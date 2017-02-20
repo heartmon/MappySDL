@@ -19,50 +19,81 @@ bool game_over = false;
 float game_speed = 1.f;		// speed of the game; it is increased each time all the aliens are hit
 							// it is also the score multiplier
 
-#include "mouse.h"
-#include "mouse_render_component.h"
-#include "mouse_input_component.h"
+#include "game.h"
 
 int main(int argc, char** argv)
 {
+
 	AvancezLib system;
 
 	system.init(640, 480);
 
-	Mouse mouse;
-	//MouseRenderComponent mouseRenderComponent = new MouseRenderComponent(&system);
-	mouse.Init( &system, new MouseRenderComponent(&system), new MouseInputComponent(&system) );
-
+	Game game;
+	game.Create(&system);
+	game.Init();
 
 	float lastTime = system.getElapsedTime();
 	while (system.update())
 	{
-		//Time
 		float newTime = system.getElapsedTime();
 		float dt = newTime - lastTime;
-		
 		dt = dt * game_speed;
 		lastTime = newTime;
 
-		//Update
-		mouse.Update(dt);
+		
 
-		if (game_over)
-			dt = 0.f;
+		game.Update(dt);
 
-		if (game_over)
-		{
-			//sprintf(msg, "*** G A M E  O V E R ***");
-			//system.drawText(250, 8, msg);
-		}
+		//game.Draw();
 	}
 
-	//aliens.destroy();
-	//player.destroy();
+	// clean up
+	game.Destroy();
 	system.destroy();
 
 	return 0;
 }
+
+//int main(int argc, char** argv)
+//{
+//	AvancezLib system;
+//
+//	system.init(640, 480);
+//
+//	Mouse mouse;
+//	//MouseRenderComponent mouseRenderComponent = new MouseRenderComponent(&system);
+//	mouse.Init( &system, new MouseRenderComponent(&system), new MouseInputComponent(&system) );
+//
+//
+//	float lastTime = system.getElapsedTime();
+//	while (system.update())
+//	{
+//		//Time
+//		float newTime = system.getElapsedTime();
+//		float dt = newTime - lastTime;
+//		
+//		dt = dt * game_speed;
+//		lastTime = newTime;
+//
+//		//Update
+//		mouse.Update(dt);
+//
+//		if (game_over)
+//			dt = 0.f;
+//
+//		if (game_over)
+//		{
+//			//sprintf(msg, "*** G A M E  O V E R ***");
+//			//system.drawText(250, 8, msg);
+//		}
+//	}
+//
+//	//aliens.destroy();
+//	//player.destroy();
+//	system.destroy();
+//
+//	return 0;
+//}
 
 
 

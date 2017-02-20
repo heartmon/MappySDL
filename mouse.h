@@ -1,37 +1,47 @@
 #pragma once
 #include "game_entity.h"
 #include "avancezlib.h"
+#include "mouse_sprite_state.h"
 
-class MouseRenderComponent;
-class MouseInputComponent;
 class Mouse : public GameEntity {
 	//Constants
 
 
 	//Properties
-	AvancezLib* system;
-	Sprite* sprite; // will use cliping
-	int currentState;
+	//AvancezLib* system;
+	//Sprite* sprite; // will use cliping
+	//int currentState;
 
 public:
-	//State of mouse
-	//enum State { Saturday, Sunday, Monday, Tuesday, Wednesday, Thursday, Friday };
-	const static int STATE_STAND = 0;
-	const static int STATE_WALK = 1;
-	const static int STATE_JUMP = 2;
-	const static int STATE_KNOCKBACK = 3;
-	const static int STATE_DEAD = 4;
+	////State of mouse
+	////enum State { Saturday, Sunday, Monday, Tuesday, Wednesday, Thursday, Friday };
+	//const static int STATE_STAND = 0;
+	//const static int STATE_WALK = 1;
+	//const static int STATE_PREJUMP = 2;
+	//const static int STATE_JUMP = 3;
+	//const static int STATE_KNOCKBACK = 4;
+	//const static int STATE_DEAD = 5;
 
-	Mouse();
-	void Init(AvancezLib* system, MouseRenderComponent* renderComponent, MouseInputComponent* inputComponent);
-	void Draw();
-	void Update(float dt);
-	void Destroy();
-	int getCurrentState();
-	void setCurrentState(int state);
-	int direction;
+
+	virtual ~Mouse() { SDL_Log("Mouse::~Mouse"); }
+	virtual void Init()
+	{
+		SDL_Log("Mouse::Init");
+		GameEntity::Init();
+
+		horizontalPosition = 30;
+		verticalPosition = 0;
+		setCurrentStateType(MouseSpriteState::STATE_STAND);
+	}
+	virtual void Receive(Message m)
+	{
+		if (m == HIT)
+		{
+			SDL_Log("Mouse::Hit!");
+		}
+	}
 
 private:
-	MouseRenderComponent* renderComponent;
-	MouseInputComponent* inputComponent;
+	//Collision box
+	//SDL_Rect collider;
 };

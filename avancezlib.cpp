@@ -151,7 +151,7 @@ Sprite * AvancezLib::createSprite(const char * path)
 	return sprite;
 }
 
-LTexture * AvancezLib::createSpriteSheet(const char * path) {
+SpriteSheet * AvancezLib::createSpriteSheet(const char * path) {
 	//Get rid of preexisting texture
 	//free();
 
@@ -194,7 +194,7 @@ LTexture * AvancezLib::createSpriteSheet(const char * path) {
 		SDL_FreeSurface(loadedSurface);
 	}
 
-	LTexture * sprite = new LTexture(renderer, newTexture, width, height);
+	SpriteSheet * sprite = new SpriteSheet(renderer, newTexture, width, height);
 
 	return sprite;
 
@@ -203,7 +203,7 @@ LTexture * AvancezLib::createSpriteSheet(const char * path) {
 	return mTexture != NULL;
 
 
-	LTexture spriteSheetTexture;
+	SpriteSheet spriteSheetTexture;
 
 	spriteSheetTexture.setRenderer(renderer);
 	spriteSheetTexture.loadFromFile(path);
@@ -318,10 +318,10 @@ void Sprite::destroy()
 	SDL_DestroyTexture(texture);
 }
 
-//LTexture
+//SpriteSheet
 
 
-LTexture::LTexture(SDL_Renderer * renderer, SDL_Texture * texture, int width, int height)
+SpriteSheet::SpriteSheet(SDL_Renderer * renderer, SDL_Texture * texture, int width, int height)
 {
 	//Initialize
 	this->renderer = renderer;
@@ -331,13 +331,13 @@ LTexture::LTexture(SDL_Renderer * renderer, SDL_Texture * texture, int width, in
 	mHeight = height;
 }
 
-LTexture::~LTexture()
+SpriteSheet::~SpriteSheet()
 {
 	//Deallocate
 	free();
 }
 
-bool LTexture::loadFromFile(const char * path)
+bool SpriteSheet::loadFromFile(const char * path)
 {
 	//Get rid of preexisting texture
 	free();
@@ -383,7 +383,7 @@ bool LTexture::loadFromFile(const char * path)
 	return mTexture != NULL;
 }
 
-void LTexture::free()
+void SpriteSheet::free()
 {
 	//Free texture if it exists
 	if (mTexture != NULL)
@@ -395,7 +395,7 @@ void LTexture::free()
 	}
 }
 
-void LTexture::render(int x, int y, SDL_Rect* clip)
+void SpriteSheet::render(int x, int y, SDL_Rect* clip)
 {
 	//Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -411,16 +411,16 @@ void LTexture::render(int x, int y, SDL_Rect* clip)
 	SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
 }
 
-int LTexture::getWidth()
+int SpriteSheet::getWidth()
 {
 	return mWidth;
 }
 
-int LTexture::getHeight()
+int SpriteSheet::getHeight()
 {
 	return mHeight;
 }
 
-void LTexture::setRenderer(SDL_Renderer* renderer) {
+void SpriteSheet::setRenderer(SDL_Renderer* renderer) {
 	this->renderer = renderer;
 }

@@ -48,13 +48,31 @@
     <ClCompile Include="avancezlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mouse.cpp">
-      <Filter>Source Files\mouse</Filter>
-    </ClCompile>
     <ClCompile Include="mouse_render_component.cpp">
       <Filter>Source Files\mouse</Filter>
     </ClCompile>
     <ClCompile Include="mouse_input_component.cpp">
+      <Filter>Source Files\mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Source Files\level</Filter>
+    </ClCompile>
+    <ClCompile Include="sample_level.cpp">
+      <Filter>Source Files\level</Filter>
+    </ClCompile>
+    <ClCompile Include="component.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="game_entity.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="entity_state.cpp">
+      <Filter>Source Files\base</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse_behavior_component.cpp">
+      <Filter>Source Files\mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse_sprite_state.cpp">
       <Filter>Source Files\mouse</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,24 +81,6 @@
       <Filter>Source Files\mouse</Filter>
     </ClInclude>
     <ClInclude Include="game_entity.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="observer.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="observable.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="input_component.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics_component.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="collision_component.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="physics_component.h">
       <Filter>Source Files\base</Filter>
     </ClInclude>
     <ClInclude Include="render_component.h">
@@ -92,23 +92,41 @@
     <ClInclude Include="global_constant.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="DrawComponent.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
-    <ClInclude Include="mouse_draw_component.h">
-      <Filter>Source Files\mouse</Filter>
-    </ClInclude>
     <ClInclude Include="avancezlib.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="mouse_render_component.h">
       <Filter>Source Files\mouse</Filter>
     </ClInclude>
-    <ClInclude Include="draw_component.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
     <ClInclude Include="mouse_input_component.h">
       <Filter>Source Files\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="sample_level.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
+    <ClInclude Include="component.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="object_pool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="entity_state.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse_behavior_component.h">
+      <Filter>Source Files\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse_behavior_component_interface.h">
+      <Filter>Source Files\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse_sprite_state.h">
+      <Filter>Source Files\mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite_state_interface.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

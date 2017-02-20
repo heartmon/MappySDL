@@ -29,14 +29,14 @@ public:
 };
 
 //Texture wrapper class
-class LTexture
+class SpriteSheet
 {
 public:
 	//Initializes variables
-	LTexture(SDL_Renderer * renderer, SDL_Texture * texture, int width, int height);
+	SpriteSheet(SDL_Renderer * renderer, SDL_Texture * texture, int width, int height);
 
 	//Deallocates memory
-	~LTexture();
+	~SpriteSheet();
 
 	//Loads image at specified path
 	bool loadFromFile(const char* path);
@@ -85,7 +85,7 @@ public:
 	Sprite* createSpriteNonBmp(const char* path);
 
 	// Sprite sheet
-	LTexture* createSpriteSheet(const char* path);
+	SpriteSheet* createSpriteSheet(const char* path);
 
 	// Draws the given text.
 	void drawText(int x, int y, const char* msg);
