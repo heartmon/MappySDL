@@ -66,18 +66,16 @@ void SpriteSheetRenderComponent::Create(AvancezLib* system, GameEntity * go, std
 	this->spriteState = spriteState;
 }
 void SpriteSheetRenderComponent::Update(float dt) {
+	//int currentStateType = gameEntity->getCurrentStateType();
+	//EntityState* s = spriteState->getMatchEntityState(currentStateType);
+	//s->Render(gameEntity->horizontalPosition, gameEntity->verticalPosition, 0);
+
 	// 1 check the state
-	//SDL_Log("SpriteSheetRenderComponent::Update");
-	std::set<EntityState*>* states = spriteState->getSpriteStateEntities();
-	//SDL_Log("%d", states->size());
-	for (std::set<EntityState*>::iterator it = states->begin(); it != states->end(); ++it) {
+	std::vector<EntityState*>* states = spriteState->getSpriteStateEntities();
+	for (std::vector<EntityState*>::iterator it = states->begin(); it != states->end(); ++it) {
 		EntityState* s = *it;
 		SDL_Rect* rect = s->getClipingRect();
-		//SDL_Log("%d", gameEntity->getCurrentStateType());
-		//if (gameEntity->getCurrentStateType() == NULL) {
-		//	return;
-		//}
-		
+
 		// check current state for using in render
 		if (s->getStateType() == gameEntity->getCurrentStateType()) {
 			//SDL_Log("!!!");
@@ -86,11 +84,7 @@ void SpriteSheetRenderComponent::Update(float dt) {
 			int frame = gameEntity->animationFrame;
 			frame = ((int)(t0 * 10) % s->getNumberOfFrame());
 			gameEntity->animationFrame = frame;
-
-			//SDL_Log("WTF %d", gameEntity->horizontalPosition);
-
 			// Render using the spritesheet (SpriteSheet.render)
-			SDL_Log("%d", rect->h);
 			s->Render(gameEntity->horizontalPosition, gameEntity->verticalPosition, frame);
 		}
 	}

@@ -1,8 +1,10 @@
 #pragma once
-#include "mouse_behavior_component_interface.h"
 #include "avancezlib.h"
+#include "game_entity.h"
+#include <set>
+#include "component.h"
 
-class MouseBehaviorComponent : public MouseBehaviorComponentInterface  {
+class MouseBehaviorComponent : public Component {
 public:
 	void Create(AvancezLib* system, GameEntity * go, std::set<GameEntity*> * game_objects);
 	void Update(float dt);

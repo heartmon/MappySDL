@@ -38,5 +38,5 @@ void EntityState::Render(float x, float y, int frame) {
 	//test->y = 0;
 	//test->w = 32;
 	//test->h = 32;
-	spriteSheet->render(x, y, this->clipingRect);
+	spriteSheet->render(x, y, clipingRect);
 }

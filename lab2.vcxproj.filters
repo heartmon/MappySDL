@@ -48,12 +48,6 @@
     <ClCompile Include="avancezlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mouse_render_component.cpp">
-      <Filter>Source Files\mouse</Filter>
-    </ClCompile>
-    <ClCompile Include="mouse_input_component.cpp">
-      <Filter>Source Files\mouse</Filter>
-    </ClCompile>
     <ClCompile Include="tile.cpp">
       <Filter>Source Files\level</Filter>
     </ClCompile>
@@ -83,9 +77,6 @@
     <ClInclude Include="game_entity.h">
       <Filter>Source Files\base</Filter>
     </ClInclude>
-    <ClInclude Include="render_component.h">
-      <Filter>Source Files\base</Filter>
-    </ClInclude>
     <ClInclude Include="tile.h">
       <Filter>Source Files\level</Filter>
     </ClInclude>
@@ -94,12 +85,6 @@
     </ClInclude>
     <ClInclude Include="avancezlib.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mouse_render_component.h">
-      <Filter>Source Files\mouse</Filter>
-    </ClInclude>
-    <ClInclude Include="mouse_input_component.h">
-      <Filter>Source Files\mouse</Filter>
     </ClInclude>
     <ClInclude Include="sample_level.h">
       <Filter>Source Files\level</Filter>
@@ -114,9 +99,6 @@
       <Filter>Source Files\base</Filter>
     </ClInclude>
     <ClInclude Include="mouse_behavior_component.h">
-      <Filter>Source Files\mouse</Filter>
-    </ClInclude>
-    <ClInclude Include="mouse_behavior_component_interface.h">
       <Filter>Source Files\mouse</Filter>
     </ClInclude>
     <ClInclude Include="mouse_sprite_state.h">

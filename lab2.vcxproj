@@ -25,8 +25,6 @@
     <ClCompile Include="game_entity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mouse_behavior_component.cpp" />
-    <ClCompile Include="mouse_input_component.cpp" />
-    <ClCompile Include="mouse_render_component.cpp" />
     <ClCompile Include="mouse_sprite_state.cpp" />
     <ClCompile Include="sample_level.cpp" />
     <ClCompile Include="tile.cpp" />
@@ -40,12 +38,8 @@
     <ClInclude Include="global_constant.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_behavior_component.h" />
-    <ClInclude Include="mouse_behavior_component_interface.h" />
-    <ClInclude Include="mouse_input_component.h" />
-    <ClInclude Include="mouse_render_component.h" />
     <ClInclude Include="mouse_sprite_state.h" />
     <ClInclude Include="object_pool.h" />
-    <ClInclude Include="render_component.h" />
     <ClInclude Include="sample_level.h" />
     <ClInclude Include="sprite_state_interface.h" />
     <ClInclude Include="tile.h" />

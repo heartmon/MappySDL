@@ -16,7 +16,8 @@ public:
 	const static int JUMP_ANIMATION_FRAME = 2;
 
 	void Create(AvancezLib* system);
-	std::set<EntityState*>* getSpriteStateEntities();
+	std::vector<EntityState*>* getSpriteStateEntities();
+	EntityState* getMatchEntityState(int currentStateType);
 private:
 	const int spriteSize = 32;
 
@@ -25,4 +26,8 @@ private:
 	SDL_Rect walkSpriteClips[WALKING_ANIMATION_FRAME];
 	SDL_Rect prejumpSpriteClips[PREJUMP_ANIMATION_FRAME];
 	SDL_Rect jumpSpriteClips[JUMP_ANIMATION_FRAME];
+
+	EntityState* jump;
+	EntityState* walk;
+	EntityState* stand;
 };

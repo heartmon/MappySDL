@@ -21,6 +21,11 @@ float game_speed = 1.f;		// speed of the game; it is increased each time all the
 
 #include "game.h"
 
+int num_frames = 0;
+int sum_delta = 0;
+float avg_fps = 0;
+char msg[256];
+
 int main(int argc, char** argv)
 {
 
@@ -40,7 +45,20 @@ int main(int argc, char** argv)
 		dt = dt * game_speed;
 		lastTime = newTime;
 
-		
+		sum_delta += dt;
+		//SDL_Log("%f", sum_delta);
+	
+
+		num_frames++;
+
+		if (sum_delta > 100)
+		{
+			avg_fps = ((float)num_frames / sum_delta) * 1000;
+			num_frames = 0;
+			sum_delta = 0;
+		}
+		sprintf(msg, "%.3f fps", avg_fps);
+		system.drawText(12, 12, msg);
 
 		game.Update(dt);
 
