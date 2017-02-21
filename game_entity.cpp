@@ -5,9 +5,13 @@
 
 void GameEntity::Create()
 {
-	SDL_Log("GameEntity::Create");
+	//SDL_Log("GameEntity::Create");
 
 	enabled = false;
+	isVisibleWithinCamera = false;
+	isCollidedWithMap = false;
+
+	size = new SDL_Rect;
 }
 
 void GameEntity::AddComponent(Component * component)
@@ -15,15 +19,19 @@ void GameEntity::AddComponent(Component * component)
 	components.push_back(component);
 }
 
+void GameEntity::SetCollisionRule(CollisionRuleInterface* collisionRule) {
+	this->collisionRule = collisionRule;
+}
 
 void GameEntity::Init()
 {
-	SDL_Log("GameObject::Init");
+	//SDL_Log("GameObject::Init");
 
 	for (auto it = components.begin(); it != components.end(); it++)
 		(*it)->Init();
 
 	enabled = true;
+	isVisibleWithinCamera = true;
 }
 
 void GameEntity::Update(float dt)
@@ -51,7 +59,7 @@ void GameEntity::AddReceiver(GameEntity * go)
 	receivers.push_back(go);
 }
 
-void GameEntity::Send(Message m)
+void GameEntity::Send(Message* m)
 {
 	for (auto i = 0; i < receivers.size(); i++)
 	{

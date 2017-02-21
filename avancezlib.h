@@ -103,6 +103,9 @@ public:
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
 	void getKeyStatus(KeyStatus& keys);
 
+	//Level camera
+	//SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 private:
 	SDL_Window * window;
 	SDL_Renderer * renderer;

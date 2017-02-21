@@ -1,23 +1,23 @@
 #pragma once
-#include <SDL.h>
+#include "global_constant.h"
+#include "avancezlib.h"
+#include "game_entity.h"
 
-class Tile {
+class Tile : public GameEntity {
 public:
-	//Initializes position and type
-	Tile(int x, int y, int tileType);
-
-	//Shows the tile
-	void render(SDL_Rect& camera);
-
 	//Get the tile type
 	int getType();
-
 	//Get the collision box
 	SDL_Rect getBox();
+	void Create(int x, int y, int tileType);
+	void Update(float dt);
+
+	virtual std::string getName() {
+		return CLASS_TILE;
+	}
 private:
 	//The attributes of the tile
 	SDL_Rect mBox;
-
 	//The tile type
 	int mType;
 };

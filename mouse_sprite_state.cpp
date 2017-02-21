@@ -13,7 +13,7 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	standSpriteClips[0].y = 0;
 	standSpriteClips[0].w = spriteSize;
 	standSpriteClips[0].h = spriteSize;
-	stand = new EntityState(mappySpriteSheet, STATE_STAND, STANDING_ANIMATION_FRAME, &standSpriteClips[0]);
+	stand = new EntityState(mappySpriteSheet, STATE_STAND, STANDING_ANIMATION_FRAME, standSpriteClips);
 
 	//walking animation
 	walkSpriteClips[0].x = spriteSize * 0;
@@ -51,19 +51,4 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	// Set back
 	this->states = states;
 	SDL_Log("States after setback: %d", this->states->size());
-}
-
-std::vector<EntityState*>* MouseSpriteState::getSpriteStateEntities() {
-	return states;
-}
-
-EntityState* MouseSpriteState::getMatchEntityState(int currentStateType) {
-	switch (currentStateType) {
-	case STATE_WALK:
-		return walk;
-	case STATE_STAND:
-		return stand;
-	default:
-		return NULL;
-	}
 }

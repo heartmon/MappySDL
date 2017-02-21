@@ -15,9 +15,10 @@ public:
 	const static int PREJUMP_ANIMATION_FRAME = 1;
 	const static int JUMP_ANIMATION_FRAME = 2;
 
+	const static int SPRITE_WIDTH = 32;
+	const static int SPRITE_HEIGHT = 32;
+
 	void Create(AvancezLib* system);
-	std::vector<EntityState*>* getSpriteStateEntities();
-	EntityState* getMatchEntityState(int currentStateType);
 private:
 	const int spriteSize = 32;
 

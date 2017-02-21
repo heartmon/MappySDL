@@ -26,23 +26,29 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mouse_behavior_component.cpp" />
     <ClCompile Include="mouse_sprite_state.cpp" />
-    <ClCompile Include="sample_level.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="tile.cpp" />
+    <ClCompile Include="tile_sprite_state.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="avancezlib.h" />
+    <ClInclude Include="collision_rule_interface.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="entity_state.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_entity.h" />
     <ClInclude Include="global_constant.h" />
+    <ClInclude Include="level_render_component.h" />
+    <ClInclude Include="message.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_behavior_component.h" />
+    <ClInclude Include="mouse_collision_rule.h" />
     <ClInclude Include="mouse_sprite_state.h" />
     <ClInclude Include="object_pool.h" />
-    <ClInclude Include="sample_level.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="sprite_state_interface.h" />
     <ClInclude Include="tile.h" />
+    <ClInclude Include="tile_sprite_state.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2E9FBE05-6307-49D3-B92B-A07C2E699073}</ProjectGuid>

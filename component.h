@@ -1,5 +1,6 @@
 #pragma once
 #include <set>
+#include <vector>
 #include "object_pool.h"
 
 class GameEntity;
@@ -8,18 +9,20 @@ class Sprite;
 class SpriteSheet;
 class EntityState;
 class SpriteStateInterface;
+class SDL_Rect;
+class Tile;
 
 class Component
 {
 protected:
 	AvancezLib * system;
 	GameEntity * gameEntity;	// the game object this component is part of
-	std::set<GameEntity*> * allGameEntities;	// the global container of game objects
+	std::vector<GameEntity*> * allGameEntities;	// the global container of game objects
 
 public:
 	virtual ~Component() {}
 
-	virtual void Create(AvancezLib* system, GameEntity * go, std::set<GameEntity*> * game_objects);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects);
 
 	virtual void Init() {}
 	virtual void Update(float dt) = 0;
@@ -34,7 +37,7 @@ class RenderComponent : public Component
 
 public:
 
-	virtual void Create(AvancezLib* system, GameEntity * go, std::set<GameEntity*> * game_objects, const char * sprite_name);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, const char * sprite_name);
 	virtual void Update(float dt);
 	virtual void Destroy();
 
@@ -43,13 +46,35 @@ public:
 
 class SpriteSheetRenderComponent : public Component {
 public:
-	virtual void Create(AvancezLib* system, GameEntity * go, std::set<GameEntity*> * game_objects, SpriteStateInterface* spriteState);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SpriteStateInterface* spriteState, bool order = false, SDL_Rect* camera = NULL);
 	virtual void Update(float dt);
 	virtual void Destroy();
 
 private:
 	SpriteStateInterface* spriteState;
+	bool order = false;
+	SDL_Rect* camera;
 };
+
+class CameraCollideComponent : public Component {
+	SDL_Rect* camera;
+public:
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera);
+	virtual void Update(float dt);
+	virtual void Destroy();
+private:
+};
+
+class MapCollideComponent : public Component {
+	SDL_Rect* camera;
+public:
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, std::vector<Tile*>* tileMap);
+	virtual void Update(float dt);
+	virtual void Destroy();
+private:
+	std::vector<Tile*>* tileMap;
+};
+
 
 
 class CollideComponent : public Component
@@ -57,7 +82,7 @@ class CollideComponent : public Component
 	ObjectPool<GameEntity> * coll_objects; // collision will be tested with these objects
 
 public:
-	virtual void Create(AvancezLib* system, GameEntity * go, std::set<GameEntity*> * game_objects, ObjectPool<GameEntity> * coll_objects);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<GameEntity> * coll_objects);
 	virtual void Update(float dt);
 };
 

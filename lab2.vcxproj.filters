@@ -51,9 +51,6 @@
     <ClCompile Include="tile.cpp">
       <Filter>Source Files\level</Filter>
     </ClCompile>
-    <ClCompile Include="sample_level.cpp">
-      <Filter>Source Files\level</Filter>
-    </ClCompile>
     <ClCompile Include="component.cpp">
       <Filter>Source Files\base</Filter>
     </ClCompile>
@@ -68,6 +65,12 @@
     </ClCompile>
     <ClCompile Include="mouse_sprite_state.cpp">
       <Filter>Source Files\mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>Source Files\level</Filter>
+    </ClCompile>
+    <ClCompile Include="tile_sprite_state.cpp">
+      <Filter>Source Files\level</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,9 +88,6 @@
     </ClInclude>
     <ClInclude Include="avancezlib.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sample_level.h">
-      <Filter>Source Files\level</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
       <Filter>Source Files\base</Filter>
@@ -109,6 +109,24 @@
     </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
+    <ClInclude Include="level_render_component.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
+    <ClInclude Include="tile_sprite_state.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
+    <ClInclude Include="message.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_rule_interface.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse_collision_rule.h">
+      <Filter>Source Files\mouse</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -20,6 +20,7 @@ float game_speed = 1.f;		// speed of the game; it is increased each time all the
 							// it is also the score multiplier
 
 #include "game.h"
+#include "global_constant.h"
 
 int num_frames = 0;
 int sum_delta = 0;
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
 
 	AvancezLib system;
 
-	system.init(640, 480);
+	system.init(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	Game game;
 	game.Create(&system);
@@ -46,19 +47,19 @@ int main(int argc, char** argv)
 		lastTime = newTime;
 
 		sum_delta += dt;
-		//SDL_Log("%f", sum_delta);
+		//SDL_Log("%f", dt);
 	
 
-		num_frames++;
+		//num_frames++;
 
-		if (sum_delta > 100)
-		{
-			avg_fps = ((float)num_frames / sum_delta) * 1000;
-			num_frames = 0;
-			sum_delta = 0;
-		}
-		sprintf(msg, "%.3f fps", avg_fps);
-		system.drawText(12, 12, msg);
+		//if (sum_delta > 100)
+		//{
+		//	avg_fps = ((float)num_frames / sum_delta) * 1000;
+		//	num_frames = 0;
+		//	sum_delta = 0;
+		//}
+		//sprintf(msg, "%.3f fps", avg_fps);
+		//system.drawText(12, 12, msg);
 
 		game.Update(dt);
 
