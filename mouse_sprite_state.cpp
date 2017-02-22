@@ -4,7 +4,7 @@
 void MouseSpriteState::Create(AvancezLib* system) {
 	// Set sprite sheet name
 	SDL_Log("MouseSpriteState::Create");
-	char* mappySpriteName = "data/mappy_sprite.png";
+	char* mappySpriteName = "data/mappy_sprite2.png";
 	SpriteSheet* mappySpriteSheet = system->createSpriteSheet(mappySpriteName);
 
 	//setup clipping rect
@@ -14,6 +14,13 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	standSpriteClips[0].w = spriteSize;
 	standSpriteClips[0].h = spriteSize;
 	stand = new EntityState(mappySpriteSheet, STATE_STAND, STANDING_ANIMATION_FRAME, standSpriteClips);
+
+	//stand animation
+	standRightSpriteClips[0].x = spriteSize * 1;
+	standRightSpriteClips[0].y = spriteSize * 1;
+	standRightSpriteClips[0].w = spriteSize;
+	standRightSpriteClips[0].h = spriteSize;
+	EntityState* standRight = new EntityState(mappySpriteSheet, STATE_STAND_RIGHT, STANDING_ANIMATION_FRAME, standRightSpriteClips);
 
 	//walking animation
 	walkSpriteClips[0].x = spriteSize * 0;
@@ -28,7 +35,24 @@ void MouseSpriteState::Create(AvancezLib* system) {
 
 	walk = new EntityState(mappySpriteSheet, STATE_WALK, WALKING_ANIMATION_FRAME, walkSpriteClips);
 
+	walkRightSpriteClips[0].x = spriteSize * 0;
+	walkRightSpriteClips[0].y = spriteSize * 1;
+	walkRightSpriteClips[0].w = spriteSize;
+	walkRightSpriteClips[0].h = spriteSize;
+
+	walkRightSpriteClips[1].x = spriteSize * 1;
+	walkRightSpriteClips[1].y = spriteSize * 1;
+	walkRightSpriteClips[1].w = spriteSize;
+	walkRightSpriteClips[1].h = spriteSize;
+
+	EntityState* walkRight = new EntityState(mappySpriteSheet, STATE_WALK_RIGHT, WALKING_ANIMATION_FRAME, walkRightSpriteClips);
+
 	//prejump animation
+	prejumpSpriteClips[0].x = spriteSize * 6;
+	prejumpSpriteClips[0].y = 0;
+	prejumpSpriteClips[0].w = spriteSize;
+	prejumpSpriteClips[0].h = spriteSize;
+	EntityState* preJump = new EntityState(mappySpriteSheet, STATE_PREJUMP, PREJUMP_ANIMATION_FRAME, prejumpSpriteClips);
 
 	//jump animation
 	jumpSpriteClips[0].x = spriteSize * 3;
@@ -47,6 +71,9 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	states->push_back(stand);
 	states->push_back(walk);
 	states->push_back(jump);
+	states->push_back(standRight);
+	states->push_back(walkRight);
+	states->push_back(preJump);
 	
 	// Set back
 	this->states = states;

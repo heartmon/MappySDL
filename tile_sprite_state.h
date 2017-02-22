@@ -9,8 +9,11 @@ public:
 	const static int STATE_TILE_CORNER_RIGHT = 3;
 	const static int STATE_TILE_SPACE = 4;
 	const static int STATE_TILE_BASE = 5;
+	const static int STATE_TILE_WALL_LEFT = 6;
+	const static int STATE_TILE_SPACE_JUMP = 7;
+	const static int STATE_TILE_ROPE = 8;
 
-	const static int TOTAL_TILE_SPRITES = 6;
+	const static int TOTAL_TILE_SPRITES = 9;
 
 	const static int TILE_WIDTH = 48;
 	const static int TILE_HEIGHT = 48;
@@ -26,4 +29,6 @@ private:
 	SDL_Rect cornerRightClips[FRAME_NO_MOVE];
 	SDL_Rect spaceClips[FRAME_NO_MOVE];
 	SDL_Rect baseClips[FRAME_NO_MOVE];
+	SDL_Rect wallLeftClips[FRAME_NO_MOVE];
+	SDL_Rect spaceJumpClips[FRAME_NO_MOVE];
 };

@@ -51,14 +51,30 @@ public:
 	int direction; //left = -1, right = 1;
 	bool enabled;
 	bool isVisibleWithinCamera;
-	bool isCollidedWithMap;
+	bool isXCollidedWithMap;
+	bool isYCollidedWithMap;
 	int animationFrame = 0;
-
+	float arbitaryTrackingNumber = 0;
 	const int static LEFT = -1;
 	const int static RIGHT = 1;
+
+	float vy = 0;
+	float vx = 0;
+
+	virtual SDL_Rect getCollisionBox(SDL_Rect* camera = NULL) {
+		int x = horizontalPosition;
+		int y = verticalPosition;
+		if (camera) {
+			x += camera->x;
+			y += camera->y;
+		}
+		SDL_Rect a = { x, y, size->w, size->h };
+		return a;
+	}
 protected:
 	int currentStateType = -1;
 	CollisionRuleInterface* collisionRule;
 	SDL_Rect* size;
+	
 private:
 };

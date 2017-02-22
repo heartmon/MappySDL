@@ -206,6 +206,8 @@ void MapCollideComponent::Update(float dt) {
 				gameEntity->Receive(m);
 				//go0->Receive(new Message(HIT));
 				m->Destroy();
+
+				//gameEntity->isCollidedWithMap = true;
 			}
 			else {
 				//gameEntity->isCollidedWithMap = false;

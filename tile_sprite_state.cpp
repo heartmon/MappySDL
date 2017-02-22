@@ -37,6 +37,11 @@ void TileSpriteState::Create(AvancezLib* system) {
 	baseClips[0].w = TILE_WIDTH;
 	baseClips[0].h = TILE_HEIGHT;
 
+	wallLeftClips[0].x = TILE_WIDTH * STATE_TILE_WALL_LEFT;
+	wallLeftClips[0].y = 0;
+	wallLeftClips[0].w = TILE_WIDTH;
+	wallLeftClips[0].h = TILE_HEIGHT;
+
 	// Order is important
 	EntityState* wallRight = new EntityState(spriteSheet, STATE_TILE_WALL_RIGHT, FRAME_NO_MOVE, wallRightClips);
 	EntityState* cornerLeft = new EntityState(spriteSheet, STATE_TILE_CORNER_LEFT, FRAME_NO_MOVE, cornerLeftClips);
@@ -44,6 +49,9 @@ void TileSpriteState::Create(AvancezLib* system) {
 	EntityState* cornerRight = new EntityState(spriteSheet, STATE_TILE_CORNER_RIGHT, FRAME_NO_MOVE, cornerRightClips);
 	EntityState* space = new EntityState(spriteSheet, STATE_TILE_SPACE, FRAME_NO_MOVE, spaceClips);
 	EntityState* base = new EntityState(spriteSheet, STATE_TILE_BASE, FRAME_NO_MOVE, baseClips);
+	EntityState* wallLeft = new EntityState(spriteSheet, STATE_TILE_WALL_LEFT, FRAME_NO_MOVE, wallLeftClips);
+	EntityState* spaceJump = new EntityState(spriteSheet, STATE_TILE_SPACE_JUMP, FRAME_NO_MOVE, spaceClips);
+	EntityState* rope = new EntityState(spriteSheet, STATE_TILE_ROPE, FRAME_NO_MOVE, spaceClips);
 
 	std::vector<EntityState*>* states = new std::vector<EntityState*>;
 	states->push_back(wallRight);
@@ -52,6 +60,9 @@ void TileSpriteState::Create(AvancezLib* system) {
 	states->push_back(cornerRight);
 	states->push_back(space);
 	states->push_back(base);
+	states->push_back(wallLeft);
+	states->push_back(spaceJump);
+	states->push_back(rope);
 
 	// Set back
 	this->states = states;

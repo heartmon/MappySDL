@@ -38,7 +38,6 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_entity.h" />
     <ClInclude Include="global_constant.h" />
-    <ClInclude Include="level_render_component.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_behavior_component.h" />

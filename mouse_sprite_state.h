@@ -8,6 +8,8 @@ public:
 	const static int STATE_JUMP = 3;
 	const static int STATE_KNOCKBACK = 4;
 	const static int STATE_DEAD = 5;
+	const static int STATE_STAND_RIGHT = 6;
+	const static int STATE_WALK_RIGHT = 7;
 
 	const static int STANDING_ANIMATION_FRAME = 1;
 	const static int WALKING_ANIMATION_FRAME = 2;
@@ -27,6 +29,8 @@ private:
 	SDL_Rect walkSpriteClips[WALKING_ANIMATION_FRAME];
 	SDL_Rect prejumpSpriteClips[PREJUMP_ANIMATION_FRAME];
 	SDL_Rect jumpSpriteClips[JUMP_ANIMATION_FRAME];
+	SDL_Rect standRightSpriteClips[STANDING_ANIMATION_FRAME];
+	SDL_Rect walkRightSpriteClips[WALKING_ANIMATION_FRAME];
 
 	EntityState* jump;
 	EntityState* walk;

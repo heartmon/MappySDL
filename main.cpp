@@ -19,6 +19,9 @@ bool game_over = false;
 float game_speed = 1.f;		// speed of the game; it is increased each time all the aliens are hit
 							// it is also the score multiplier
 
+float gravity = 0.2f;
+float maxFallSpeed = -5.0f;
+
 #include "game.h"
 #include "global_constant.h"
 

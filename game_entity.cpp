@@ -9,7 +9,8 @@ void GameEntity::Create()
 
 	enabled = false;
 	isVisibleWithinCamera = false;
-	isCollidedWithMap = false;
+	isXCollidedWithMap = false;
+	isYCollidedWithMap = false;
 
 	size = new SDL_Rect;
 }
@@ -32,6 +33,7 @@ void GameEntity::Init()
 
 	enabled = true;
 	isVisibleWithinCamera = true;
+	direction = 0;
 }
 
 void GameEntity::Update(float dt)
@@ -75,6 +77,7 @@ int GameEntity::getCurrentStateType() {
 }
 
 void GameEntity::setCurrentStateType(int currentStateType) {
+	//SDL_Log("%d", currentStateType);
 	this->animationFrame = 0;
 	this->currentStateType = currentStateType;
 }

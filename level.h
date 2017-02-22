@@ -9,7 +9,7 @@ class TileSpriteState;
 
 class Level : public GameEntity {
 	//The different tile sprites
-	const static int TOTAL_TILES = 288;
+	const static int TOTAL_TILES = 378;
 	//private prop
 	AvancezLib* system;
 	SDL_Rect* camera;

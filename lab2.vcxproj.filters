@@ -113,9 +113,6 @@
     <ClInclude Include="level.h">
       <Filter>Source Files\level</Filter>
     </ClInclude>
-    <ClInclude Include="level_render_component.h">
-      <Filter>Source Files\level</Filter>
-    </ClInclude>
     <ClInclude Include="tile_sprite_state.h">
       <Filter>Source Files\level</Filter>
     </ClInclude>

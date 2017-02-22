@@ -3,6 +3,15 @@
 #include "mouse_sprite_state.h"
 #include "global_constant.h"
 
+float ax = 0;
+float ay = 0;
+float vx = 160.f;
+float vy = 10;
+float xold, yold, vxold, vyold;
+int coeff = 10;
+float x = 0;
+float y = 0;
+
 void MouseBehaviorComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera) {
 	Component::Create(system, go, game_objects);
 
@@ -15,26 +24,126 @@ void MouseBehaviorComponent::Update(float dt) {
 	// Input behavior
 	bool go_on = true;
 
-	AvancezLib::KeyStatus  keys;
+	float g = 100.f;
+
+
+	AvancezLib::KeyStatus keys;
 	system->getKeyStatus(keys);
 
+	// input processing
+	switch (gameEntity->getCurrentStateType()) {
+		case MouseSpriteState::STATE_JUMP:
+		case MouseSpriteState::STATE_PREJUMP:
+			break;
+		default:
+			ProcessInput(keys, dt);
+	}
+
+	// default moving
+	// X
+	if (!gameEntity->isXCollidedWithMap) {
+		if (isMovable) {
+			Move(dt * gameEntity->direction * 160.f);
+			isMovable = false;
+		}
+	}
+	else {
+		Move(0.5 * gameEntity->direction * -1);
+		gameEntity->isXCollidedWithMap = false;
+		isMovable = false;
+	}
+	// Y
+	if (!gameEntity->isYCollidedWithMap) {
+		gameEntity->setCurrentStateType(MouseSpriteState::STATE_JUMP);
+		gameEntity->verticalPosition += dt * gameEntity->vy;
+		//gameEntity->verticalPosition += dt * -g * vy;
+		gameEntity->vy += dt * g;
+		SDL_Log("%f", gameEntity->vy);
+	}
+
+	if (gameEntity->isYCollidedWithMap) {
+		if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP) {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+			gameEntity->vy = 100;
+		}
+		gameEntity->isYCollidedWithMap = false;
+	}
+
+	// Save previous values
+	//xold = x;
+	//yold = y;
+	//vxold = vx;
+	//vyold = vy;
+
+	//// Update acceleration
+	//ax = -(coeff*vxold) * (coeff*vyold);
+	//ay = -(coeff*vyold) * (coeff*vyold) - 9.8;
+
+	//vx = vxold + ax*dt;
+	//vy = vyold + ay*dt;
+
+	//// Update position
+	//x = xold + vxold*dt + 0.5*ax*(dt * dt);
+	//y = yold + vyold*dt + 0.5*ay*(dt * dt);
+
+	//SDL_Log("Y: %f", y);
+
+	// state processing
+
+	//hopping
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
+		if (gameEntity->arbitaryTrackingNumber == 0) {
+			gameEntity->arbitaryTrackingNumber = camera->x;
+		}
+		//gameEntity->arbitaryTrackingNumber += (dt*gameEntity->direction);
+
+		// 32 = one jump step
+		if ((int)(camera->x - gameEntity->arbitaryTrackingNumber) <= 12) {
+			gameEntity->verticalPosition += -dt * 50.f;
+		}
+		else {
+			gameEntity->verticalPosition += dt * 50.f;
+		}
+		if (camera->x - gameEntity->arbitaryTrackingNumber >= 0 && camera->x - gameEntity->arbitaryTrackingNumber <= 16) {
+			SDL_Log("%f", camera->x - gameEntity->arbitaryTrackingNumber);
+			
+			Move(dt*gameEntity->direction * 160.f);
+		}
+		else {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_JUMP);
+			gameEntity->arbitaryTrackingNumber = 0;
+		}
+
+		return;
+	}
+
+	
+
+	
+}
+
+void MouseBehaviorComponent::ProcessInput(AvancezLib::KeyStatus keys, float dt) {
 	if (keys.right) {
-		Move(dt * 160.f);
-		gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK);
+		gameEntity->direction = GameEntity::RIGHT;
+		gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK_RIGHT);
+		isMovable = true;
 	}
 
 	if (keys.left) {
-		Move(dt * -160.f);
+		gameEntity->direction = GameEntity::LEFT;
 		gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK);
+		isMovable = true;
 	}
 
 	if (!keys.left && !keys.right) {
-		gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+		if (gameEntity->direction == GameEntity::RIGHT) {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND_RIGHT);
+		}
+		else {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+		}
+		isMovable = false;
 	}
-
-	// always affect by gravity
-	if(!gameEntity->isCollidedWithMap)
-		gameEntity->verticalPosition += dt * 60.0f;
 }
 
 void MouseBehaviorComponent::Move(float move)
