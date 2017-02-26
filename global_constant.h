@@ -1,12 +1,17 @@
 #pragma once
 #include <string>
 //Screen dimension constants
-const int SCREEN_WIDTH = 480;
-const int SCREEN_HEIGHT = 640;
+const int SCREEN_WIDTH = 560;
+const int SCREEN_HEIGHT = 480;
 
 //The dimensions of the level
 const int LEVEL_WIDTH = 1280;
-const int LEVEL_HEIGHT = 640;
+const int LEVEL_HEIGHT = 480;
+
+const int TILE_ROWS = 32;
+const int TILES_COLUMNS = 12;
+const int TOTAL_TILES = TILE_ROWS * TILES_COLUMNS;
+
 
 //Tile constants
 //const int TILE_WIDTH = 24;

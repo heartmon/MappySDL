@@ -4,7 +4,7 @@
 void MouseSpriteState::Create(AvancezLib* system) {
 	// Set sprite sheet name
 	SDL_Log("MouseSpriteState::Create");
-	char* mappySpriteName = "data/mappy_sprite2.png";
+	char* mappySpriteName = "data/mappy_sprite3.png";
 	SpriteSheet* mappySpriteSheet = system->createSpriteSheet(mappySpriteName);
 
 	//setup clipping rect
@@ -65,7 +65,10 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	jumpSpriteClips[1].w = spriteSize;
 	jumpSpriteClips[1].h = spriteSize;
 
-	jump = new EntityState(mappySpriteSheet, STATE_JUMP, JUMP_ANIMATION_FRAME, jumpSpriteClips);
+	jump = new EntityState(mappySpriteSheet, STATE_INTHEAIR, JUMP_ANIMATION_FRAME, jumpSpriteClips);
+
+	EntityState* preJumpBack = new EntityState(mappySpriteSheet, STATE_PRE_JUMP_BACK, JUMP_ANIMATION_FRAME, jumpSpriteClips);
+	EntityState* jumpBack = new EntityState(mappySpriteSheet, STATE_JUMP_BACK, PREJUMP_ANIMATION_FRAME, prejumpSpriteClips);
 
 	std::vector<EntityState*>* states = new std::vector<EntityState*>;
 	states->push_back(stand);
@@ -74,6 +77,8 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	states->push_back(standRight);
 	states->push_back(walkRight);
 	states->push_back(preJump);
+	states->push_back(preJumpBack);
+	states->push_back(jumpBack);
 	
 	// Set back
 	this->states = states;

@@ -36,10 +36,10 @@ public:
 
 		// Mouse init
 		mouse = new Mouse();
-		MouseCollisionRule* mouseCollisionRule = new MouseCollisionRule();
-		mouseCollisionRule->Create(mouse, camera);
 		MouseBehaviorComponent* mouseBehaviorComponent = new MouseBehaviorComponent();
 		mouseBehaviorComponent->Create(system, mouse, &gameEntities, camera);
+		MouseCollisionRule* mouseCollisionRule = new MouseCollisionRule();
+		mouseCollisionRule->Create(mouse, camera, mouseBehaviorComponent);
 		SpriteSheetRenderComponent* mouseSpriteSheetRenderComponent = new SpriteSheetRenderComponent();
 		MouseSpriteState* mouseSpriteState = new MouseSpriteState();
 		mouseSpriteState->Create(system);

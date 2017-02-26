@@ -4,6 +4,7 @@
 #include "entity_state.h"
 #include "sprite_state_interface.h"
 #include "tile.h"
+#include "collision_rule_interface.h"
 
 void Component::Create(AvancezLib * system, GameEntity * go, std::vector<GameEntity*>* allGameEntities)
 {
@@ -186,11 +187,17 @@ void MapCollideComponent::Create(AvancezLib* system, GameEntity * go, std::vecto
 	this->tileMap = tileMap;
 }
 void MapCollideComponent::Update(float dt) {
+	int count = 0;
 	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
 		Tile* tile = *it;
+		//std::vector<GameEntity*>* extraEntities = new std::vector<GameEntity*>();
+		//if (count + TILE_ROWS < tileMap->size()) {
+		//	extraEntities->push_back(tileMap->at(count));
+		//}
+		//
 
 		if (tile->enabled) {
-			int collidedResult = gameEntity->getCollisionRule()->isCollided(tile);
+			int collidedResult = gameEntity->getCollisionRule()->isCollided(tile, dt, tileMap);
 			if (collidedResult == -1) {
 				if ((tile->horizontalPosition > gameEntity->horizontalPosition - 10) &&
 					(tile->horizontalPosition < gameEntity->horizontalPosition + 10) &&
@@ -213,6 +220,8 @@ void MapCollideComponent::Update(float dt) {
 				//gameEntity->isCollidedWithMap = false;
 			}
 		}
+		count++;
+		//delete extraEntities;
 	}
 	//for (auto i = 0; i < sizeof(tileMap) / sizeof(tileMap[0]); i++)
 	//{

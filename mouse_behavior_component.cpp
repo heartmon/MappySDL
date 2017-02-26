@@ -1,152 +1,163 @@
 #include "mouse_behavior_component.h"
 #include "game_entity.h"
-#include "mouse_sprite_state.h"
 #include "global_constant.h"
-
-float ax = 0;
-float ay = 0;
-float vx = 160.f;
-float vy = 10;
-float xold, yold, vxold, vyold;
-int coeff = 10;
-float x = 0;
-float y = 0;
+#include <cmath>
 
 void MouseBehaviorComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera) {
 	Component::Create(system, go, game_objects);
 
 	this->camera = camera;
+	
+}
+
+void MouseBehaviorComponent::Init() {
 	cameraHorizontalFloat = camera->x;
 	cameraVerticalFloat = camera->y;
+
+	defaultVx = gameEntity->vx;
+	defaultVy = gameEntity->vy;
 }
 
 void MouseBehaviorComponent::Update(float dt) {
+	prevState = gameEntity->getCurrentStateType();
+
 	// Input behavior
 	bool go_on = true;
 
-	float g = 100.f;
-
+	float g = 200.f;
 
 	AvancezLib::KeyStatus keys;
 	system->getKeyStatus(keys);
 
 	// input processing
-	switch (gameEntity->getCurrentStateType()) {
-		case MouseSpriteState::STATE_JUMP:
-		case MouseSpriteState::STATE_PREJUMP:
-			break;
-		default:
-			ProcessInput(keys, dt);
-	}
-
-	// default moving
-	// X
-	if (!gameEntity->isXCollidedWithMap) {
-		if (isMovable) {
-			Move(dt * gameEntity->direction * 160.f);
-			isMovable = false;
+	if (isOnTheGround(gameEntity->getCurrentStateType())) {
+		if (keys.right) {
+			gameEntity->direction = GameEntity::RIGHT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK_RIGHT);
+			ChangeSpeedX(160.f);
 		}
-	}
-	else {
-		Move(0.5 * gameEntity->direction * -1);
-		gameEntity->isXCollidedWithMap = false;
-		isMovable = false;
-	}
-	// Y
-	if (!gameEntity->isYCollidedWithMap) {
-		gameEntity->setCurrentStateType(MouseSpriteState::STATE_JUMP);
-		gameEntity->verticalPosition += dt * gameEntity->vy;
-		//gameEntity->verticalPosition += dt * -g * vy;
-		gameEntity->vy += dt * g;
-		SDL_Log("%f", gameEntity->vy);
-	}
 
-	if (gameEntity->isYCollidedWithMap) {
-		if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP) {
-			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
-			gameEntity->vy = 100;
+		if (keys.left) {
+			gameEntity->direction = GameEntity::LEFT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK);
+			ChangeSpeedX(-160.f);
 		}
-		gameEntity->isYCollidedWithMap = false;
+
+		if (!keys.left && !keys.right) {
+			if (gameEntity->direction == GameEntity::RIGHT) {
+				gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND_RIGHT);
+			}
+			else {
+				gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+			}
+			ChangeSpeedX(0.f);
+		}
+
+		gameEntity->ay = 0;
+		goingToJumpTo = 0;
+		resetStateIndicator = false;
 	}
 
-	// Save previous values
-	//xold = x;
-	//yold = y;
-	//vxold = vx;
-	//vyold = vy;
+	// Update position
+	float distanceX = dt * gameEntity->vx;
+	float distanceY = dt * gameEntity->vy;
+	Move(distanceX, distanceY);
 
-	//// Update acceleration
-	//ax = -(coeff*vxold) * (coeff*vyold);
-	//ay = -(coeff*vyold) * (coeff*vyold) - 9.8;
+	// Update Velocity
+	gameEntity->vy += dt * g * gameEntity->ay;
 
-	//vx = vxold + ax*dt;
-	//vy = vyold + ay*dt;
-
-	//// Update position
-	//x = xold + vxold*dt + 0.5*ax*(dt * dt);
-	//y = yold + vyold*dt + 0.5*ay*(dt * dt);
-
-	//SDL_Log("Y: %f", y);
 
 	// state processing
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_INTHEAIR) {
+		if (gameEntity->vy <= 0) {
+			// process key when in the air
+			if (keys.right) {
+				gameEntity->direction = GameEntity::RIGHT;
+				gameEntity->setCurrentStateType(MouseSpriteState::STATE_PRE_JUMP_BACK);
+				goingToJumpTo = GameEntity::RIGHT;
+			}
 
+			if (keys.left) {
+				gameEntity->direction = GameEntity::LEFT;
+				gameEntity->setCurrentStateType(MouseSpriteState::STATE_PRE_JUMP_BACK);
+				goingToJumpTo = GameEntity::LEFT;
+			}
+		}
+		resetStateIndicator = false;
+	}
+
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PRE_JUMP_BACK) {
+		if (gameEntity->vy > 0) {
+			goingToJumpTo = 0;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
+		}
+	}
+
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP_BACK) {
+		goingToJumpTo = 0;
+		if (!resetStateIndicator) {
+			SDL_Log("JUMP BACK");
+			float jumpSpeed = 100;
+			trackingNumber = 0;
+			ChangeSpeedY(-100.f);
+			ChangeSpeedX(gameEntity->direction*jumpSpeed);
+			gameEntity->ay = 3.5;
+			resetStateIndicator = true;
+		}
+
+		trackingNumber += dt;
+		if (trackingNumber <= 0.3) {
+			Move(dt*gameEntity->vx, 0);
+		}
+		else {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
+			ChangeSpeedX(0);
+			ChangeSpeedY(200);
+			gameEntity->ay = 1;
+			SDL_Log("Change to in the air");
+			resetStateIndicator = false;
+		}
+
+		return;
+	}
 	//hopping
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
-		if (gameEntity->arbitaryTrackingNumber == 0) {
-			gameEntity->arbitaryTrackingNumber = camera->x;
+		if (!resetStateIndicator) {
+			SDL_Log("Pre jump");
+			float jumpSpeed = 100;
+			trackingNumber = 0;
+			ChangeSpeedY(-100.f);
+			ChangeSpeedX(gameEntity->direction*jumpSpeed);
+			gameEntity->ay = 3.5;
+			resetStateIndicator = true;
+			if (jumpAgainstWall) {
+				ChangeSpeedY(0);
+			}
 		}
-		//gameEntity->arbitaryTrackingNumber += (dt*gameEntity->direction);
 
-		// 32 = one jump step
-		if ((int)(camera->x - gameEntity->arbitaryTrackingNumber) <= 12) {
-			gameEntity->verticalPosition += -dt * 50.f;
+		trackingNumber += dt;
+		if ( trackingNumber <= 0.2 && (trackingNumber <= 0.1 || !jumpAgainstWall)) {
+			Move(dt*gameEntity->vx, 0);
 		}
 		else {
-			gameEntity->verticalPosition += dt * 50.f;
-		}
-		if (camera->x - gameEntity->arbitaryTrackingNumber >= 0 && camera->x - gameEntity->arbitaryTrackingNumber <= 16) {
-			SDL_Log("%f", camera->x - gameEntity->arbitaryTrackingNumber);
-			
-			Move(dt*gameEntity->direction * 160.f);
-		}
-		else {
-			gameEntity->setCurrentStateType(MouseSpriteState::STATE_JUMP);
-			gameEntity->arbitaryTrackingNumber = 0;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
+			ChangeSpeedX(0);
+			ChangeSpeedY(200);
+			gameEntity->ay = 1;
+			SDL_Log("Change to in the air");
+			resetStateIndicator = false;
+			jumpAgainstWall = false;
 		}
 
 		return;
 	}
 
-	
+	//SDL_Log("%d", prevState);
 
 	
 }
 
-void MouseBehaviorComponent::ProcessInput(AvancezLib::KeyStatus keys, float dt) {
-	if (keys.right) {
-		gameEntity->direction = GameEntity::RIGHT;
-		gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK_RIGHT);
-		isMovable = true;
-	}
-
-	if (keys.left) {
-		gameEntity->direction = GameEntity::LEFT;
-		gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK);
-		isMovable = true;
-	}
-
-	if (!keys.left && !keys.right) {
-		if (gameEntity->direction == GameEntity::RIGHT) {
-			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND_RIGHT);
-		}
-		else {
-			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
-		}
-		isMovable = false;
-	}
-}
-
-void MouseBehaviorComponent::Move(float move)
+void MouseBehaviorComponent::Move(float distanceX, float distanceY)
 {
 	if (gameEntity->getSize() == NULL) {
 		SDL_Log("Need getSize to be implemented!!");
@@ -164,7 +175,7 @@ void MouseBehaviorComponent::Move(float move)
 
 	}
 	else {
-		cameraHorizontalFloat += move;
+		cameraHorizontalFloat += distanceX;
 	}
 
 	//limited screen
@@ -177,7 +188,7 @@ void MouseBehaviorComponent::Move(float move)
 
 	// If camera is on left-most or right-mose side
 	if (cameraHorizontalFloat <= 0 || cameraHorizontalFloat >= LEVEL_WIDTH - camera->w) {
-		gameEntity->horizontalPosition += move;
+		gameEntity->horizontalPosition += distanceX;
 	}
 
 	// horizontal position bound screen
@@ -190,6 +201,21 @@ void MouseBehaviorComponent::Move(float move)
 
 	//set back to camera
 	camera->x = cameraHorizontalFloat;
+
+	// Y
+	if (cameraVerticalFloat < 0) {
+		cameraVerticalFloat = 0;
+	}
+
+	if (cameraVerticalFloat > LEVEL_HEIGHT - camera->h) {
+		cameraVerticalFloat = LEVEL_HEIGHT - camera->h;
+	}
+
+	// If camera is on top-most or bottom-most side
+	if (cameraVerticalFloat <= 0 || cameraVerticalFloat >= LEVEL_HEIGHT - camera->h) {
+		gameEntity->verticalPosition += distanceY;
+	}
+
 }
 
 

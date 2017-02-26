@@ -20,6 +20,11 @@ public:
 
 		size->w = MouseSpriteState::SPRITE_WIDTH;
 		size->h = MouseSpriteState::SPRITE_HEIGHT;
+
+		w = MouseSpriteState::SPRITE_WIDTH;
+		h = MouseSpriteState::SPRITE_HEIGHT;
+
+		vx = 160.0f;
 	}
 	//virtual void Receive(Message* m)
 	//{

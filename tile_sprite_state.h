@@ -15,12 +15,23 @@ public:
 
 	const static int TOTAL_TILE_SPRITES = 9;
 
-	const static int TILE_WIDTH = 48;
-	const static int TILE_HEIGHT = 48;
+	const static int TILE_WIDTH = 40;
+	const static int TILE_HEIGHT = 40;
 
 	void Create(AvancezLib* system);
+
+	bool static isFloor(int state) {
+		switch (state) {
+			case STATE_TILE_CORNER_RIGHT:
+			case STATE_TILE_CORNER_LEFT:
+			case STATE_TILE_PATH:
+			case STATE_TILE_BASE:
+				return true;
+		}
+		return false;
+	}
 private:
-	const int spriteSize = 48;
+	const int spriteSize = 40;
 
 	// Set state and sprite clipping
 	SDL_Rect wallRightClips[FRAME_NO_MOVE];

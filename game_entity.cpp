@@ -2,6 +2,7 @@
 #include "component.h"
 #include "avancezlib.h"
 #include "entity_state.h"
+#include "collision_rule_interface.h"
 
 void GameEntity::Create()
 {
@@ -34,6 +35,8 @@ void GameEntity::Init()
 	enabled = true;
 	isVisibleWithinCamera = true;
 	direction = 0;
+
+	ay = 1;
 }
 
 void GameEntity::Update(float dt)
@@ -80,4 +83,11 @@ void GameEntity::setCurrentStateType(int currentStateType) {
 	//SDL_Log("%d", currentStateType);
 	this->animationFrame = 0;
 	this->currentStateType = currentStateType;
+}
+
+void GameEntity::Receive(Message* m) {
+	// Check HIT = collided
+	if (m->getMessageType() == HIT) {
+		collisionRule->didHit(m);
+	}
 }

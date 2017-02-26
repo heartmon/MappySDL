@@ -8,6 +8,7 @@ class Message {
 	MessageType messageType;
 	std::string arg1;
 	std::string arg2;
+
 public:
 	Message(MessageType messageType, const char* arg1 = "", const char* arg2 = "") {
 		this->messageType = messageType;
