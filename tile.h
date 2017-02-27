@@ -5,12 +5,8 @@
 
 class Tile : public GameEntity {
 public:
-	//Get the tile type
-	int getType();
-	//Get the collision box
-	SDL_Rect getBox();
-	void Create(int x, int y, int tileType);
-	void Update(float dt);
+	virtual void Create(int x, int y, int tileType);
+	virtual void Update(float dt);
 
 	virtual std::string getName() {
 		return CLASS_TILE;

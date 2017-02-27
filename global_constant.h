@@ -24,3 +24,4 @@ const std::string CLASS_MOUSE = "Mouse";
 const std::string CLASS_TILE = "Tile";
 const std::string CLASS_GAME = "Game";
 const std::string CLASS_LEVEL = "Level";
+const std::string CLASS_ROPE = "Rope";

@@ -45,6 +45,8 @@
     <ClInclude Include="mouse_sprite_state.h" />
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="rope.h" />
+    <ClInclude Include="rope_sprite_state.h" />
     <ClInclude Include="sprite_state_interface.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tile_sprite_state.h" />

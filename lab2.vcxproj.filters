@@ -125,5 +125,11 @@
     <ClInclude Include="mouse_collision_rule.h">
       <Filter>Source Files\mouse</Filter>
     </ClInclude>
+    <ClInclude Include="rope.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_sprite_state.h">
+      <Filter>Source Files\level</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
