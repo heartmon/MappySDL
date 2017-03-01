@@ -4,7 +4,8 @@
 #include <fstream>
 #include "tile.h"
 #include "tile_sprite_state.h"
-
+#include "rope.h"
+#include "rope_collision_rule.h"
 // Message of complete level -> change level
 
 void Level::Create(AvancezLib* system, SDL_Rect* camera) {
@@ -17,6 +18,7 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 	this->camera = camera;
 
 	this->tileMap = new std::vector<Tile*>;
+	this->ropeArray = new std::vector<Rope*>;
 }
 
 void Level::Init() {
@@ -30,34 +32,25 @@ void Level::Init() {
 		Tile* tile = *it;
 		tile->Init();
 	}
+
+	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+		Rope* rope = *it;
+		rope->Init();
+	}
 }
 
 void Level::Update(float dt) {
 	GameEntity::Update(dt);
 
-	/*for (int i = 0; i < TOTAL_TILES; ++i) {
-		tileSet[i]->Update(dt);
-	}*/
 	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
 		Tile* tile = *it;
 		tile->Update(dt);
 	}
 
-	//SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
-	////Render level
-	//for (int i = 0; i < TOTAL_TILES; ++i)
-	//{
-	//	//tileSet[i]->render(camera);
-	//	//SDL_Rect mBox = tileSet[i]->getBox();
-	//	int mType = tileSet[i]->getType();
-	//	if (checkCollision(camera, tileSet[i]->getBox()))
-	//	{
-	//		//SDL_Log("Render ready! %d", tileClips[mType].x);
-	//		//Show the tile
-	//		tileSprite->render(tileSet[i]->getBox().x - camera.x, tileSet[i]->getBox().y - camera.y, &tileClips[mType]);
-	//	}
-	//}
+	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+		Rope* rope = *it;
+		rope->Update(dt);
+	}
 }
 
 void Level::SetTileMap() {
@@ -65,7 +58,7 @@ void Level::SetTileMap() {
 
 	//Choose the path base on current level
 	char levelPath[20];
-	sprintf(levelPath, "data/level%d.map", level);
+	sprintf(levelPath, "data/level%d.txt", level);
 
 	//Success flag
 	bool tilesLoaded = true;
@@ -96,10 +89,36 @@ void Level::SetTileMap() {
 
 		//If the number is a valid tile number
 		//SDL_Log("TileType:: %d", tileType);
-		if ((tileType >= 0) && (tileType < TileSpriteState::TOTAL_TILE_SPRITES))
+		if ((tileType >= 0))
 		{
+			// special adding
+			if (tileType == TileSpriteState::STATE_TILE_ROPE) {
+				SDL_Log("Rope is being created?");
+				Rope* rope = new Rope();
+				rope->Create((float)x, (float)y);
+
+				//Set value
+				RopeSpriteState* ropeSpriteState = new RopeSpriteState();
+				ropeSpriteState->Create(system);
+				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+				spriteSheetRenderComponent->Create(system, rope, NULL, ropeSpriteState, true, camera);
+				CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+				cameraCollideComponent->Create(system, rope, NULL, camera);
+				RopeBehaviorComponent* ropeBehaviorComponent = new RopeBehaviorComponent();
+				ropeBehaviorComponent->Create(system, rope, nullptr, ropeSpriteState);
+				RopeCollisionRule* ropeCollisionRule = new RopeCollisionRule();
+				ropeCollisionRule->Create(rope, camera, ropeBehaviorComponent);
+				
+				rope->SetCollisionRule(ropeCollisionRule);
+				rope->AddComponent(spriteSheetRenderComponent);
+				rope->AddComponent(cameraCollideComponent);
+				rope->AddBehaviorComponent(ropeBehaviorComponent);
+				ropeArray->push_back(rope);
+			}
+
 			Tile* tile = new Tile();
 			tile->Create(x, y, tileType);
+
 			// set component to each tile
 			SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
 			spriteSheetRenderComponent->Create(system, tile, NULL, tss, true, camera);
@@ -109,16 +128,6 @@ void Level::SetTileMap() {
 			tile->AddComponent(cameraCollideComponent);
 
 			tileMap->push_back(tile);
-
-			//tileSet[i] = new Tile();
-			//tileSet[i]->Create(x, y, tileType);
-			//// set component to each tile
-			//SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
-			//spriteSheetRenderComponent->Create(system, tileSet[i], NULL, tss, true, camera);
-			//CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
-			//cameraCollideComponent->Create(system, tileSet[i], NULL, camera);
-			//tileSet[i]->AddComponent(spriteSheetRenderComponent);
-			//tileSet[i]->AddComponent(cameraCollideComponent);
 		}
 		//If we don't recognize the tile type
 		else

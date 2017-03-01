@@ -34,10 +34,16 @@
     <ClInclude Include="avancezlib.h" />
     <ClInclude Include="collision_rule_interface.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="door.h" />
+    <ClInclude Include="door_behavior_component.h" />
     <ClInclude Include="entity_state.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_entity.h" />
     <ClInclude Include="global_constant.h" />
+    <ClInclude Include="item.h" />
+    <ClInclude Include="item_behavior_component.h" />
+    <ClInclude Include="item_collision_rule.h" />
+    <ClInclude Include="item_sprite_state.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="mouse_behavior_component.h" />
@@ -46,6 +52,8 @@
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="rope.h" />
+    <ClInclude Include="rope_behavior_component.h" />
+    <ClInclude Include="rope_collision_rule.h" />
     <ClInclude Include="rope_sprite_state.h" />
     <ClInclude Include="sprite_state_interface.h" />
     <ClInclude Include="tile.h" />

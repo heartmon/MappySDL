@@ -1,12 +1,12 @@
 #pragma once
 #include "sprite_state_interface.h"
 
-class RopeSpriteState : public SpriteStateInterface {
+class ItemSpriteState : public SpriteStateInterface {
 public:
 	const static int STATE_ROPE_STATIC = 0;
 	const static int STATE_ROPE_JUMP_ON = 1;
 	const static int STATE_ROPE_SEPARATE = 2;
-	
+
 	const static int FRAME_ROPE_JUMP_ON = 12;
 
 	const static int SPRITE_WIDTH = 80;
@@ -21,8 +21,8 @@ public:
 		this->spriteSheet = spriteSheet;
 
 
-		InitClip(STATE_ROPE_STATIC, SPRITE_HEIGHT*2, FRAME_NO_MOVE, staticClip);
-		InitClip(STATE_ROPE_JUMP_ON, SPRITE_HEIGHT*2, FRAME_ROPE_JUMP_ON, jumpOnClip);
+		InitClip(STATE_ROPE_STATIC, SPRITE_HEIGHT * 2, FRAME_NO_MOVE, staticClip);
+		InitClip(STATE_ROPE_JUMP_ON, SPRITE_HEIGHT * 2, FRAME_ROPE_JUMP_ON, jumpOnClip);
 		jumpOnClip[0].x = SPRITE_WIDTH * 1;
 		jumpOnClip[1].x = SPRITE_WIDTH * 2;
 		jumpOnClip[2].x = SPRITE_WIDTH * 3;

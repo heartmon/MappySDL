@@ -1,14 +1,14 @@
 #pragma once
 #include "game_entity.h"
-#include "rope_sprite_state.h"
-#include "rope_behavior_component.h"
+#include "item_sprite_state.h"
+#include "item_behavior_component.h"
 
-class Rope : public GameEntity {
+class Item : public GameEntity {
 public:
 
 	//virtual void Create(int x, int y, int tileType) {	}
 	/*virtual void Update(float dt) {
-		
+
 	}*/
 
 	//virtual void setCurrentStateType(int currentStateType) {
@@ -19,10 +19,10 @@ public:
 		SDL_Log("Rope::Init");
 		GameEntity::Init();
 
-		setCurrentStateType(RopeSpriteState::STATE_ROPE_STATIC);
+		setCurrentStateType(ItemSpriteState::STATE_ROPE_STATIC);
 
-		size->w = RopeSpriteState::SPRITE_WIDTH;
-		size->h = RopeSpriteState::SPRITE_HEIGHT;
+		size->w = ItemSpriteState::SPRITE_WIDTH;
+		size->h = ItemSpriteState::SPRITE_HEIGHT;
 	}
 
 	virtual std::string getName() {
@@ -41,7 +41,7 @@ public:
 	virtual void Receive(Message* m) {
 		GameEntity::Receive(m);
 		if (m->getMessageType() == MOUSE_JUMP_TO_STAND) {
-			((RopeBehaviorComponent*)behaviorComponent)->restoreLife();
+			//((RopeBehaviorComponent*)behaviorComponent)->restoreLife();
 		}
 
 	}

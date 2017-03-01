@@ -2,7 +2,7 @@
 #include <string>
 #include "SDL.h"
 
-enum MessageType { HIT, ALIEN_HIT, GAME_OVER, LEVEL_WIN, NO_MSG, TILE_MAP_HIT };
+enum MessageType { HIT, MOUSE_JUMP_TO_STAND, GAME_OVER, LEVEL_WIN, NO_MSG, TILE_MAP_HIT };
 
 class Message {
 	MessageType messageType;

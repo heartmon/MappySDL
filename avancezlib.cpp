@@ -337,6 +337,12 @@ SpriteSheet::~SpriteSheet()
 	free();
 }
 
+
+void SpriteSheet::SetTintColor(unsigned int  r, unsigned int g, unsigned int b) {
+	SDL_SetTextureColorMod(mTexture, r, g, b);
+}
+
+
 bool SpriteSheet::loadFromFile(const char * path)
 {
 	//Get rid of preexisting texture

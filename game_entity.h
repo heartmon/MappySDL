@@ -32,8 +32,13 @@ public:
 	}
 
 	virtual void Create();
+	virtual void Create(float x, float y) {
+		Create();
+		horizontalPosition = x;
+		verticalPosition = y;
+	}
 	virtual void AddComponent(Component * component);
-
+	virtual void AddBehaviorComponent(Component * component);
 	virtual SDL_Rect* getSize() {
 		return size;
 	}
@@ -50,8 +55,8 @@ public:
 	virtual void Receive(Message* m);
 	void Send(Message* m);
 
-	int getCurrentStateType();
-	void setCurrentStateType(int currentStateType);
+	virtual int getCurrentStateType();
+	virtual void setCurrentStateType(int currentStateType);
 
 	float horizontalPosition;
 	float verticalPosition;
@@ -91,10 +96,15 @@ public:
 
 		return collisionBox;
 	}
+
+	virtual Component* getBehaviorComponent() {
+		return behaviorComponent;
+	}
 protected:
 	int currentStateType = -1;
 	CollisionRuleInterface* collisionRule;
 	SDL_Rect* size;
+	Component* behaviorComponent;
 	
 private:
 };

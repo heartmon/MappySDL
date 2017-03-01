@@ -4,6 +4,7 @@
 #include "component.h"
 #include <vector>
 
+class Rope;
 class Tile;
 class TileSpriteState;
 
@@ -15,6 +16,8 @@ class Level : public GameEntity {
 	SDL_Rect* camera;
 	//SpriteSheet* tileSprite;
 	Tile* tileSet[TOTAL_TILES];
+	
+	std::vector<Rope*>* ropeArray;
 	std::vector<Tile*>* tileMap;
 	//SDL_Rect tileClips[6];
 	int level = 1;
@@ -29,6 +32,9 @@ public:
 	void Update(float dt);
 	std::vector<Tile*>* getTileMap() {
 		return tileMap;
+	}
+	std::vector<Rope*>* getRopeArray() {
+		return ropeArray;
 	}
 private:
 	void SetTileMap();

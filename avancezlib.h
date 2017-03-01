@@ -52,6 +52,7 @@ public:
 	int getHeight();
 
 	void setRenderer(SDL_Renderer* renderer);
+	void SetTintColor(unsigned int  r, unsigned int g, unsigned int b);
 
 private:
 	//The actual hardware texture

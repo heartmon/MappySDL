@@ -37,14 +37,14 @@ void RenderComponent::Destroy()
 }
 
 
-void CollideComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<GameEntity> * coll_objects)
+void CollidePoolComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<GameEntity> * coll_objects)
 {
 	Component::Create(system, go, game_objects);
 	this->coll_objects = coll_objects;
 }
 
 
-void CollideComponent::Update(float dt)
+void CollidePoolComponent::Update(float dt)
 {
 	for (auto i = 0; i < coll_objects->pool.size(); i++)
 	{
@@ -60,6 +60,41 @@ void CollideComponent::Update(float dt)
 				go0->Receive(new Message(HIT));
 			}
 		}
+	}
+}
+
+void CollideComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, std::vector<GameEntity*> * collObjects)
+{
+	Component::Create(system, go, game_objects);
+	this->collObjects = collObjects;
+}
+
+
+void CollideComponent::Update(float dt)
+{
+	for (std::vector<GameEntity*>::iterator it = collObjects->begin(); it != collObjects->end(); ++it)
+	{
+		GameEntity * go0 = *it;
+		if (go0->enabled)
+		{
+			int collidedResult = gameEntity->getCollisionRule()->isCollided(gameEntity, go0, dt);
+			if (collidedResult == -1) {
+				if ((go0->horizontalPosition > gameEntity->horizontalPosition - 10) &&
+					(go0->horizontalPosition < gameEntity->horizontalPosition + 10) &&
+					(go0->verticalPosition > gameEntity->verticalPosition - 10) &&
+					(go0->verticalPosition < gameEntity->verticalPosition + 10))
+				{
+					collidedResult = 1;
+				}
+				else { collidedResult = 0; }
+			} 
+			if (collidedResult == 1) {
+				SDL_Log("hit");
+				gameEntity->Receive(new Message(HIT, go0->getName().c_str()));
+				go0->Receive(new Message(HIT, gameEntity->getName().c_str()));
+			}
+		}
+		
 	}
 }
 
@@ -95,7 +130,7 @@ void SpriteSheetRenderComponent::Update(float dt) {
 		// Update animation frame
 		float t0 = system->getElapsedTime();
 		int frame = gameEntity->animationFrame;
-		frame = ((int)(t0 * 10) % s->getNumberOfFrame());
+		frame = ((int)(t0 * s->getAnimationSpeed()) % s->getNumberOfFrame());
 		gameEntity->animationFrame = frame;
 
 		//Render
@@ -103,6 +138,8 @@ void SpriteSheetRenderComponent::Update(float dt) {
 	}
 	else {
 		std::vector<EntityState*>* states = spriteState->getSpriteStateEntities();
+
+
 		int num = 0;
 		for (std::vector<EntityState*>::iterator it = states->begin(); it != states->end(); ++it) {
 			EntityState* s = *it;
@@ -119,7 +156,7 @@ void SpriteSheetRenderComponent::Update(float dt) {
 				gameEntity->animationFrame = frame;
 
 				// Render using the spritesheet (SpriteSheet.render)
-				s->Render(gameEntity->horizontalPosition, gameEntity->verticalPosition, frame);
+				s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
 			}
 		}
 	}
@@ -150,9 +187,9 @@ void CameraCollideComponent::Update(float dt) {
 
 	//Calculate the sides of rect B
 	leftB = gameEntity->horizontalPosition;
-	rightB = gameEntity->horizontalPosition + 48;
+	rightB = gameEntity->horizontalPosition + gameEntity->getSize()->w;
 	topB = gameEntity->verticalPosition;
-	bottomB = gameEntity->verticalPosition + 48;
+	bottomB = gameEntity->verticalPosition + gameEntity->getSize()->h;
 
 	//If any of the sides from A are outside of B
 	if (bottomA <= topB)
@@ -190,14 +227,8 @@ void MapCollideComponent::Update(float dt) {
 	int count = 0;
 	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
 		Tile* tile = *it;
-		//std::vector<GameEntity*>* extraEntities = new std::vector<GameEntity*>();
-		//if (count + TILE_ROWS < tileMap->size()) {
-		//	extraEntities->push_back(tileMap->at(count));
-		//}
-		//
-
 		if (tile->enabled) {
-			int collidedResult = gameEntity->getCollisionRule()->isCollided(tile, dt, tileMap);
+			int collidedResult = gameEntity->getCollisionRule()->isCollidedWithMap(tile, dt, tileMap);
 			if (collidedResult == -1) {
 				if ((tile->horizontalPosition > gameEntity->horizontalPosition - 10) &&
 					(tile->horizontalPosition < gameEntity->horizontalPosition + 10) &&
@@ -223,21 +254,6 @@ void MapCollideComponent::Update(float dt) {
 		count++;
 		//delete extraEntities;
 	}
-	//for (auto i = 0; i < sizeof(tileMap) / sizeof(tileMap[0]); i++)
-	//{
-	//	GameEntity * go0 = coll_objects->pool[i];
-	//	if (go0->enabled)
-	//	{
-	//		if ((go0->horizontalPosition > gameEntity->horizontalPosition - 10) &&
-	//			(go0->horizontalPosition < gameEntity->horizontalPosition + 10) &&
-	//			(go0->verticalPosition   > gameEntity->verticalPosition - 10) &&
-	//			(go0->verticalPosition   < gameEntity->verticalPosition + 10))
-	//		{
-	//			gameEntity->Receive(new Message(HIT));
-	//			go0->Receive(new Message(HIT));
-	//		}
-	//	}
-	//}
 }
 void MapCollideComponent::Destroy() {
 

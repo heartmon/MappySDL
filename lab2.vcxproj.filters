@@ -126,10 +126,34 @@
       <Filter>Source Files\mouse</Filter>
     </ClInclude>
     <ClInclude Include="rope.h">
-      <Filter>Source Files\level</Filter>
+      <Filter>Source Files\rope</Filter>
     </ClInclude>
     <ClInclude Include="rope_sprite_state.h">
-      <Filter>Source Files\level</Filter>
+      <Filter>Source Files\rope</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_behavior_component.h">
+      <Filter>Source Files\rope</Filter>
+    </ClInclude>
+    <ClInclude Include="rope_collision_rule.h">
+      <Filter>Source Files\rope</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>Source Files\item</Filter>
+    </ClInclude>
+    <ClInclude Include="item_behavior_component.h">
+      <Filter>Source Files\item</Filter>
+    </ClInclude>
+    <ClInclude Include="item_collision_rule.h">
+      <Filter>Source Files\item</Filter>
+    </ClInclude>
+    <ClInclude Include="door.h">
+      <Filter>Source Files\door</Filter>
+    </ClInclude>
+    <ClInclude Include="door_behavior_component.h">
+      <Filter>Source Files\door</Filter>
+    </ClInclude>
+    <ClInclude Include="item_sprite_state.h">
+      <Filter>Source Files\item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

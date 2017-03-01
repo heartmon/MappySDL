@@ -77,12 +77,20 @@ private:
 
 
 
-class CollideComponent : public Component
+class CollidePoolComponent : public Component
 {
 	ObjectPool<GameEntity> * coll_objects; // collision will be tested with these objects
 
 public:
 	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<GameEntity> * coll_objects);
+	virtual void Update(float dt);
+};
+
+class CollideComponent : public Component 
+{
+	std::vector<GameEntity*>* collObjects;
+public:
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, std::vector<GameEntity*> * collObjects);
 	virtual void Update(float dt);
 };
 

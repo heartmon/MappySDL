@@ -9,12 +9,57 @@ public:
 		this->gameEntity = gameEntity;
 	};
 	virtual void didHit(Message* message) {};
-	virtual int isCollided(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) { 
+	virtual int isCollided(GameEntity* self, GameEntity* withThisEntity, float dt) { return -1; }
+	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
 		//auto -> use default of component
 		return -1; 
 		// return 0 ; false
 		// return 1 ; true
 	};
+
+	bool checkSquareCollision(GameEntity::Box a, GameEntity::Box b) {
+		// The sides of the rectangles
+		int leftA, leftB;
+		int rightA, rightB;
+		int topA, topB;
+		int bottomA, bottomB;
+
+		//Calculate the sides of rect A
+		leftA = a.x;
+		rightA = a.x + a.w;
+		topA = a.y;
+		bottomA = a.y + a.h;
+
+		//Calculate the sides of rect B
+		leftB = b.x;
+		rightB = b.x + b.w;
+		topB = b.y;
+		bottomB = b.y + b.h;
+
+		//If any of the sides from A are outside of B
+		if (bottomA <= topB)
+		{
+			return false;
+		}
+
+		if (topA >= bottomB)
+		{
+			return false;
+		}
+
+		if (rightA <= leftB)
+		{
+			return false;
+		}
+
+		if (leftA >= rightB)
+		{
+			return false;
+		}
+
+		//If none of the sides from A are outside B
+		return true;
+	}
 
 	virtual float SweptAABB(GameEntity::Box movingBox, GameEntity::Box staticBox, float &normalX, float &normalY) {
 		float xInvEntry, yInvEntry;

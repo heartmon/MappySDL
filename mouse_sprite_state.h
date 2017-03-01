@@ -23,6 +23,13 @@ public:
 	const static int SPRITE_HEIGHT = 40;
 
 	void Create(AvancezLib* system);
+
+	virtual int getSpriteWidth() {
+		return SPRITE_WIDTH;
+	}
+	virtual int getSpriteHeight() {
+		return SPRITE_HEIGHT;
+	}
 private:
 	const int spriteSize = 40;
 

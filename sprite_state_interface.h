@@ -10,8 +10,29 @@ public:
 	std::vector<EntityState*>* getSpriteStateEntities() {
 		return states;
 	}
+	SpriteSheet* getSpriteSheet() {
+		return spriteSheet;
+	}
+	virtual int getSpriteWidth() = 0;
+	virtual int getSpriteHeight() = 0;
+
 protected:
 	std::vector<EntityState*>* states;
+	SpriteSheet* spriteSheet;
+
+	void InitClip(int state, int y, int animationFrame, SDL_Rect* clip) {
+		for (int i = 0; i < animationFrame; i++) {
+			clip[i].x = getSpriteWidth() * (i + state);
+			clip[i].y = y;
+			clip[i].w = getSpriteWidth();
+			clip[i].h = getSpriteHeight();
+		}
+	}
+
+	EntityState* CreateEntityState(int state, int frame, SDL_Rect* clip, int animationSpeed = 10) {
+		return new EntityState(spriteSheet, state, frame, clip, animationSpeed);
+	}
 private:
+	
 	
 };

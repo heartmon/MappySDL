@@ -34,6 +34,9 @@ public:
 		level->Create(system, camera);
 		gameEntities.push_back(level);
 
+		// Rope
+		std::vector<Rope*>* ropeArray = level->getRopeArray();
+
 		// Mouse init
 		mouse = new Mouse();
 		MouseBehaviorComponent* mouseBehaviorComponent = new MouseBehaviorComponent();
@@ -46,10 +49,13 @@ public:
 		mouseSpriteSheetRenderComponent->Create(system, mouse, &gameEntities, mouseSpriteState);
 		MapCollideComponent* mapCollideComponent = new MapCollideComponent();
 		mapCollideComponent->Create(system, mouse, &gameEntities, level->getTileMap());
+		CollideComponent* ropeCollideComponent = new CollideComponent();
+		ropeCollideComponent->Create(system, mouse, &gameEntities, (std::vector<GameEntity*>*)ropeArray);
 		mouse->Create();
 		mouse->AddComponent(mouseBehaviorComponent);
 		mouse->AddComponent(mouseSpriteSheetRenderComponent);
 		mouse->AddComponent(mapCollideComponent);
+		mouse->AddComponent(ropeCollideComponent);
 		mouse->AddReceiver(this);
 		mouse->SetCollisionRule(mouseCollisionRule);
 		gameEntities.push_back(mouse);
@@ -61,6 +67,12 @@ public:
 		mouse->Init();
 		level->Init();
 
+		std::vector<Rope*>* ropeArray = level->getRopeArray();
+		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+			Rope* rope = *it;
+			mouse->AddReceiver(rope);
+		}
+
 		enabled = true;
 		game_over = false;
 	}
@@ -70,8 +82,8 @@ public:
 		if (m->getMessageType() == GAME_OVER)
 			game_over = true;
 
-		if (m->getMessageType() == ALIEN_HIT)
-			score += POINTS_PER_ALIEN * game_speed;
+		//if (m->getMessageType() == ALIEN_HIT)
+			//score += POINTS_PER_ALIEN * game_speed;
 	}
 
 	virtual void Update(float dt)

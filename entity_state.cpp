@@ -4,6 +4,7 @@ EntityState::EntityState(SpriteSheet* spriteSheet, int stateType, int numberOfFr
 	this->spriteSheet = spriteSheet;
 	this->stateType = stateType;
 	this->numberOfFrame = numberOfFrame;
+	this->animationSpeed = 10;
 }
 
 EntityState::EntityState(SpriteSheet* spriteSheet, int stateType, int numberOfFrame, SDL_Rect* clipingRect) {
@@ -11,8 +12,17 @@ EntityState::EntityState(SpriteSheet* spriteSheet, int stateType, int numberOfFr
 	this->stateType = stateType;
 	this->numberOfFrame = numberOfFrame;
 	this->clipingRect = clipingRect;
+	this->animationSpeed = 10;
 
 	//SDL_Log("%d", this->clipingRect->x);
+}
+
+EntityState::EntityState(SpriteSheet* spriteSheet, int stateType, int numberOfFrame, SDL_Rect* clipingRect, int animationSpeed) {
+	this->spriteSheet = spriteSheet;
+	this->stateType = stateType;
+	this->numberOfFrame = numberOfFrame;
+	this->clipingRect = clipingRect;
+	this->animationSpeed = animationSpeed;
 }
 
 void EntityState::setClipingRect(SDL_Rect* clipingRect) {

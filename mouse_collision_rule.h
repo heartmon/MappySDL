@@ -6,6 +6,7 @@
 #include "tile_sprite_state.h"
 #include <cmath>
 #include "mouse_behavior_component.h"
+#include "rope.h"
 
 class MouseCollisionRule : public CollisionRuleInterface {
 	Mouse* mouse;
@@ -23,13 +24,26 @@ public:
 
 
 		}		
+
+		if (m->getArg1() == CLASS_ROPE) {
+			SDL_Log("With rope");
+			behaviorComponent->ChangeSpeedY(-430);
+			//mouse->vy = -430;
+		}
 	}
 
-	virtual int isCollidedWithTileMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
-		return 0;
+	virtual int isCollided(GameEntity* self, GameEntity* withThisEntity, float dt) {
+		// Collide with Rope
+		if (withThisEntity->getName() == CLASS_ROPE) {
+			Rope* rope = (Rope*)withThisEntity;
+			bool isCollided = rope->getCollisionRule()->isCollided(rope, self, dt);
+			return isCollided;
+		}
+
+		return -1;
 	}
 
-	virtual int isCollided(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
+	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
 		// Setup
 		int result = -1;
 
@@ -52,12 +66,12 @@ public:
 			}
 
 			// Start checking for each tile type at each game entity (mouse) state
-			if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_ROPE) {
+			/*if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_ROPE) {
 				if (checkSquareCollision(entityBox, tileBox)) {
 					SDL_Log("With rope");
 					mouse->vy = -430;
 				}
-			}
+			}*/
 
 			//check against wall
 			switch (tile->getCurrentStateType()) {
@@ -211,9 +225,11 @@ public:
 						mouse->vy = 0;
 						mouse->ay = 0;
 						//behaviorComponent->Move(0, -dt*mouse->vy);
-						if(mouseCurrentState == MouseSpriteState::STATE_INTHEAIR || mouseCurrentState == MouseSpriteState::STATE_JUMP_BACK)
+						if (mouseCurrentState == MouseSpriteState::STATE_INTHEAIR || mouseCurrentState == MouseSpriteState::STATE_JUMP_BACK) {
 							SDL_Log("From jump to stand");
 							mouse->setCurrentStateType(MouseSpriteState::STATE_STAND);
+							mouse->Send(new Message(MOUSE_JUMP_TO_STAND));
+						}
 						result = 1;
 						break;
 				}
@@ -227,47 +243,5 @@ public:
 	}
 
 
-	bool checkSquareCollision(GameEntity::Box a, GameEntity::Box b) {
-		// The sides of the rectangles
-		int leftA, leftB;
-		int rightA, rightB;
-		int topA, topB;
-		int bottomA, bottomB;
-
-		//Calculate the sides of rect A
-		leftA = a.x;
-		rightA = a.x + a.w;
-		topA = a.y;
-		bottomA = a.y + a.h;
-
-		//Calculate the sides of rect B
-		leftB = b.x;
-		rightB = b.x + b.w;
-		topB = b.y;
-		bottomB = b.y + b.h;
-
-		//If any of the sides from A are outside of B
-		if (bottomA <= topB)
-		{
-			return false;
-		}
-
-		if (topA >= bottomB)
-		{
-			return false;
-		}
-
-		if (rightA <= leftB)
-		{
-			return false;
-		}
-
-		if (leftA >= rightB)
-		{
-			return false;
-		}
-
-		//If none of the sides from A are outside B
-		return true;
-	}
+	
 };

@@ -21,6 +21,12 @@ void GameEntity::AddComponent(Component * component)
 	components.push_back(component);
 }
 
+void GameEntity::AddBehaviorComponent(Component * component)
+{
+	AddComponent(component);
+	behaviorComponent = component;
+}
+
 void GameEntity::SetCollisionRule(CollisionRuleInterface* collisionRule) {
 	this->collisionRule = collisionRule;
 }
@@ -70,7 +76,6 @@ void GameEntity::Send(Message* m)
 	{
 		if (!receivers[i]->enabled)
 			continue;
-
 		receivers[i]->Receive(m);
 	}
 }
