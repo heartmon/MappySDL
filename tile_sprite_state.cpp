@@ -65,7 +65,10 @@ void TileSpriteState::Create(AvancezLib* system) {
 	EntityState* item500 = new EntityState(spriteSheet, STATE_TILE_ITEM_500, FRAME_NO_MOVE, spaceClips);
 
 	EntityState* rope = new EntityState(spriteSheet, STATE_TILE_ROPE, FRAME_NO_MOVE, spaceClips);
-	EntityState* door = new EntityState(spriteSheet, STATE_TILE_DOOR, FRAME_NO_MOVE, spaceClips);
+	EntityState* doorL = new EntityState(spriteSheet, STATE_TILE_DOOR_LEFT, FRAME_NO_MOVE, spaceClips);
+	EntityState* doorR = new EntityState(spriteSheet, STATE_TILE_DOOR_RIGHT, FRAME_NO_MOVE, spaceClips);
+	EntityState* doorPL = new EntityState(spriteSheet, STATE_TILE_DOOR_POWER_LEFT, FRAME_NO_MOVE, spaceClips);
+	EntityState* doorPR = new EntityState(spriteSheet, STATE_TILE_DOOR_POWER_RIGHT, FRAME_NO_MOVE, spaceClips);
 
 	std::vector<EntityState*>* states = new std::vector<EntityState*>;
 	states->push_back(space);
@@ -95,10 +98,10 @@ void TileSpriteState::Create(AvancezLib* system) {
 	states->push_back(space);
 	
 	states->push_back(rope);
-	states->push_back(door);
-	
-	
-	
+	states->push_back(doorL);
+	states->push_back(doorR);
+	states->push_back(doorPL);
+	states->push_back(doorPR);
 	
 	
 

@@ -7,7 +7,8 @@
 class Rope;
 class Tile;
 class TileSpriteState;
-
+class Item;
+class Door;
 class Level : public GameEntity {
 	//The different tile sprites
 
@@ -17,8 +18,10 @@ class Level : public GameEntity {
 	//SpriteSheet* tileSprite;
 	Tile* tileSet[TOTAL_TILES];
 	
+	std::vector<Item*>* itemArray;
 	std::vector<Rope*>* ropeArray;
 	std::vector<Tile*>* tileMap;
+	std::vector<Door*>* doorArray;
 	//SDL_Rect tileClips[6];
 	int level = 1;
 
@@ -35,6 +38,12 @@ public:
 	}
 	std::vector<Rope*>* getRopeArray() {
 		return ropeArray;
+	}
+	std::vector<Item*>* getItemArray() {
+		return itemArray;
+	}
+	std::vector<Door*>* getDoorArray() {
+		return doorArray;
 	}
 private:
 	void SetTileMap();

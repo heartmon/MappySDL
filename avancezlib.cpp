@@ -4,7 +4,10 @@
 
 
 // Creates the main window. Returns true on success.
-bool AvancezLib::init(int width, int height)
+//bool AvancezLib::init(int width, int height) {
+//	init(width, height, nullptr);
+//}
+bool AvancezLib::init(int width, int height, Router* router, GameViewport* gameViewport)
 {
 	SDL_Log("Initializing the system...\n");
 
@@ -31,7 +34,7 @@ bool AvancezLib::init(int width, int height)
 	}
 
 	TTF_Init();
-	font = TTF_OpenFont("data/space_invaders.ttf", 12); //this opens a font style and sets a size
+	font = TTF_OpenFont("data/space_invaders.ttf", 16); //this opens a font style and sets a size
 	if (font == NULL)
 	{
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "font cannot be created! SDL_Error: %s\n", SDL_GetError());
@@ -39,15 +42,19 @@ bool AvancezLib::init(int width, int height)
 	}
 
 	// initialize the keys
-	key.fire = false;	key.left = false;	key.right = false;
+	key.fire = false;	key.left = false;	key.right = false;	key.enter = false;
 
 	//Initialize renderer color
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
 
 	//Clear screen
 	SDL_RenderClear(renderer);
 
 	SDL_Log("System up and running...\n");
+
+	this->router = router;
+	this->gameViewport = gameViewport;
+
 	return true;
 }
 
@@ -95,6 +102,9 @@ bool AvancezLib::update()
 			case SDLK_RIGHT:
 				key.right = true;
 				break;
+			case SDLK_RETURN:
+				key.enter = true;
+				break;
 			}
 		}
 
@@ -110,6 +120,9 @@ bool AvancezLib::update()
 				break;
 			case SDLK_RIGHT:
 				key.right = false;
+				break;
+			case SDLK_RETURN:
+				key.enter = false;
 				break;
 			}
 		}
@@ -239,12 +252,15 @@ Sprite * AvancezLib::createSpriteNonBmp(const char * path) {
 
 	return sprite;
 }
-
-void AvancezLib::drawText(int x, int y, const char * msg)
+void AvancezLib::drawText(int x, int y, const char * msg) {
+	SDL_Color white = { 255, 255, 255 };
+	drawText(x, y, msg, white);
+}
+void AvancezLib::drawText(int x, int y, const char * msg, SDL_Color color)
 {
-	SDL_Color black = { 0, 0, 0 };  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
+	//SDL_Color black = { 255, 255, 255 };  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
 
-	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, black); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
+	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, color); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
 
 	SDL_Texture* msg_texture = SDL_CreateTextureFromSurface(renderer, surf); //now you can convert it into a texture
 
@@ -269,6 +285,7 @@ void AvancezLib::getKeyStatus(KeyStatus & keys)
 	keys.fire = key.fire;
 	keys.left = key.left;
 	keys.right = key.right;
+	keys.enter = key.enter;
 }
 
 
@@ -401,7 +418,7 @@ void SpriteSheet::free()
 	}
 }
 
-void SpriteSheet::render(int x, int y, SDL_Rect* clip)
+void SpriteSheet::render(int x, int y, SDL_Rect* clip, bool flip)
 {
 	//Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -414,7 +431,12 @@ void SpriteSheet::render(int x, int y, SDL_Rect* clip)
 	}
 
 	//Render to screen
-	SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
+	if (flip) {
+		SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, 0, 0, SDL_FLIP_HORIZONTAL);
+	}
+	else {
+		SDL_RenderCopy(renderer, mTexture, clip, &renderQuad);
+	}
 }
 
 int SpriteSheet::getWidth()

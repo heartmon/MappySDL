@@ -5,8 +5,12 @@
 #include "component.h"
 #include "mouse_sprite_state.h"
 
+class Mouse;
 class MouseBehaviorComponent : public Component {
 	SDL_Rect* camera;
+	int life = 2;
+	Mouse* gameEntity;
+
 	float cameraHorizontalFloat;
 	float cameraVerticalFloat;
 	bool isMovable = false;
@@ -20,23 +24,33 @@ class MouseBehaviorComponent : public Component {
 
 	float trackingNumber;
 
+	float spaceTriggerInterval = 0.35f;
+	float spaceTriggerTime = 0;
+	bool canSpace = true;
+
+	float knockbackInterval = 0.2f;
+	float knockbackTime = 0;
+	int knockbackDirection = 0;
+	float knockbackSpeed = 400.f;
+
+	float deadInterval = .7f;
+	float deadTime = 0;
+	float deadMovingInterval = 1.5f;
+	float deadMovingTime = 0;
 	
 public:
 	bool resetStateIndicator;
 
-	void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera);
+	void Create(AvancezLib* system, Mouse * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera);
 	virtual void Init();
+	virtual void RoundInit();
 	void Update(float dt);
 	void Receive(int message);
 	void Destroy();
 	void Move(float distanceX, float distanceY);
 
-	void ChangeSpeedX(float newVx) {
-		gameEntity->vx = newVx;
-	}
-	void ChangeSpeedY(float newVy) {
-		gameEntity->vy = newVy;
-	}
+	void ChangeSpeedX(float newVx);
+	void ChangeSpeedY(float newVy);
 
 	bool isOnTheGround(int currentState) {
 		switch (currentState) {
@@ -49,6 +63,9 @@ public:
 		return false;
 	}
 
+	void WhenDoorOpen(GameEntity* door);
+	void WhenDoorClose(GameEntity* door);
+
 	int canJumpBackRight = -1;
 	int canJumpBackLeft = -1;
 
@@ -57,9 +74,12 @@ public:
 
 	const static int BOUNCE_SPEED_Y = 430;
 
-private:
-	void MoveCamera();
+	void WhenHeadHit();
+	void WhenDie();
 
-	void ProcessInput(AvancezLib::KeyStatus keys, float dt);
+	bool isGoingToDie = false;
+
+private:
+	bool toBeKnockedBack = false;
 
 };

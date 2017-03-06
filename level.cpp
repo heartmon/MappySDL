@@ -6,6 +6,10 @@
 #include "tile_sprite_state.h"
 #include "rope.h"
 #include "rope_collision_rule.h"
+#include "item.h"
+#include "door.h"
+#include "door_collision_rule.h"
+#include "item_collision_rule.h"
 // Message of complete level -> change level
 
 void Level::Create(AvancezLib* system, SDL_Rect* camera) {
@@ -19,6 +23,8 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 
 	this->tileMap = new std::vector<Tile*>;
 	this->ropeArray = new std::vector<Rope*>;
+	this->itemArray = new std::vector<Item*>;
+	this->doorArray = new std::vector<Door*>;
 }
 
 void Level::Init() {
@@ -37,6 +43,16 @@ void Level::Init() {
 		Rope* rope = *it;
 		rope->Init();
 	}
+
+	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+		Item* item = *it;
+		item->Init();
+	}
+
+	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+		Door* door = *it;
+		door->Init();
+	}
 }
 
 void Level::Update(float dt) {
@@ -50,6 +66,16 @@ void Level::Update(float dt) {
 	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
 		Rope* rope = *it;
 		rope->Update(dt);
+	}
+
+	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+		Item* item = *it;
+		item->Update(dt);
+	}
+
+	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+		Door* door = *it;
+		door->Update(dt);
 	}
 }
 
@@ -69,6 +95,13 @@ void Level::SetTileMap() {
 	//Open the map
 	std::ifstream map(levelPath);
 
+	// set common variables
+	ItemSpriteState* itemSpriteState = new ItemSpriteState();
+	itemSpriteState->Create(system);
+
+	DoorSpriteState* doorSpriteState = new DoorSpriteState();
+	doorSpriteState->Create(system);
+
 	//Initialize the tiles
 	for (int i = 0; i < TOTAL_TILES; ++i)
 	{
@@ -87,25 +120,97 @@ void Level::SetTileMap() {
 			break;
 		}
 
+
 		//If the number is a valid tile number
 		//SDL_Log("TileType:: %d", tileType);
 		if ((tileType >= 0))
 		{
+			int isDoorType = true;
+			Door* door = new Door();
+			int doorOffsetY = -27;
+			switch (tileType) {
+				case TileSpriteState::STATE_TILE_DOOR_LEFT:
+					door->Create((float)x - 26, (float)y + doorOffsetY, 0);
+					break;
+				case TileSpriteState::STATE_TILE_DOOR_RIGHT:
+					door->Create((float)x + 3, (float)y + doorOffsetY, 1);
+					break;
+				case TileSpriteState::STATE_TILE_DOOR_POWER_LEFT:
+					door->Create((float)x - 26, (float)y + doorOffsetY, 2);
+					break;
+				case TileSpriteState::STATE_TILE_DOOR_POWER_RIGHT:
+					door->Create((float)x + 3, (float)y + doorOffsetY, 3);
+					break;
+				default:
+					isDoorType = false;
+			}
+
+			if (isDoorType) {
+				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+				spriteSheetRenderComponent->Create(system, door, NULL, doorSpriteState, true, camera);
+				CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+				cameraCollideComponent->Create(system, door, NULL, camera);
+				DoorBehaviorComponent* doorBehaviorComponent = new DoorBehaviorComponent();
+				doorBehaviorComponent->Create(system, door, doorArray, camera);
+				DoorCollisionRule* doorCollisionRule = new DoorCollisionRule();
+				doorCollisionRule->Create(door, camera, doorBehaviorComponent);
+
+				door->SetCollisionRule(doorCollisionRule);
+				door->AddComponent(spriteSheetRenderComponent);
+				door->AddComponent(cameraCollideComponent);
+				door->AddBehaviorComponent(doorBehaviorComponent);
+				doorArray->push_back(door);
+			}
+			switch (tileType) {
+				case  TileSpriteState::STATE_TILE_ITEM_100:
+				case  TileSpriteState::STATE_TILE_ITEM_200:
+				case  TileSpriteState::STATE_TILE_ITEM_300:
+				case  TileSpriteState::STATE_TILE_ITEM_400:
+				case  TileSpriteState::STATE_TILE_ITEM_500:
+					SDL_Log("Item is being created?");
+					Item* item = new Item();
+					item->Create((float)x, (float)y, tileType - 10 - 1, (tileType - 10)*100);
+
+					SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+					spriteSheetRenderComponent->Create(system, item, NULL, itemSpriteState, true, camera);
+
+					CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+					cameraCollideComponent->Create(system, item, NULL, camera);
+
+					ItemBehaviorComponent* itemBehaviorComponent = new ItemBehaviorComponent();
+					itemBehaviorComponent->Create(system, item, nullptr);
+
+					ItemCollisionRule* itemCollisionRule = new ItemCollisionRule();
+					itemCollisionRule->Create(item, camera, itemBehaviorComponent);
+
+					item->SetCollisionRule(itemCollisionRule);
+					item->AddComponent(spriteSheetRenderComponent);
+					item->AddComponent(cameraCollideComponent);
+					item->AddBehaviorComponent(itemBehaviorComponent);
+					itemArray->push_back(item);
+
+					//break;
+			}
+
 			// special adding
 			if (tileType == TileSpriteState::STATE_TILE_ROPE) {
 				SDL_Log("Rope is being created?");
 				Rope* rope = new Rope();
-				rope->Create((float)x, (float)y);
+				rope->Create((float)x, (float)y - RopeSpriteState::SPRITE_HEIGHT/2 + 5);
 
 				//Set value
 				RopeSpriteState* ropeSpriteState = new RopeSpriteState();
 				ropeSpriteState->Create(system);
+
 				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
 				spriteSheetRenderComponent->Create(system, rope, NULL, ropeSpriteState, true, camera);
+
 				CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
 				cameraCollideComponent->Create(system, rope, NULL, camera);
+
 				RopeBehaviorComponent* ropeBehaviorComponent = new RopeBehaviorComponent();
 				ropeBehaviorComponent->Create(system, rope, nullptr, ropeSpriteState);
+
 				RopeCollisionRule* ropeCollisionRule = new RopeCollisionRule();
 				ropeCollisionRule->Create(rope, camera, ropeBehaviorComponent);
 				

@@ -4,6 +4,8 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include <SDL_image.h>
+#include "router.h"
+#include "game_viewport.h"
 
 class Sprite
 {
@@ -45,7 +47,7 @@ public:
 	void free();
 
 	//Renders texture at given point
-	void render(int x, int y, SDL_Rect* clip = NULL);
+	void render(int x, int y, SDL_Rect* clip = NULL, bool flip = false);
 
 	//Gets image dimensions
 	int getWidth();
@@ -71,7 +73,8 @@ public:
 	void destroy();
 
 	// Creates the main window. Returns true on success.
-	bool init(int width, int height);
+	//bool init(int width, int height);
+	bool init(int width, int height, Router* router, GameViewport* gameViewport);
 
 	// Clears the screen and draws all sprites and texts which have been drawn
 	// since the last update call.
@@ -90,6 +93,7 @@ public:
 
 	// Draws the given text.
 	void drawText(int x, int y, const char* msg);
+	void drawText(int x, int y, const char* msg, SDL_Color color);
 
 	// Return the total time spent in the game, in seconds.
 	float getElapsedTime();
@@ -99,6 +103,7 @@ public:
 		bool fire; // space
 		bool left; // left arrow
 		bool right; // right arrow
+		bool enter; // enter button
 	};
 
 	// Returns the keyboard status. If a flag is set, the corresponding key is being held down.
@@ -107,6 +112,23 @@ public:
 	//Level camera
 	//SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
+	SDL_Renderer* getRenderer() {
+		return renderer;
+	}
+
+	Router* getRouter() {
+		return router;
+	}
+	
+	GameViewport* getGameViewport() {
+		return gameViewport;
+	}
+
+	void SetRendererViewport(GameViewportType viewportType) {
+		SDL_RenderSetViewport(renderer, gameViewport->getViewport(viewportType));
+	}
+
+
 private:
 	SDL_Window * window;
 	SDL_Renderer * renderer;
@@ -114,6 +136,10 @@ private:
 	TTF_Font* font;
 
 	KeyStatus key;
+
+	Router* router;
+
+	GameViewport* gameViewport;
 };
 
 #endif // __AVANCEZ_LIB__

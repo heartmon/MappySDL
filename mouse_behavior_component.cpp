@@ -1,10 +1,11 @@
 #include "mouse_behavior_component.h"
-#include "game_entity.h"
-#include "global_constant.h"
 #include <cmath>
+#include "door.h"
+#include "mouse.h"
 
-void MouseBehaviorComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera) {
+void MouseBehaviorComponent::Create(AvancezLib* system, Mouse* go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera) {
 	Component::Create(system, go, game_objects);
+	this->gameEntity = go;
 
 	this->camera = camera;
 	
@@ -16,6 +17,16 @@ void MouseBehaviorComponent::Init() {
 
 	defaultVx = gameEntity->vx;
 	defaultVy = gameEntity->vy;
+
+	gameEntity->Send(new Message(UPDATE_LIFE, gameEntity, gameEntity->lives));
+}
+
+void MouseBehaviorComponent::RoundInit() {
+	cameraHorizontalFloat = camera->x;
+	cameraVerticalFloat = camera->y;
+
+	gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+	gameEntity->Send(new Message(UPDATE_LIFE, gameEntity, gameEntity->lives));
 }
 
 void MouseBehaviorComponent::Update(float dt) {
@@ -29,8 +40,42 @@ void MouseBehaviorComponent::Update(float dt) {
 	AvancezLib::KeyStatus keys;
 	system->getKeyStatus(keys);
 
+	// sum
+	spaceTriggerTime += dt;
+
+	if (spaceTriggerTime > spaceTriggerInterval) {
+		canSpace = true;
+		spaceTriggerTime = 0;
+	}
+
+	// cannot do anything
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_DEAD) {
+		deadTime += dt;
+		if (deadTime > deadInterval) {
+			deadTime = 0;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_DEAD_MOVING);
+		}
+		return;
+	}
+
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_DEAD_MOVING) {
+		deadMovingTime += dt;
+		if (deadMovingTime > deadMovingInterval) {
+			deadMovingTime = 0;
+			gameEntity->lives--;
+
+			if (gameEntity->lives < 0) {
+				gameEntity->Send(new Message(GAME_OVER, gameEntity));
+			}
+			else {
+				gameEntity->Send(new Message(LIFE_DECREASE, gameEntity));
+			}
+		}
+		return;
+	}
+
 	// input processing
-	if (isOnTheGround(gameEntity->getCurrentStateType())) {
+	if (isOnTheGround(gameEntity->getCurrentStateType()) && gameEntity->getCurrentStateType() != MouseSpriteState::STATE_KNOCKBACK) {
 		if (keys.right) {
 			gameEntity->direction = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK_RIGHT);
@@ -41,6 +86,14 @@ void MouseBehaviorComponent::Update(float dt) {
 			gameEntity->direction = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_WALK);
 			ChangeSpeedX(-160.f);
+		}
+
+		//space
+		if (keys.fire) {
+			if (canSpace) {
+				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
+				canSpace = false;
+			}
 		}
 
 		if (!keys.left && !keys.right) {
@@ -59,15 +112,37 @@ void MouseBehaviorComponent::Update(float dt) {
 	}
 
 	// Update position
-	float distanceX = dt * gameEntity->vx;
+	float distanceX = dt * gameEntity->vx; 
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_KNOCKBACK) {
+		distanceX = 0;
+	}
+	
 	float distanceY = dt * gameEntity->vy;
+
 	Move(distanceX, distanceY);
 
 	// Update Velocity
 	gameEntity->vy += dt * g * gameEntity->ay;
 
-
 	// state processing
+	// State = Knockback
+	if (toBeKnockedBack) {
+		gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
+		toBeKnockedBack = false;
+	}
+
+	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_KNOCKBACK) {
+		knockbackTime += dt;
+		
+		if (knockbackTime < knockbackInterval) {
+			Move(dt*knockbackSpeed*knockbackDirection, 0);
+		}
+		if (knockbackTime > knockbackInterval + 0.01f ) {
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
+			knockbackTime = 0;
+		}
+	}
+
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_INTHEAIR) {
 		if (gameEntity->vy <= 0) {
 			// process key when in the air
@@ -84,6 +159,7 @@ void MouseBehaviorComponent::Update(float dt) {
 			}
 		}
 		resetStateIndicator = false;
+		gameEntity->vx = 0;
 	}
 
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PRE_JUMP_BACK) {
@@ -103,6 +179,8 @@ void MouseBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(gameEntity->direction*jumpSpeed);
 			gameEntity->ay = 3.5;
 			resetStateIndicator = true;
+
+			isGoingToDie = false;
 		}
 
 		trackingNumber += dt;
@@ -133,6 +211,7 @@ void MouseBehaviorComponent::Update(float dt) {
 			if (jumpAgainstWall) {
 				ChangeSpeedY(0);
 			}
+			isGoingToDie = true;
 		}
 
 		trackingNumber += dt;
@@ -195,8 +274,17 @@ void MouseBehaviorComponent::Move(float distanceX, float distanceY)
 	if (gameEntity->horizontalPosition < 0) {
 		gameEntity->horizontalPosition = 0;
 	}
-	if (gameEntity->horizontalPosition > SCREEN_WIDTH - entitySize->w) {
-		gameEntity->horizontalPosition = SCREEN_WIDTH - entitySize->w;
+	if (gameEntity->horizontalPosition > SCREEN_WIDTH - gameEntity->getSize()->w) {
+		gameEntity->horizontalPosition = SCREEN_WIDTH - gameEntity->getSize()->w;
+	}
+
+	// vertical position bound screen
+	//if (gameEntity->verticalPosition < 0) {
+	//	gameEntity->verticalPosition = 0;
+	//}
+	if (gameEntity->verticalPosition > SCREEN_HEIGHT - gameEntity->getSize()->h) {
+		gameEntity->verticalPosition = SCREEN_HEIGHT - gameEntity->getSize()->h;
+		gameEntity->Receive(new Message(MOUSE_DIE, gameEntity));
 	}
 
 	//set back to camera
@@ -212,7 +300,7 @@ void MouseBehaviorComponent::Move(float distanceX, float distanceY)
 	}
 
 	// If camera is on top-most or bottom-most side
-	if (cameraVerticalFloat <= 0 || cameraVerticalFloat >= LEVEL_HEIGHT - camera->h) {
+	if (cameraVerticalFloat <=  0 || cameraVerticalFloat >= LEVEL_HEIGHT - camera->h) {
 		gameEntity->verticalPosition += distanceY;
 	}
 
@@ -227,26 +315,74 @@ void MouseBehaviorComponent::Destroy() {
 
 }
 
-void MouseBehaviorComponent::MoveCamera() {
-	//Center the camera over the dot
-	//camera->x = (x + 32 / 2) - 32 / 2;
-	//camera->y = (y + 32 / 2) - 32 / 2;
+void MouseBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
+	// check if mouse is at the range of the door >> knockback
+	Door* door = (Door*)ent;
+	GameEntity::Box mouseBox = gameEntity->getCollisionBox(camera);
+	float doorX = door->horizontalPosition;
+	float doorW = door->getSize()->w;
 
-	//Keep the camera in bounds
-	if (camera->x < 0)
-	{
-		camera->x = 0;
+	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
+		// if inside door
+		if (mouseBox.x <= doorX + doorW - doorW/4 && mouseBox.x + mouseBox.w >= doorX) {
+			SDL_Log("KNOCKBACK!");
+			toBeKnockedBack = true;
+			knockbackDirection = GameEntity::LEFT;
+			gameEntity->direction = GameEntity::LEFT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
+		}
 	}
-	if (camera->y < 0)
-	{
-		camera->y = 0;
+	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
+		// if inside door
+		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX + doorW / 4) {
+			SDL_Log("KNOCKBACK!");
+			toBeKnockedBack = true;
+			knockbackDirection = GameEntity::RIGHT;
+			gameEntity->direction = GameEntity::RIGHT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
+		}
 	}
-	if (camera->x > LEVEL_WIDTH - camera->w)
-	{
-		camera->x = LEVEL_WIDTH - camera->w;
+}
+
+void MouseBehaviorComponent::WhenDoorClose(GameEntity* ent) {
+	Door* door = (Door*)ent;
+	GameEntity::Box mouseBox = gameEntity->getCollisionBox(camera);
+	float doorX = door->horizontalPosition;
+	float doorW = door->getSize()->w;
+
+	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
+		// if inside door
+		if (mouseBox.x <= doorX + doorW - doorW / 4 && mouseBox.x + mouseBox.w >= doorX) {
+			SDL_Log("KNOCKBACK!");
+			toBeKnockedBack = true;
+			knockbackDirection = GameEntity::RIGHT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
+		}
 	}
-	if (camera->y > LEVEL_HEIGHT - camera->h)
-	{
-		camera->y = LEVEL_HEIGHT - camera->h;
+	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
+		// if inside door
+		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX + doorW / 4) {
+			SDL_Log("KNOCKBACK!");
+			toBeKnockedBack = true;
+			knockbackDirection = GameEntity::LEFT;
+			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
+		}
 	}
+}
+
+void MouseBehaviorComponent::ChangeSpeedX(float newVx) {
+	gameEntity->vx = newVx;
+}
+void MouseBehaviorComponent::ChangeSpeedY(float newVy) {
+	gameEntity->vy = newVy;
+}
+
+void MouseBehaviorComponent::WhenHeadHit() {
+	ChangeSpeedY(-gameEntity->vy);
+	//gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
+}
+
+void MouseBehaviorComponent::WhenDie() {
+	SDL_Log("DEAD :(");
+	gameEntity->setCurrentStateType(MouseSpriteState::STATE_DEAD);
 }

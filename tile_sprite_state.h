@@ -19,7 +19,10 @@ public:
 	const static int STATE_TILE_ITEM_500 = 15;
 	
 	const static int STATE_TILE_ROPE = 21;
-	const static int STATE_TILE_DOOR = 22;
+	const static int STATE_TILE_DOOR_LEFT = 22;
+	const static int STATE_TILE_DOOR_RIGHT = 23;
+	const static int STATE_TILE_DOOR_POWER_LEFT = 24;
+	const static int STATE_TILE_DOOR_POWER_RIGHT = 25;
 
 	
 	//const static int TOTAL_TILE_SPRITES = 9;

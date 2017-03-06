@@ -17,20 +17,34 @@ public:
 	}
 
 	virtual void didHit(Message* m) {
-		if (m->getArg1() == CLASS_TILE) {
+		if (m->getArg1()->getName() == CLASS_TILE) {
 			//mouse->isCollidedWithMap = true;
 		}
-		if (m->getArg1() == CLASS_MOUSE) {
+		/*if (m->getArg1()->getName() == CLASS_MOUSE) {
 			behaviorComponent->removeLife();
-		}
+		}*/
 	}
 
 	virtual int isCollided(GameEntity* self, GameEntity* withThisEntity, float dt) {
 		if (withThisEntity->getName() == CLASS_MOUSE) {
 			if (gameEntity->getCurrentStateType() == RopeSpriteState::STATE_ROPE_STATIC) {
-				bool isCollided = checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox(camera));
+				GameEntity::Box selfBox = self->getCollisionBox();
+				GameEntity::Box withBox = withThisEntity->getCollisionBox(camera);
+
+				bool xCollided = selfBox.x <= withBox.x + withBox.w && selfBox.x + selfBox.w >= withBox.x;
+				bool footCollided = (selfBox.y + selfBox.h / 2 - 5 <= withBox.y + withBox.h && selfBox.y + selfBox.h / 2 >= withBox.y + withBox.h - 5);
+				bool headCollided = (selfBox.y + selfBox.h / 2 -5 <= withBox.y + 3 && selfBox.y + selfBox.h / 2 >= withBox.y + 1);
+				bool yCollided = footCollided || headCollided;
+				//bool isCollided = checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox(camera));
+				bool isCollided = xCollided && yCollided;
+
+				// head collided -> not remove life
+				if (isCollided && headCollided) {
+					return isCollided;
+				}
 
 				if (isCollided && behaviorComponent->getRopeLive() > 1) {
+					behaviorComponent->removeLife();
 					return isCollided;
 				}
 				else if (isCollided && behaviorComponent->getRopeLive() <= 1 ) {

@@ -1,5 +1,6 @@
 #include "component.h"
 #include "game_entity.h"
+#include "draw_entity.h"
 #include "avancezlib.h"
 #include "entity_state.h"
 #include "sprite_state_interface.h"
@@ -89,30 +90,35 @@ void CollideComponent::Update(float dt)
 				else { collidedResult = 0; }
 			} 
 			if (collidedResult == 1) {
-				SDL_Log("hit");
-				gameEntity->Receive(new Message(HIT, go0->getName().c_str()));
-				go0->Receive(new Message(HIT, gameEntity->getName().c_str()));
+				//SDL_Log("hit");
+				gameEntity->Receive(new Message(HIT, go0));
+				go0->Receive(new Message(HIT, gameEntity));
 			}
 		}
 		
 	}
 }
 
-void SpriteSheetRenderComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SpriteStateInterface* spriteState, bool order, SDL_Rect* camera ) {
+void SpriteSheetRenderComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SpriteStateInterface* spriteState, bool order, SDL_Rect* camera, bool flip, GameViewportType viewportType) {
 	Component::Create(system, go, game_objects);
 	this->spriteState = spriteState;
 	this->order = order;
 	this->camera = camera;
+	this->flip = flip;
+	this->viewportType = viewportType;
 }
 void SpriteSheetRenderComponent::Update(float dt) {
 	if (!gameEntity->isVisibleWithinCamera) {
 		return;
 	}
 
+	system->SetRendererViewport(viewportType);
+
+
 	int offsetCameraX = 0;
 	int offsetCameraY = 0;
 
-	if (camera != NULL) {
+	if (camera != nullptr) {
 		offsetCameraX = camera->x;
 		offsetCameraY = camera->y;
 	}
@@ -134,7 +140,13 @@ void SpriteSheetRenderComponent::Update(float dt) {
 		gameEntity->animationFrame = frame;
 
 		//Render
-		s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
+		if (this->flip == true) {
+			bool isRight = gameEntity->direction == GameEntity::RIGHT;
+			s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame, isRight);
+		}
+		else {
+			s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
+		}
 	}
 	else {
 		std::vector<EntityState*>* states = spriteState->getSpriteStateEntities();
@@ -151,17 +163,66 @@ void SpriteSheetRenderComponent::Update(float dt) {
 				// Update animation frame
 				float t0 = system->getElapsedTime();
 				int frame = gameEntity->animationFrame;
-				frame = ((int)(t0 * 10) % s->getNumberOfFrame());
+				frame = ((int)(t0 * s->getAnimationSpeed()) % s->getNumberOfFrame());
 
 				gameEntity->animationFrame = frame;
 
 				// Render using the spritesheet (SpriteSheet.render)
-				s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
+				if (this->flip == true) {
+					s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame, gameEntity->direction == GameEntity::RIGHT);
+				}
+				else {
+					s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
+				}
 			}
 		}
 	}
 }
 void SpriteSheetRenderComponent::Destroy() {
+
+}
+
+void DrawTextRenderComponent::Create(AvancezLib* system, DrawEntity * go, SDL_Rect* camera, GameViewportType viewportType) {
+	//Component::Create(system, go, game_objects);
+	this->system = system;
+	this->drawEntity = go;
+	this->gameEntity = go;
+	this->camera = camera;
+	this->viewportType = viewportType;
+}
+void DrawTextRenderComponent::Update(float dt) {
+	if (!gameEntity->isVisibleWithinCamera) {
+		return;
+	}
+
+	system->SetRendererViewport(viewportType);
+
+	int offsetCameraX = 0;
+	int offsetCameraY = 0;
+
+	if (camera != nullptr) {
+		offsetCameraX = camera->x;
+		offsetCameraY = camera->y;
+	}
+
+	// Get color
+	//SDL_Color defaultColor = { 255,255,255 };
+	SDL_Color color = drawEntity->getColor();
+
+	//SDL_Log("%d", &(drawEntity->getMsg()));
+	
+	system->drawText(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, drawEntity->getMsg().c_str(), color);
+
+	// Render using the spritesheet (SpriteSheet.render)
+	/*if (this->flip == true) {
+		s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame, gameEntity->direction == GameEntity::RIGHT);
+	}
+	else {
+		s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
+	}*/
+
+}
+void DrawTextRenderComponent::Destroy() {
 
 }
 
@@ -240,7 +301,7 @@ void MapCollideComponent::Update(float dt) {
 			}
 
 			if (collidedResult == 1) {
-				Message* m = new Message(HIT, tile->getName().c_str());
+				Message* m = new Message(HIT, tile);
 				gameEntity->Receive(m);
 				//go0->Receive(new Message(HIT));
 				m->Destroy();

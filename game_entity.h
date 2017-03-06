@@ -50,6 +50,7 @@ public:
 
 	virtual void Update(float dt);
 	virtual void Init();
+	virtual void RoundInit();
 	virtual void Destroy();
 	virtual void AddReceiver(GameEntity *ge);
 	virtual void Receive(Message* m);

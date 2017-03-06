@@ -24,6 +24,9 @@ float maxFallSpeed = -5.0f;
 
 #include "game.h"
 #include "global_constant.h"
+#include "start_screen.h"
+#include "router.h"
+#include "game_over_screen.h"
 
 int num_frames = 0;
 int sum_delta = 0;
@@ -35,11 +38,30 @@ int main(int argc, char** argv)
 
 	AvancezLib system;
 
-	system.init(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Router router;
+	router.setCurrentScreen(START_SCREEN);
+
+	GameViewport gameViewport;
+	gameViewport.Init();
+
+	system.init(WINDOW_WIDTH, WINDOW_HEIGHT, &router, &gameViewport);
+
+
+	StartScreen startScreen;
+	startScreen.Create(&system);
+	startScreen.Init();
+
+	GameOverScreen gameOverScreen;
+	gameOverScreen.Create(&system);
+	gameOverScreen.Init();
 
 	Game game;
 	game.Create(&system);
 	game.Init();
+
+	new GameViewport();
+
+	int currentScreen = 0;
 
 	float lastTime = system.getElapsedTime();
 	while (system.update())
@@ -63,8 +85,24 @@ int main(int argc, char** argv)
 		//}
 		//sprintf(msg, "%.3f fps", avg_fps);
 		//system.drawText(12, 12, msg);
+		if (router.getCurrentScreen() == START_SCREEN) {
+			startScreen.Update(dt);
+			startScreen.Draw();
+		}
 
-		game.Update(dt);
+		if (router.getCurrentScreen() == PLAY_SCREEN) {
+			if (!game.isGameOver()) {
+				game.Update(dt);
+			}
+			else {
+				router.setCurrentScreen(GAME_OVER_SCREEN);
+			}
+		}
+
+		if (router.getCurrentScreen() == GAME_OVER_SCREEN) {
+			gameOverScreen.Update(dt);
+			gameOverScreen.Draw();
+		}
 
 		//game.Draw();
 	}

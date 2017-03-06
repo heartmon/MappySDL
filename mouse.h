@@ -5,31 +5,30 @@
 
 class Mouse : public GameEntity {
 public:
-	virtual void Create() {
+	int lives;
+
+	//
+	virtual void Create(float x, float y) {
 		GameEntity::Create();
+		horizontalPosition = x;
+		verticalPosition = y;
 	}
 	virtual ~Mouse() { SDL_Log("Mouse::~Mouse"); }
 	virtual void Init()
 	{
 		SDL_Log("Mouse::Init");
+		lives = 2;
 		GameEntity::Init();
 
-		horizontalPosition = 240;
-		verticalPosition = 0;
 		setCurrentStateType(MouseSpriteState::STATE_STAND);
 
 		size->w = MouseSpriteState::SPRITE_WIDTH;
 		size->h = MouseSpriteState::SPRITE_HEIGHT;
 
-		w = MouseSpriteState::SPRITE_WIDTH;
-		h = MouseSpriteState::SPRITE_HEIGHT;
-
 		vx = 160.0f;
 	}
-	//virtual void Receive(Message* m)
-	//{
-	//	//SDL_Log("Mouse::Hit!");
-	//}
+
+	virtual void Receive(Message* m);
 
 	virtual std::string getName() {
 		return CLASS_MOUSE;

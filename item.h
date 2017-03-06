@@ -6,7 +6,11 @@
 class Item : public GameEntity {
 public:
 
-	//virtual void Create(int x, int y, int tileType) {	}
+	void Create(float x, float y, int state, int baseScore) {
+		GameEntity::Create(x, y);
+		setCurrentStateType(state);
+		this->baseScore = baseScore;
+	}
 	/*virtual void Update(float dt) {
 
 	}*/
@@ -16,35 +20,33 @@ public:
 	//}
 
 	virtual void Init() {
-		SDL_Log("Rope::Init");
+		SDL_Log("Item::Init");
 		GameEntity::Init();
-
-		setCurrentStateType(ItemSpriteState::STATE_ROPE_STATIC);
-
 		size->w = ItemSpriteState::SPRITE_WIDTH;
 		size->h = ItemSpriteState::SPRITE_HEIGHT;
 	}
 
 	virtual std::string getName() {
-		return CLASS_ROPE;
+		return CLASS_ITEM;
 	}
 
-	virtual GameEntity::Box getCollisionBox(SDL_Rect* camera = NULL) {
-		GameEntity::Box ropeCollisionBox = GameEntity::getCollisionBox(camera);
+	//virtual GameEntity::Box getCollisionBox(SDL_Rect* camera = NULL) {
+	//	GameEntity::Box colBox = GameEntity::getCollisionBox(camera);
 
-		//override value
-		ropeCollisionBox.y = verticalPosition + getSize()->h / 2;
+	//	//override value
+	//	colBox.y = verticalPosition + getSize()->h / 2;
 
-		return ropeCollisionBox;
-	}
+	//	return colBox;
+	//}
 
 	virtual void Receive(Message* m) {
 		GameEntity::Receive(m);
-		if (m->getMessageType() == MOUSE_JUMP_TO_STAND) {
-			//((RopeBehaviorComponent*)behaviorComponent)->restoreLife();
-		}
-
 	}
-private:
 
+	int getBaseScore() {
+		return baseScore;
+	}
+
+private:
+	int baseScore;
 };

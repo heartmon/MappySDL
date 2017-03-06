@@ -34,11 +34,14 @@
     <Filter Include="Source Files\door">
       <UniqueIdentifier>{c379c456-436e-45df-b0a0-380adbcd97e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\rainbow_door">
-      <UniqueIdentifier>{07eb3e52-f9fc-4eff-98e5-9ed62fc786a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\level">
       <UniqueIdentifier>{bf532615-991c-457d-9602-9fed8eba3f71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rainbow">
+      <UniqueIdentifier>{07eb3e52-f9fc-4eff-98e5-9ed62fc786a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\score">
+      <UniqueIdentifier>{00211549-fcd7-485c-9cc6-64665d656026}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +74,9 @@
     </ClCompile>
     <ClCompile Include="tile_sprite_state.cpp">
       <Filter>Source Files\level</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse.cpp">
+      <Filter>Source Files\mouse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +160,60 @@
     </ClInclude>
     <ClInclude Include="item_sprite_state.h">
       <Filter>Source Files\item</Filter>
+    </ClInclude>
+    <ClInclude Include="door_sprite_state.h">
+      <Filter>Source Files\door</Filter>
+    </ClInclude>
+    <ClInclude Include="door_collision_rule.h">
+      <Filter>Source Files\door</Filter>
+    </ClInclude>
+    <ClInclude Include="door_toggle.h">
+      <Filter>Source Files\door</Filter>
+    </ClInclude>
+    <ClInclude Include="rainbow.h">
+      <Filter>Source Files\rainbow</Filter>
+    </ClInclude>
+    <ClInclude Include="rainbow_sprite_state.h">
+      <Filter>Source Files\rainbow</Filter>
+    </ClInclude>
+    <ClInclude Include="rainbow_collision_rule.h">
+      <Filter>Source Files\rainbow</Filter>
+    </ClInclude>
+    <ClInclude Include="rainbow_controller.h">
+      <Filter>Source Files\rainbow</Filter>
+    </ClInclude>
+    <ClInclude Include="rainbow_behavior_component.h">
+      <Filter>Source Files\rainbow</Filter>
+    </ClInclude>
+    <ClInclude Include="start_screen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="router.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_viewport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="score_total.h">
+      <Filter>Source Files\score</Filter>
+    </ClInclude>
+    <ClInclude Include="info.h">
+      <Filter>Source Files\score</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>Source Files\score</Filter>
+    </ClInclude>
+    <ClInclude Include="score_controller.h">
+      <Filter>Source Files\score</Filter>
+    </ClInclude>
+    <ClInclude Include="item_controller.h">
+      <Filter>Source Files\item</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_entity.h">
+      <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="game_over_screen.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

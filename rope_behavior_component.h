@@ -21,6 +21,12 @@ public:
 		updateSpriteWithCurrentLife();
 	}
 
+	virtual void RoundInit() {
+		ropeLife = 4;
+		gameEntity->setCurrentStateType(RopeSpriteState::STATE_ROPE_STATIC);
+		updateSpriteWithCurrentLife();
+	}
+
 	int getRopeLive() {
 		return ropeLife;
 	}
@@ -56,14 +62,16 @@ public:
 			spriteState->getSpriteSheet()->SetTintColor(255, 0, 0);
 			break;
 		default:
-			
+			spriteState->getSpriteSheet()->SetTintColor(255, 0, 0);
 			break;
 		}
 	}
 
 	void restoreLife() {
-		ropeLife = 4;
-		updateSpriteWithCurrentLife();
+		if (gameEntity->getCurrentStateType() != RopeSpriteState::STATE_ROPE_SEPARATE) {
+			ropeLife = 4;
+			updateSpriteWithCurrentLife();
+		}
 	}
 
 	void ropeSeparated() {
@@ -85,7 +93,7 @@ public:
 		// if HIT by other game entities
 		if (msg.getMessageType() == HIT) {
 			// hit by mouse
-			if (msg.getArg1() == CLASS_MOUSE) {
+			if (msg.getArg1()->getName() == CLASS_MOUSE) {
 				SDL_Log("HIT ROPE!");
 			}
 		}

@@ -66,19 +66,33 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	jumpSpriteClips[1].h = spriteSize;
 
 	jump = new EntityState(mappySpriteSheet, STATE_INTHEAIR, JUMP_ANIMATION_FRAME, jumpSpriteClips);
+	//new code
+	InitClip(5, 0, FRAME_NO_MOVE, knockbackClip);
+
+	//dead
+	InitClip(7, 0, DEAD_ANIMATION_FRAME, deadClip);
+	InitClip(16, 0, DEAD_MOVING_ANIMATION_FRAME, deadMovingClip);
 
 	EntityState* preJumpBack = new EntityState(mappySpriteSheet, STATE_PRE_JUMP_BACK, JUMP_ANIMATION_FRAME, jumpSpriteClips);
 	EntityState* jumpBack = new EntityState(mappySpriteSheet, STATE_JUMP_BACK, PREJUMP_ANIMATION_FRAME, prejumpSpriteClips);
+	EntityState* knockBack = new EntityState(mappySpriteSheet, STATE_KNOCKBACK, FRAME_NO_MOVE, knockbackClip);
+	EntityState* dead = new EntityState(mappySpriteSheet, STATE_DEAD, DEAD_ANIMATION_FRAME, deadClip, 14.0f);
+	EntityState* deadMoving= new EntityState(mappySpriteSheet, STATE_DEAD_MOVING, DEAD_MOVING_ANIMATION_FRAME, deadMovingClip, 25.0f);
 
 	std::vector<EntityState*>* states = new std::vector<EntityState*>;
 	states->push_back(stand);
 	states->push_back(walk);
 	states->push_back(jump);
+	states->push_back(knockBack);
 	states->push_back(standRight);
 	states->push_back(walkRight);
 	states->push_back(preJump);
 	states->push_back(preJumpBack);
 	states->push_back(jumpBack);
+	states->push_back(dead);
+	states->push_back(deadMoving);
+
+	
 	
 	// Set back
 	this->states = states;

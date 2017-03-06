@@ -2,8 +2,10 @@
 #include <set>
 #include <vector>
 #include "object_pool.h"
+#include "game_viewport.h"
 
 class GameEntity;
+class DrawEntity;
 class AvancezLib;
 class Sprite;
 class SpriteSheet;
@@ -25,6 +27,7 @@ public:
 	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects);
 
 	virtual void Init() {}
+	virtual void RoundInit() {}
 	virtual void Update(float dt) = 0;
 	virtual void Receive(int message) {}
 	virtual void Destroy() {}
@@ -46,7 +49,7 @@ public:
 
 class SpriteSheetRenderComponent : public Component {
 public:
-	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SpriteStateInterface* spriteState, bool order = false, SDL_Rect* camera = NULL);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, SpriteStateInterface* spriteState, bool order = false, SDL_Rect* camera = NULL, bool flip = false, GameViewportType viewportType = MAIN_VIEWPORT);
 	virtual void Update(float dt);
 	virtual void Destroy();
 
@@ -54,6 +57,19 @@ private:
 	SpriteStateInterface* spriteState;
 	bool order = false;
 	SDL_Rect* camera;
+	bool flip ;
+	GameViewportType viewportType;
+};
+
+class DrawTextRenderComponent : public Component {
+public:
+	virtual void Create(AvancezLib* system, DrawEntity * go, SDL_Rect* camera = NULL, GameViewportType viewportType = MAIN_VIEWPORT);
+	virtual void Update(float dt);
+	virtual void Destroy();
+private:
+	DrawEntity* drawEntity;
+	SDL_Rect* camera;
+	GameViewportType viewportType;
 };
 
 class CameraCollideComponent : public Component {

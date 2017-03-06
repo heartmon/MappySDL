@@ -12,8 +12,9 @@ void GameEntity::Create()
 	isVisibleWithinCamera = false;
 	isXCollidedWithMap = false;
 	isYCollidedWithMap = false;
-
+	direction = 0;
 	size = new SDL_Rect;
+	setCurrentStateType(0);
 }
 
 void GameEntity::AddComponent(Component * component)
@@ -40,9 +41,14 @@ void GameEntity::Init()
 
 	enabled = true;
 	isVisibleWithinCamera = true;
-	direction = 0;
 
 	ay = 1;
+}
+
+void GameEntity::RoundInit() {
+	for (auto it = components.begin(); it != components.end(); it++) {
+		(*it)->RoundInit();
+	}
 }
 
 void GameEntity::Update(float dt)
