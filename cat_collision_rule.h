@@ -41,7 +41,7 @@ public:
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
 			if ((rand() % 2) + 1 == 2) {
-				SDL_Log("50 chance -- toggle!");
+				//SDL_Log("50 chance -- toggle!");
 				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
 			}
 			else {
@@ -138,7 +138,7 @@ public:
 		if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_INTHEAIR || gameEntity->getCurrentStateType() == CatSpriteState::STATE_JUMP_BACK) {
 			//SDL_Log("From jump to stand");
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_STAND);
-			gameEntity->Send(new Message(MOUSE_JUMP_TO_STAND));
+			//gameEntity->Send(new Message(MOUSE_JUMP_TO_STAND));
 		}
 		return 1;
 	}

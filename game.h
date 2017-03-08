@@ -178,7 +178,8 @@ public:
 			rope->RoundInit();
 		}
 
-		//catController->RoundInit();
+		catController->RoundInit();
+		//catController->Spawn();
 
 		this->Send(new Message(UPDATE_LEVEL, this, levelNo));
 	}
@@ -194,7 +195,7 @@ public:
 		scoreController->Init();
 		rainbowController->Init();
 		catController->Init();
-		catController->Spawn();
+		
 
 		ReceiverInit();
 		EntityRoundInit();

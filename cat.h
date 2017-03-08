@@ -12,20 +12,23 @@ public:
 		GameEntity::Create();
 		horizontalPosition = x;
 		verticalPosition = y;
+
+		size->w = CatSpriteState::SPRITE_WIDTH;
+		size->h = CatSpriteState::SPRITE_HEIGHT;
 	}
 	virtual ~Cat() { SDL_Log("Cat::~Cat"); }
 	virtual void Init()
 	{
 		SDL_Log("Cat::Init");
-		lives = 2;
 		GameEntity::Init();
-
-		setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
-
-		size->w = CatSpriteState::SPRITE_WIDTH;
-		size->h = CatSpriteState::SPRITE_HEIGHT;
-
+		vy = 0;
 		vx = 160.0f;
+		setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
+	}
+	virtual void Init(float x, float y) {
+		Init();
+		horizontalPosition = x;
+		verticalPosition = y;
 	}
 
 	virtual void Receive(Message* m) {

@@ -15,6 +15,13 @@ class CatController : public GameEntity {
 	Level* level;
 	Mouse* mouse;
 	CatSpriteState* spriteState;
+
+	float spawnDelayTime = 0.f;
+	float spawnInterval = .3f;
+	bool canSpawn = true;
+	bool firstTimeSpawn = true;
+	int maximumSpawn = 4;
+	int activeCats = 0;
 public:
 	void Create(AvancezLib* system, SDL_Rect* camera, Level* level, Mouse* mouse) {
 		GameEntity::Create();
@@ -22,7 +29,7 @@ public:
 		this->camera = camera;
 		this->level = level;
 		this->mouse = mouse;
-		cats_pool.Create(20);
+		cats_pool.Create(6);
 
 		spriteState = new CatSpriteState();
 		spriteState->Create(system);
@@ -36,6 +43,51 @@ public:
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->Update(dt);
 		}
+
+		if (!canSpawn) {
+			spawnDelayTime += dt;
+			if (spawnDelayTime > spawnInterval) {
+				spawnDelayTime = 0;
+				canSpawn = true;
+			}
+		}
+
+		if (firstTimeSpawn) {
+			if (canSpawn) {
+				switch (activeCats) {
+					case 0:
+						Spawn(24 * TileSpriteState::TILE_WIDTH, 2 * TileSpriteState::TILE_HEIGHT);
+						break;
+					case 1:
+						Spawn(12 * TileSpriteState::TILE_WIDTH, 10 * TileSpriteState::TILE_HEIGHT);
+						break;
+					case 2:
+						Spawn();
+						break;
+					case 3:
+						Spawn();
+						break;
+					default:
+						Spawn();
+						break;
+				}
+			}
+		}
+		else {
+			if (canSpawn) {
+				if (activeCats < maximumSpawn) {
+					Spawn();
+				}
+			}
+		}
+
+		if (activeCats == maximumSpawn) {
+			firstTimeSpawn = false;
+		}
+
+		
+		
+
 	}
 
 	void Receive(Message* m) {
@@ -55,17 +107,20 @@ public:
 		//cats_pool.Deallocate();
 		//cats_pool.Create(20);
 	
-		//for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
-		//	(*go)->enabled = false;
-		//}
-		Spawn();
+		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
+			(*go)->enabled = false;
+		}
+		activeCats = 0;
+		//Spawn();
 	}
 
 	void Spawn() {
-		Spawn(21 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
+		Spawn(13 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
 	}
 	void Spawn(int x, int y) {
 		MakeCat(x, y);
+		activeCats++;
+		canSpawn = false;
 	}
 
 	void MakeCat(int x, int y) {
@@ -74,10 +129,12 @@ public:
 			return; 
 		}
 
-		cat->Create(x, y);
-		
-		
+		if (cat->getBehaviorComponent() != nullptr) {
+			cat->Init(x, y);
+			return;
+		}
 
+		cat->Create(x, y);		
 		SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
 		spriteComponent->Create(system, cat, nullptr, spriteState, true, camera, true);
 		CatBehaviorComponent* behaviorComponent = new CatBehaviorComponent();
@@ -90,7 +147,6 @@ public:
 		ropeCollideComponent->Create(system, cat, nullptr, (std::vector<GameEntity*>*)level->getRopeArray());
 		CollideComponent* doorCollideCompponent = new CollideComponent();
 		doorCollideCompponent->Create(system, cat, nullptr, (std::vector<GameEntity*>*)level->getDoorArray());
-
 
 		cat->SetCollisionRule(collisionRule);
 		cat->AddComponent(spriteComponent);

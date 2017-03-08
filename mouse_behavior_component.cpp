@@ -172,7 +172,7 @@ void MouseBehaviorComponent::Update(float dt) {
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP_BACK) {
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
-			SDL_Log("JUMP BACK");
+			//SDL_Log("JUMP BACK");
 			float jumpSpeed = 100;
 			trackingNumber = 0;
 			ChangeSpeedY(-100.f);
@@ -192,7 +192,7 @@ void MouseBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
-			SDL_Log("Change to in the air");
+			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
 		}
 
@@ -201,7 +201,7 @@ void MouseBehaviorComponent::Update(float dt) {
 	//hopping
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
 		if (!resetStateIndicator) {
-			SDL_Log("Pre jump");
+			//SDL_Log("Pre jump");
 			float jumpSpeed = 100;
 			trackingNumber = 0;
 			ChangeSpeedY(-100.f);
@@ -223,7 +223,7 @@ void MouseBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
-			SDL_Log("Change to in the air");
+			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
 			jumpAgainstWall = false;
 		}
@@ -325,7 +325,7 @@ void MouseBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
 		// if inside door
 		if (mouseBox.x <= doorX + doorW - doorW/4 && mouseBox.x + mouseBox.w >= doorX) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
 			gameEntity->direction = GameEntity::LEFT;
@@ -335,7 +335,7 @@ void MouseBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
 		// if inside door
 		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX + doorW / 4) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
 			gameEntity->direction = GameEntity::RIGHT;
@@ -353,7 +353,7 @@ void MouseBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
 		// if inside door
 		if (mouseBox.x <= doorX + doorW - doorW / 4 && mouseBox.x + mouseBox.w >= doorX) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
@@ -362,7 +362,7 @@ void MouseBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
 		// if inside door
 		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX + doorW / 4) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);

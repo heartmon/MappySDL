@@ -33,6 +33,7 @@ public:
 	void Create(AvancezLib* system, SDL_Rect* camera);
 	void Init();
 	void Update(float dt);
+	//void RoundInit();
 	std::vector<Tile*>* getTileMap() {
 		return tileMap;
 	}

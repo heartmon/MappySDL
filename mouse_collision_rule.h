@@ -25,7 +25,6 @@ public:
 	}
 	void didHit(Message* m) {
 		if (m->getArg1()->getName() == CLASS_CAT) {
-			SDL_Log("FFFFFFF");
 		}
 		if (m->getArg1()->getName() == CLASS_TILE) {
 			//mouse->isCollidedWithMap = true;
@@ -48,7 +47,7 @@ public:
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
 			behaviorComponent->ChangeSpeedX(0);
-			behaviorComponent->Move(2 * -mouse->direction, 0);
+			behaviorComponent->Move(3 * -mouse->direction, 0);
 		}
 	}
 
@@ -71,7 +70,6 @@ public:
 		}
 		if (withThisEntity->getName() == CLASS_CAT) {
 			if(checkSquareCollision(self->getCollisionBox(camera), withThisEntity->getCollisionBox())) {
-				
 			}
 		}
 

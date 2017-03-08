@@ -76,6 +76,9 @@ void CatBehaviorComponent::Update(float dt) {
 
 
 	float distanceY = dt * gameEntity->vy;
+	//if (gameEntity->vx > 160) {
+	//	SDL_Log("????");
+	//}
 	Move(distanceX, distanceY);
 
 	/*char[20] msg;
@@ -146,8 +149,8 @@ void CatBehaviorComponent::Update(float dt) {
 		//gameEntity->direction = goingToJumpTo;
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
-			SDL_Log("JUMP BACK");
-			SDL_Log("Direction %d", gameEntity->direction);
+			//SDL_Log("JUMP BACK");
+			//SDL_Log("Direction %d", gameEntity->direction);
 			float jumpSpeed = 100;
 			trackingNumber = 0;
 			ChangeSpeedY(-100.f);
@@ -167,16 +170,16 @@ void CatBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
-			SDL_Log("Change to in the air");
+			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
 
 			/*if (gameEntity->direction == GameEntity::RIGHT) {
 				ChangeSpeedX(160);
-				currentOrder = CAT_MOVE_RIGHT;
+				nextOrder = CAT_MOVE_RIGHT;
 			}
 			else {
 				ChangeSpeedX(160);
-				currentOrder = CAT_MOVE_LEFT;
+				nextOrder = CAT_MOVE_LEFT;
 			}*/
 		}
 
@@ -185,7 +188,7 @@ void CatBehaviorComponent::Update(float dt) {
 	//hopping
 	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_PREJUMP) {
 		if (!resetStateIndicator) {
-			SDL_Log("Pre jump");
+			//SDL_Log("Pre jump");
 			float jumpSpeed = 100;
 			prejumpTime = 0;
 			ChangeSpeedY(-100.f);
@@ -207,7 +210,7 @@ void CatBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
-			SDL_Log("Change to in the air");
+			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
 			jumpAgainstWall = false;
 		}
@@ -232,6 +235,9 @@ void CatBehaviorComponent::Update(float dt) {
 }
 
 void CatBehaviorComponent::ThinkWhereToMove() {
+	if (nextOrder != NOTHING) {
+		return;
+	}
 	clearOrder();
 	//if (isNumb) {
 	//	return;
@@ -247,11 +253,11 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 	case CatSpriteState::STATE_STAND:
 	case CatSpriteState::STATE_WALK:
 		if (gameEntity->horizontalPosition < mouseBox.x) {
-			SDL_Log("Cat will move right");
+			//SDL_Log("Cat will move right");
 			nextOrder = CAT_MOVE_RIGHT;
 		}
 		else {
-			SDL_Log("Cat will move left");
+			//SDL_Log("Cat will move left");
 			nextOrder = CAT_MOVE_LEFT;
 		}
 		break;
@@ -260,11 +266,11 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 
 void CatBehaviorComponent::ChangeDirection() {
 	if(currentOrder == CAT_MOVE_RIGHT) {
-		SDL_Log("From right to left");
+		//SDL_Log("From right to left");
 		nextOrder = CAT_MOVE_LEFT;
 	}
 	else {
-		SDL_Log("From left to right");
+		//SDL_Log("From left to right");
 		nextOrder = CAT_MOVE_RIGHT;
 	}
 }
@@ -302,7 +308,10 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		if (gameEntity->vy > 0) {
 			return;
 		}
+		int justRandom = (rand() % 10) / 2 - 4;
 		bool yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - 1 == mouseBlockYPos;
+		//bool yDistance = catBlockYPos + justRandom == mouseBlockYPos;
+
 		bool notCareMouseState = true; //flag, whether the first or second condition's happened
 		bool stateOfMouse = mouse->getCurrentStateType() != MouseSpriteState::STATE_INTHEAIR;
 		if ((rand() % 2) + 1 + numbCount == 2)
@@ -316,11 +325,11 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		//
 		if (yDistance) {
 			if (gameEntity->horizontalPosition < mouseBox.x) {
-				SDL_Log("Cat will jump right");
+				//SDL_Log("Cat will jump right");
 				nextOrder = CAT_JUMP_BACK_RIGHT;
 			}
 			else {
-				SDL_Log("Cat will jump left");
+				//SDL_Log("Cat will jump left");
 				nextOrder = CAT_JUMP_BACK_LEFT;
 			}
 
@@ -341,13 +350,13 @@ void CatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 	GameEntity::Box doorBox = door->getCollisionBox();
 	float doorX = door->horizontalPosition;
 	float doorW = door->getSize()->w;
-	SDL_Log("================================");
+	//SDL_Log("================================");
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
 		// if inside door
 		if (catBox.x <= doorX + doorW - doorW / 4 && catBox.x + catBox.w >= doorX
 			&& catBox.y <= doorBox.y + doorBox.h / 2 && catBox.y + catBox.h / 2 >= doorBox.y
 			) {
-			SDL_Log("CATTTT KNOCKBACK!");
+			//SDL_Log("CATTTT KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
 			gameEntity->direction = GameEntity::LEFT;
@@ -359,7 +368,7 @@ void CatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 		if (catBox.x <= doorX + doorW && catBox.x + catBox.w >= doorX + doorW / 4
 			&& catBox.y <= doorBox.y + doorBox.h / 2 && catBox.y + catBox.h / 2 >= doorBox.y
 			) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
 			gameEntity->direction = GameEntity::RIGHT;
@@ -380,7 +389,7 @@ void CatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 		if (catBox.x <= doorX + doorW - doorW / 4 && catBox.x + catBox.w >= doorX
 			&& catBox.y <= doorBox.y + doorBox.h / 2 && catBox.y + catBox.h / 2 >= doorBox.y
 			) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
@@ -391,7 +400,7 @@ void CatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 		if (catBox.x <= doorX + doorW && catBox.x + catBox.w >= doorX + doorW / 4
 			&& catBox.y <= doorBox.y + doorBox.h / 2 && catBox.y + catBox.h / 2 >= doorBox.y
 			) {
-			SDL_Log("KNOCKBACK!");
+			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
