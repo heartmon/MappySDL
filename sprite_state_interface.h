@@ -16,6 +16,9 @@ public:
 	virtual int getSpriteWidth() = 0;
 	virtual int getSpriteHeight() = 0;
 
+	virtual void Destroy() {
+	}
+
 protected:
 	std::vector<EntityState*>* states;
 	SpriteSheet* spriteSheet;

@@ -52,13 +52,22 @@ void CollidePoolComponent::Update(float dt)
 		GameEntity * go0 = coll_objects->pool[i];
 		if (go0->enabled)
 		{
-			if ((go0->horizontalPosition > gameEntity->horizontalPosition - 10) &&
-				(go0->horizontalPosition < gameEntity->horizontalPosition + 10) &&
-				(go0->verticalPosition   > gameEntity->verticalPosition - 10) &&
-				(go0->verticalPosition   < gameEntity->verticalPosition + 10))
-			{
-				gameEntity->Receive(new Message(HIT));
-				go0->Receive(new Message(HIT));
+		
+			int collidedResult = gameEntity->getCollisionRule()->isCollided(gameEntity, go0, dt);
+			if (collidedResult == -1) {
+				if ((go0->horizontalPosition > gameEntity->horizontalPosition - 10) &&
+					(go0->horizontalPosition < gameEntity->horizontalPosition + 10) &&
+					(go0->verticalPosition > gameEntity->verticalPosition - 10) &&
+					(go0->verticalPosition < gameEntity->verticalPosition + 10))
+				{
+					collidedResult = 1;
+				}
+				else { collidedResult = 0; }
+			}
+			if (collidedResult == 1) {
+				//SDL_Log("hit");
+				gameEntity->Receive(new Message(HIT, go0));
+				go0->Receive(new Message(HIT, gameEntity));
 			}
 		}
 	}
@@ -179,7 +188,9 @@ void SpriteSheetRenderComponent::Update(float dt) {
 	}
 }
 void SpriteSheetRenderComponent::Destroy() {
-
+	if (spriteState != NULL)
+		spriteState->Destroy();
+	spriteState = NULL;
 }
 
 void DrawTextRenderComponent::Create(AvancezLib* system, DrawEntity * go, SDL_Rect* camera, GameViewportType viewportType) {

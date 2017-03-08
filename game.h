@@ -13,6 +13,7 @@
 #include "info.h"
 #include "item.h"
 #include "score_controller.h"
+#include "cat_controller.h"
 
 class Game : public GameEntity {
 	Mouse* mouse;
@@ -27,6 +28,7 @@ class Game : public GameEntity {
 	RainbowController* rainbowController;
 	Info* info;
 	ScoreController* scoreController;
+	CatController* catController;
 
 	std::vector<Rope*>* ropeArray;
 	std::vector<Door*>* doorArray;
@@ -62,6 +64,12 @@ public:
 
 		// Mouse init
 		mouse = new Mouse();
+
+		//Cat controller
+		catController = new CatController();
+		catController->Create(system, camera, level, mouse);
+		gameEntities.push_back(catController);
+
 		MouseBehaviorComponent* mouseBehaviorComponent = new MouseBehaviorComponent();
 		mouseBehaviorComponent->Create(system, mouse, &gameEntities, camera);
 		MouseCollisionRule* mouseCollisionRule = new MouseCollisionRule();
@@ -82,6 +90,9 @@ public:
 		CollideComponent* itemCollideComponent = new CollideComponent();
 		itemCollideComponent->Create(system, mouse, &gameEntities, (std::vector<GameEntity*>*)itemArray);
 
+		CollidePoolComponent* catsCollideComponent = new CollidePoolComponent();
+		catsCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)catController->getCats());
+
 		mouse->Create(START_MOUSE_X, START_MOUSE_Y);
 		mouse->AddBehaviorComponent(mouseBehaviorComponent);
 		mouse->AddComponent(mouseSpriteSheetRenderComponent);
@@ -89,14 +100,11 @@ public:
 		mouse->AddComponent(itemCollideComponent);
 		mouse->AddComponent(ropeCollideComponent);
 		mouse->AddComponent(doorCollideCompponent);
+		mouse->AddComponent(catsCollideComponent);
 		
-
-		mouse->AddReceiver(this);
 		mouse->SetCollisionRule(mouseCollisionRule);
 		gameEntities.push_back(mouse);
 
-
-		mouse->AddReceiver(doorToggle);
 
 		//Rainbow controller
 		rainbowController = new RainbowController();
@@ -107,14 +115,14 @@ public:
 		info = new Info();
 		info->Create(system);
 		gameEntities.push_back(info);
-		mouse->AddReceiver(info);
-		this->AddReceiver(info);
+		
 
 		//Score controller
 		scoreController = new ScoreController();
 		scoreController->Create(system, camera);
 		gameEntities.push_back(scoreController);
-		scoreController->AddReceiver(info);
+
+
 
 	}
 
@@ -134,12 +142,43 @@ public:
 		mouse->verticalPosition = START_MOUSE_Y;
 	}
 
+	void ReceiverInit() {
+		mouse->AddReceiver(this);
+		mouse->AddReceiver(doorToggle);
+		mouse->AddReceiver(info);
+
+		this->AddReceiver(info);
+
+		scoreController->AddReceiver(info);
+		catController->AddReceiver(doorToggle);
+
+		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+			Rope* rope = *it;
+			mouse->AddReceiver(rope);
+		}
+
+		for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+			Door* door = *it;
+			mouse->AddReceiver(door);
+			door->AddReceiver(mouse);
+			door->AddReceiver(rainbowController);
+			door->AddReceiver(catController);
+		}
+
+		for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+			Item* item = *it;
+			item->AddReceiver(scoreController);
+		}
+	}
+
 	void EntityRoundInit() {
 		mouse->RoundInit();
 		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
 			Rope* rope = *it;
 			rope->RoundInit();
 		}
+
+		//catController->RoundInit();
 
 		this->Send(new Message(UPDATE_LEVEL, this, levelNo));
 	}
@@ -154,29 +193,14 @@ public:
 		doorToggle->Init();
 		scoreController->Init();
 		rainbowController->Init();
+		catController->Init();
+		catController->Spawn();
 
-		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
-			Rope* rope = *it;
-			mouse->AddReceiver(rope);
-		}
-
-		for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
-			Door* door = *it;
-			mouse->AddReceiver(door);
-			door->AddReceiver(mouse);
-			door->AddReceiver(rainbowController);
-		}
-
-		for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
-			Item* item = *it;
-			//mouse->AddReceiver(item);
-			item->AddReceiver(scoreController);
-		}
+		ReceiverInit();
+		EntityRoundInit();
 
 		enabled = true;
 		game_over = false;
-
-		EntityRoundInit();
 	}
 
 	virtual void Receive(Message* m)

@@ -67,19 +67,19 @@ public:
 	bool isXCollidedWithMap;
 	bool isYCollidedWithMap;
 	int animationFrame = 0;
-	float arbitaryTrackingNumber = 0;
+	float arbitaryTrackingNumber = 0.f;
 	const int static LEFT = -1;
 	const int static RIGHT = 1;
 
-	float vy = 0;
-	float vx = 0;
-	float ax = 1;
-	float ay = 1;
+	float vy = 0.f;
+	float vx = 0.f;
+	float ax = 1.f;
+	float ay = 1.f;
 	float w, h;
 
 	virtual GameEntity::Box getCollisionBox(SDL_Rect* camera = NULL) {
-		int x = horizontalPosition;
-		int y = verticalPosition;
+		int x = (int)horizontalPosition;
+		int y = (int)verticalPosition;
 		if (camera) {
 			x += camera->x;
 			y += camera->y;

@@ -35,5 +35,18 @@ public:
 				return 0;
 			}
 		}
+
+		if (withThisEntity->getName() == CLASS_CAT) {
+			if (gameEntity->getCurrentStateType() != DoorSpriteState::STATE_DOOR_OPEN) {
+				bool isCollided = checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox());
+				if (isCollided) {
+					//SDL_Log("HIT DOOR");
+				}
+				return isCollided;
+			}
+			else {
+				return 0;
+			}
+		}
 	}
 };

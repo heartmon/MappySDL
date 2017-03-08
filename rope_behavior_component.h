@@ -85,6 +85,12 @@ public:
 			gameEntity->setCurrentStateType(RopeSpriteState::STATE_ROPE_SEPARATE);
 		}
 		else {
+			jumpOn();
+		}
+	}
+
+	void jumpOn() {
+		if (ropeLife > 0) {
 			gameEntity->setCurrentStateType(RopeSpriteState::STATE_ROPE_JUMP_ON);
 		}
 	}

@@ -3,6 +3,7 @@
 #include <vector>
 #include "object_pool.h"
 #include "game_viewport.h"
+#include "message.h"
 
 class GameEntity;
 class DrawEntity;
@@ -29,7 +30,7 @@ public:
 	virtual void Init() {}
 	virtual void RoundInit() {}
 	virtual void Update(float dt) = 0;
-	virtual void Receive(int message) {}
+	virtual void Receive(Message* m) {}
 	virtual void Destroy() {}
 };
 

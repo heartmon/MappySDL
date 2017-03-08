@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="avancezlib.cpp" />
+    <ClCompile Include="cat_behavior_component.cpp" />
     <ClCompile Include="component.cpp" />
     <ClCompile Include="entity_state.cpp" />
     <ClCompile Include="game_entity.cpp" />
@@ -33,6 +34,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="avancezlib.h" />
+    <ClInclude Include="cat.h" />
+    <ClInclude Include="cat_behavior_component.h" />
+    <ClInclude Include="cat_collision_rule.h" />
+    <ClInclude Include="cat_controller.h" />
+    <ClInclude Include="cat_sprite_state.h" />
     <ClInclude Include="collision_rule_interface.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="door.h" />
@@ -60,6 +66,7 @@
     <ClInclude Include="mouse_sprite_state.h" />
     <ClInclude Include="object_pool.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="player_collision_rule.h" />
     <ClInclude Include="rainbow.h" />
     <ClInclude Include="rainbow_behavior_component.h" />
     <ClInclude Include="rainbow_collision_rule.h" />

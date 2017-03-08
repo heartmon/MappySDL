@@ -78,6 +78,9 @@
     <ClCompile Include="mouse.cpp">
       <Filter>Source Files\mouse</Filter>
     </ClCompile>
+    <ClCompile Include="cat_behavior_component.cpp">
+      <Filter>Source Files\cat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mouse.h">
@@ -214,6 +217,24 @@
     </ClInclude>
     <ClInclude Include="game_over_screen.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cat.h">
+      <Filter>Source Files\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="cat_behavior_component.h">
+      <Filter>Source Files\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="cat_collision_rule.h">
+      <Filter>Source Files\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="cat_sprite_state.h">
+      <Filter>Source Files\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="cat_controller.h">
+      <Filter>Source Files\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="player_collision_rule.h">
+      <Filter>Source Files\base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

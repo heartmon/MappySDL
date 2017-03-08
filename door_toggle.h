@@ -31,7 +31,14 @@ public:
 			return;
 		}
 		canToggle = false;
-		GameEntity::Box controlEntityBox = controlEntity->getCollisionBox(camera);
+		GameEntity::Box controlEntityBox;
+
+		if (controlEntity->getName() == CLASS_MOUSE) {
+			controlEntityBox = controlEntity->getCollisionBox(camera);
+		}
+		else {
+			controlEntityBox = controlEntity->getCollisionBox();
+		}
 		int xCheck = (int)controlEntityBox.x;
 		Door* nearestDoor = nullptr;
 		int minimumDistance = 9999;
@@ -67,6 +74,13 @@ public:
 		if (nearestDoor != nullptr) {
 			nearestDoor->isToggleEnabled = false;
 			/*SDL_Log("WORKKKKKKKKKKKKKK LEFT");*/
+			if ((nearestDoor->getCurrentStateType() == DoorSpriteState::STATE_DOOR_POWER_LEFT
+				|| nearestDoor->getCurrentStateType() == DoorSpriteState::STATE_DOOR_POWER_RIGHT)
+				&& controlEntity->getName() != CLASS_MOUSE
+				) {
+				// cannot toggle this door
+				return;
+			}
 			((DoorBehaviorComponent*)nearestDoor->getBehaviorComponent())->Toggle();
 		}
 		

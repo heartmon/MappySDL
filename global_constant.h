@@ -34,5 +34,7 @@ const std::string CLASS_ROPE = "Rope";
 const std::string CLASS_DOOR = "Door";
 const std::string CLASS_RAINBOW = "Rainbow";
 const std::string CLASS_ITEM = "Item";
+const std::string CLASS_CAT = "Cat";
+const std::string CLASS_BIG_CAT = "BigCat";
 
 enum ScreenName { START_SCREEN, PLAY_SCREEN, GAME_OVER_SCREEN };
