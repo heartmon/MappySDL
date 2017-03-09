@@ -45,6 +45,12 @@ void GameEntity::Init()
 	ay = 1;
 }
 
+void GameEntity::Init(float x, float y) {
+	GameEntity::Init();
+	horizontalPosition = x;
+	verticalPosition = y;
+}
+
 void GameEntity::RoundInit() {
 	for (auto it = components.begin(); it != components.end(); it++) {
 		(*it)->RoundInit();
@@ -62,18 +68,41 @@ void GameEntity::Update(float dt)
 
 void GameEntity::Destroy()
 {
-	for (auto it = components.begin(); it != components.end(); it++)
-		(*it)->Destroy();
+
 }
 
 GameEntity::~GameEntity()
 {
-	SDL_Log("GameObject::~GameObject");
+	//SDL_Log("Deallocated:: %s", getName().c_str());
+	SDL_Log("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD???");
+	for (auto it = components.begin(); it != components.end(); it++) {
+		(*it)->Destroy();
+		delete (*it);
+	}
+	delete size;
+	//ClearReceivers();
+	if (collisionRule != NULL) {
+		collisionRule->Destroy();
+		collisionRule = NULL;
+	}
+
+	delete collisionRule;
+	receivers.clear();
+	components.clear();
 }
 
 void GameEntity::AddReceiver(GameEntity * go)
 {
 	receivers.push_back(go);
+}
+
+void GameEntity::ClearReceivers() {
+	for (auto it : receivers)
+	{
+		delete it;
+	}
+	receivers.clear();
+	//std::vector<GameEntity*>().swap(receivers);
 }
 
 void GameEntity::Send(Message* m)

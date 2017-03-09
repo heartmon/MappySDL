@@ -19,9 +19,11 @@ public:
 
 	//}
 
-	virtual void Init() {
+	virtual void Init(float x, float y, int state, int baseScore) {
 		SDL_Log("Item::Init");
-		GameEntity::Init();
+		GameEntity::Init(x, y);
+		setCurrentStateType(state);
+		this->baseScore = baseScore;
 		size->w = ItemSpriteState::SPRITE_WIDTH;
 		size->h = ItemSpriteState::SPRITE_HEIGHT;
 	}

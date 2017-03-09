@@ -5,7 +5,9 @@
 class SpriteStateInterface {
 public:
 	const int static FRAME_NO_MOVE = 1;
-	//virtual ~StateSetInterface();
+	virtual ~SpriteStateInterface() {
+		SDL_Log("Deallocate?==========================================");
+	}
 	virtual void Create(AvancezLib* system) = 0;
 	std::vector<EntityState*>* getSpriteStateEntities() {
 		return states;
@@ -17,6 +19,7 @@ public:
 	virtual int getSpriteHeight() = 0;
 
 	virtual void Destroy() {
+		spriteSheet->Destroy();
 	}
 
 protected:

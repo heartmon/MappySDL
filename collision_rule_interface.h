@@ -8,6 +8,9 @@ public:
 	virtual void Create(GameEntity* gameEntity) {
 		this->gameEntity = gameEntity;
 	};
+	virtual void Destroy() {
+
+	}
 	virtual void didHit(Message* message) {};
 	virtual int isCollided(GameEntity* self, GameEntity* withThisEntity, float dt) { return -1; }
 	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {

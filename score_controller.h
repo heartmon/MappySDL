@@ -15,6 +15,12 @@ public:
 		scores_pool.Create(20);
 	}
 
+	void Init() {
+		GameEntity::Init();
+		SDL_Log("ScoreController:: Init");
+	}
+
+
 	void Update(float dt) {
 		for (auto go = scores_pool.pool.begin(); go != scores_pool.pool.end(); go++) {
 			(*go)->Update(dt);

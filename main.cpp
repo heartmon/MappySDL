@@ -59,6 +59,8 @@ int main(int argc, char** argv)
 	game.Create(&system);
 	game.Init();
 
+	bool isGameInit = true;
+
 	new GameViewport();
 
 	int currentScreen = 0;
@@ -95,6 +97,7 @@ int main(int argc, char** argv)
 				game.Update(dt);
 			}
 			else {
+				isGameInit = false;
 				router.setCurrentScreen(GAME_OVER_SCREEN);
 			}
 		}
@@ -102,6 +105,10 @@ int main(int argc, char** argv)
 		if (router.getCurrentScreen() == GAME_OVER_SCREEN) {
 			gameOverScreen.Update(dt);
 			gameOverScreen.Draw();
+			if (!isGameInit) {
+				game.Init();
+				isGameInit = true;
+			}
 		}
 
 		//game.Draw();

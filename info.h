@@ -21,8 +21,10 @@ public:
 
 	void Init() {
 		GameEntity::Init();
-		SDL_Log("Info::Create");
-		//scoreTotal->Init();
+		SDL_Log("Info::Init");
+
+		scoreTotal = 0;
+
 	}
 
 	void Update(float dt) {

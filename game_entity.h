@@ -26,7 +26,7 @@ public:
 		// velocity
 		float vx, vy;
 	};
-	~GameEntity();
+	virtual ~GameEntity();
 	virtual std::string getName() {
 		return "";
 	}
@@ -50,11 +50,13 @@ public:
 
 	virtual void Update(float dt);
 	virtual void Init();
+	virtual void Init(float x, float y);
 	virtual void RoundInit();
 	virtual void Destroy();
 	virtual void AddReceiver(GameEntity *ge);
 	virtual void Receive(Message* m);
 	void Send(Message* m);
+	virtual void ClearReceivers();
 
 	virtual int getCurrentStateType();
 	virtual void setCurrentStateType(int currentStateType);

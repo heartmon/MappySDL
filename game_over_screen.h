@@ -11,13 +11,13 @@ public:
 
 	virtual void Update(float dt)
 	{
-		//AvancezLib::KeyStatus keys;
-		//system->getKeyStatus(keys);
+		AvancezLib::KeyStatus keys;
+		system->getKeyStatus(keys);
 
-		//if (keys.enter) {
-		//	enabled = false;
-		//	system->getRouter()->setCurrentScreen(PLAY_SCREEN);
-		//}
+		if (keys.enter) {
+			enabled = false;
+			system->getRouter()->setCurrentScreen(START_SCREEN);
+		}
 	}
 
 	virtual void Draw()

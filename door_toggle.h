@@ -18,6 +18,11 @@ public:
 		this->camera = camera;
 	}
 
+	void Init() {
+		GameEntity::Init();
+		SDL_Log("DoorController:: Init");
+	}
+
 	void Update(float dt) {
 		toggleTime += dt;
 		if (toggleTime > toggleInterval) {
@@ -32,6 +37,8 @@ public:
 		}
 		canToggle = false;
 		GameEntity::Box controlEntityBox;
+
+		bool isLimitTheRange = false;
 
 		if (controlEntity->getName() == CLASS_MOUSE) {
 			controlEntityBox = controlEntity->getCollisionBox(camera);
@@ -52,6 +59,9 @@ public:
 				if (!(controlEntityBox.y <= doorBox.y + doorBox.h && controlEntityBox.y + controlEntityBox.h >= doorBox.y)) {
 					continue;
 				}
+
+				//check limited range
+
 				
 				if (controlEntity->direction == GameEntity::LEFT) {
 					if (xCheck - doorBox.x < minimumDistance && xCheck - doorBox.x > 0 && doorBox.x > camera->x) {

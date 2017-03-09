@@ -20,7 +20,8 @@ enum MessageType {
 	UPDATE_SCORE,
 	COLLECT_ITEM,
 	MOUSE_DIE,
-	LIFE_DECREASE
+	LIFE_DECREASE,
+	LEVEL_CLEAR
 };
 
 class Message {

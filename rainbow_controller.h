@@ -24,7 +24,7 @@ public:
 
 	void Init() {
 		GameEntity::Init();
-		
+		SDL_Log("RainbowController::Init");
 	}
 
 	void Update(float dt) {

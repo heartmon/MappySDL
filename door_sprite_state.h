@@ -18,7 +18,7 @@ public:
 
 	virtual void Create(AvancezLib* system) {
 		// Set sprite sheet name
-		SDL_Log("ItemSpriteSheet::Create");
+		SDL_Log("DoorSpriteState::Create");
 
 		char* spriteName = "data/door_sprite.png";
 		SpriteSheet* spriteSheet = system->createSpriteSheet(spriteName);

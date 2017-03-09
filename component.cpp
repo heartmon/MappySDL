@@ -188,9 +188,12 @@ void SpriteSheetRenderComponent::Update(float dt) {
 	}
 }
 void SpriteSheetRenderComponent::Destroy() {
-	if (spriteState != NULL)
+	Component::Destroy();
+	if (spriteState != NULL) {
 		spriteState->Destroy();
-	spriteState = NULL;
+		spriteState = NULL;
+	}
+	
 }
 
 void DrawTextRenderComponent::Create(AvancezLib* system, DrawEntity * go, SDL_Rect* camera, GameViewportType viewportType) {

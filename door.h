@@ -22,9 +22,11 @@ public:
 
 	//}
 
-	virtual void Init() {
+	virtual void Init(float x, float y, int state) {
 		SDL_Log("Door::Init");
-		GameEntity::Init();
+		GameEntity::Init(x, y);
+		setCurrentStateType(state);
+		defaultState = state;
 		size->w = DoorSpriteState::SPRITE_WIDTH;
 		size->h = DoorSpriteState::SPRITE_HEIGHT;
 	}

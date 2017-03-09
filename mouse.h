@@ -13,11 +13,10 @@ public:
 		horizontalPosition = x;
 		verticalPosition = y;
 	}
-	virtual ~Mouse() { SDL_Log("Mouse::~Mouse"); }
 	virtual void Init()
 	{
 		SDL_Log("Mouse::Init");
-		lives = 2;
+		lives = 0;
 		GameEntity::Init();
 
 		setCurrentStateType(MouseSpriteState::STATE_STAND);

@@ -40,9 +40,11 @@ class Game : public GameEntity {
 	const int START_MOUSE_X = 280;
 	const int START_MOUSE_Y = 400;
 
+	bool doonce = false;
+
 public:
 	virtual void Create(AvancezLib* system) {
-		SDL_Log("Game::Create");
+		SDL_Log(" ---=== CREATE GAME.H ===--- ");
 		this->system = system;
 
 		camera = new SDL_Rect();
@@ -123,6 +125,12 @@ public:
 		gameEntities.push_back(scoreController);
 
 
+	
+
+		this->AddReceiver(info);
+
+		scoreController->AddReceiver(info);
+		catController->AddReceiver(doorToggle);
 
 	}
 
@@ -143,14 +151,10 @@ public:
 	}
 
 	void ReceiverInit() {
+		SDL_Log("===============================================");
 		mouse->AddReceiver(this);
 		mouse->AddReceiver(doorToggle);
 		mouse->AddReceiver(info);
-
-		this->AddReceiver(info);
-
-		scoreController->AddReceiver(info);
-		catController->AddReceiver(doorToggle);
 
 		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
 			Rope* rope = *it;
@@ -169,6 +173,7 @@ public:
 			Item* item = *it;
 			item->AddReceiver(scoreController);
 		}
+		
 	}
 
 	void EntityRoundInit() {
@@ -186,22 +191,45 @@ public:
 
 	virtual void Init()
 	{
-		PositionRoundInit();
+		//mouse->ClearReceivers();
+
+		SDL_Log(" ---=== INIT GAME SCREEN LEVEL %d ===--- ", levelNo);
+		levelNo = 1;
+
+		// Set initial position
+		camera->x = START_CAMERA_X;
+		camera->y = 0;
+		camera->w = SCREEN_WIDTH;
+		camera->h = SCREEN_HEIGHT;
+
+		mouse->horizontalPosition = START_MOUSE_X;
+		mouse->verticalPosition = START_MOUSE_Y;
 
 		info->Init();
 		mouse->Init();
-		level->Init();
 		doorToggle->Init();
 		scoreController->Init();
 		rainbowController->Init();
 		catController->Init();
-		
 
-		ReceiverInit();
+		//StartLevel();
+
+		if (!doonce) {
+			// Level Init
+			level->Init(levelNo);
+			ReceiverInit();
+			doonce = true;
+		}
+
 		EntityRoundInit();
+			
 
 		enabled = true;
 		game_over = false;
+	}
+
+	virtual void StartLevel() {
+		level->Init(levelNo);
 	}
 
 	virtual void Receive(Message* m)
@@ -212,6 +240,10 @@ public:
 
 		if (m->getMessageType() == GAME_OVER)
 			game_over = true;
+
+		if (m->getMessageType() == LEVEL_CLEAR) {
+			levelNo++;
+		}
 	}
 
 	virtual void Update(float dt)

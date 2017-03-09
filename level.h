@@ -9,6 +9,9 @@ class Tile;
 class TileSpriteState;
 class Item;
 class Door;
+class ItemSpriteState;
+class DoorSpriteState;
+class RopeSpriteState;
 class Level : public GameEntity {
 	//The different tile sprites
 
@@ -22,6 +25,13 @@ class Level : public GameEntity {
 	std::vector<Rope*>* ropeArray;
 	std::vector<Tile*>* tileMap;
 	std::vector<Door*>* doorArray;
+
+	ObjectPool<Item> itemPools;
+	ObjectPool<Rope> ropePools;
+	ObjectPool<Tile> tileMapPools;
+	ObjectPool<Door> doorPools;
+
+
 	//SDL_Rect tileClips[6];
 	int level = 1;
 
@@ -29,11 +39,14 @@ class Level : public GameEntity {
 	//CameraCollideComponent* cameraCollideComponent;
 
 	TileSpriteState* tss;
+	ItemSpriteState* itemSpriteState;
+	DoorSpriteState* doorSpriteState;
+	//RopeSpriteState* ropeSpriteState;
 public:
 	void Create(AvancezLib* system, SDL_Rect* camera);
-	void Init();
+	void Init(int level);
 	void Update(float dt);
-	//void RoundInit();
+	void RoundInit(int level);
 	std::vector<Tile*>* getTileMap() {
 		return tileMap;
 	}
@@ -47,5 +60,5 @@ public:
 		return doorArray;
 	}
 private:
-	void SetTileMap();
+	void SetTileMap(int level);
 };

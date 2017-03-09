@@ -5,7 +5,7 @@
 
 class Rope : public GameEntity {
 public:
-
+	bool canJumpOn = true;
 	//virtual void Create(int x, int y, int tileType) {	}
 	/*virtual void Update(float dt) {
 		
@@ -15,9 +15,9 @@ public:
 
 	//}
 
-	virtual void Init() {
+	virtual void Init(float x, float y) {
 		SDL_Log("Rope::Init");
-		GameEntity::Init();
+		GameEntity::Init(x, y);
 
 		setCurrentStateType(RopeSpriteState::STATE_ROPE_STATIC);
 

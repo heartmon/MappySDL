@@ -39,6 +39,12 @@ public:
 		return &cats_pool;
 	}
 
+	void Init() {
+		GameEntity::Init();
+		SDL_Log("CatController::Init");
+	}
+
+
 	void Update(float dt) {
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->Update(dt);

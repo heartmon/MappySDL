@@ -41,10 +41,12 @@ public:
 	~SpriteSheet();
 
 	//Loads image at specified path
-	bool loadFromFile(const char* path);
+	//bool loadFromFile(const char* path);
 
 	//Deallocates texture
 	void free();
+
+	void Destroy();
 
 	//Renders texture at given point
 	void render(int x, int y, SDL_Rect* clip = NULL, bool flip = false);

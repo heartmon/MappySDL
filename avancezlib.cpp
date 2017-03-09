@@ -182,7 +182,7 @@ SpriteSheet * AvancezLib::createSpriteSheet(const char * path) {
 	}
 	else
 	{
-		SDL_Log("LOAD FILE SUCCESSFULLY");
+		//SDL_Log("LOAD FILE SUCCESSFULLY");
 		//Color key image
 		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
 
@@ -351,7 +351,7 @@ SpriteSheet::SpriteSheet(SDL_Renderer * renderer, SDL_Texture * texture, int wid
 SpriteSheet::~SpriteSheet()
 {
 	//Deallocate
-	free();
+	//free();
 }
 
 
@@ -359,64 +359,73 @@ void SpriteSheet::SetTintColor(unsigned int  r, unsigned int g, unsigned int b) 
 	SDL_SetTextureColorMod(mTexture, r, g, b);
 }
 
-
-bool SpriteSheet::loadFromFile(const char * path)
-{
-	//Get rid of preexisting texture
-	free();
-
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path);
-	if (loadedSurface == NULL)
-	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
-	}
-	else
-	{
-		SDL_Log("LOAD FILE SUCCESSFULLY");
-		//Color key image
-		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
-
-		//Create texture from surface pixels
-		newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-		if (newTexture == NULL)
-		{
-			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w;
-			mHeight = loadedSurface->h;
-
-			SDL_Log("LOADED IMAGE DIMENSION: W - %d", mWidth);
-			SDL_Log("LOADED IMAGE DIMENSION: W - %d", mHeight);
-		}
-
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface(loadedSurface);
-	}
-
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
-}
+//
+//bool SpriteSheet::loadFromFile(const char * path)
+//{
+//	//Get rid of preexisting texture
+//	free();
+//
+//	//The final texture
+//	SDL_Texture* newTexture = NULL;
+//
+//	//Load image at specified path
+//	SDL_Surface* loadedSurface = IMG_Load(path);
+//	if (loadedSurface == NULL)
+//	{
+//		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
+//	}
+//	else
+//	{
+//		SDL_Log("LOAD FILE SUCCESSFULLY");
+//		//Color key image
+//		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
+//
+//		//Create texture from surface pixels
+//		newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+//		if (newTexture == NULL)
+//		{
+//			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
+//		}
+//		else
+//		{
+//			//Get image dimensions
+//			mWidth = loadedSurface->w;
+//			mHeight = loadedSurface->h;
+//
+//			SDL_Log("LOADED IMAGE DIMENSION: W - %d", mWidth);
+//			SDL_Log("LOADED IMAGE DIMENSION: W - %d", mHeight);
+//		}
+//
+//
+//		//Get rid of old loaded surface
+//		SDL_FreeSurface(loadedSurface);
+//	}
+//
+//	//Return success
+//	mTexture = newTexture;
+//	return mTexture != NULL;
+//}
 
 void SpriteSheet::free()
 {
 	//Free texture if it exists
 	if (mTexture != NULL)
 	{
+		SDL_Log("Destroy texture?");
 		SDL_DestroyTexture(mTexture);
 		mTexture = NULL;
 		mWidth = 0;
 		mHeight = 0;
 	}
 }
+
+void SpriteSheet::Destroy()
+{
+	//if (mTexture != nullptr) {
+	//	SDL_DestroyTexture(mTexture);
+	//}
+}
+
 
 void SpriteSheet::render(int x, int y, SDL_Rect* clip, bool flip)
 {

@@ -13,11 +13,10 @@
 // Message of complete level -> change level
 
 void Level::Create(AvancezLib* system, SDL_Rect* camera) {
+	SDL_Log("Level::Create");
 	this->system = system;
 	this->level = 1;
 
-	tss = new TileSpriteState();
-	tss->Create(system);
 
 	this->camera = camera;
 
@@ -25,12 +24,47 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 	this->ropeArray = new std::vector<Rope*>;
 	this->itemArray = new std::vector<Item*>;
 	this->doorArray = new std::vector<Door*>;
+
+
+	// set common variables
+	tss = new TileSpriteState();
+	tss->Create(system);
+
+	itemSpriteState = new ItemSpriteState();
+	itemSpriteState->Create(system);
+
+	doorSpriteState = new DoorSpriteState();
+	doorSpriteState->Create(system);
+
+	//ropeSpriteState = new RopeSpriteState();
+	//ropeSpriteState->Create(system);
+
+	// setup pools
+	doorPools.Create(20);
+	for (auto d = doorPools.pool.begin(); d != doorPools.pool.end(); d++) {
+		Door* door = *d;
+		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+		spriteSheetRenderComponent->Create(system, door, NULL, doorSpriteState, true, camera);
+		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+		cameraCollideComponent->Create(system, door, NULL, camera);
+		DoorBehaviorComponent* doorBehaviorComponent = new DoorBehaviorComponent();
+		doorBehaviorComponent->Create(system, door, doorArray, camera);
+		DoorCollisionRule* doorCollisionRule = new DoorCollisionRule();
+		doorCollisionRule->Create(door, camera, doorBehaviorComponent);
+
+		door->SetCollisionRule(doorCollisionRule);
+		door->AddComponent(spriteSheetRenderComponent);
+		door->AddComponent(cameraCollideComponent);
+		door->AddBehaviorComponent(doorBehaviorComponent);
+	}
 }
 
-void Level::Init() {
+void Level::Init(int level) {
 	GameEntity::Init();
+	SDL_Log("Level::Init");
+
 	//set tile map based on current level value (1 ~ ...)
-	this->SetTileMap();
+	this->SetTileMap(level);
 	/*for (int i = 0; i < TOTAL_TILES; ++i) {
 		tileSet[i]->Init();
 	}*/
@@ -79,7 +113,37 @@ void Level::Update(float dt) {
 	}
 }
 
-void Level::SetTileMap() {
+void Level::RoundInit(int level) {
+
+}
+
+void Level::SetTileMap(int level) {
+	// clean everyting up
+	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
+		(*it)->Destroy();
+		delete *it;
+	}
+	tileMap->clear();
+
+	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+		(*it)->Destroy();
+		delete *it;
+	}
+	ropeArray->clear();
+
+	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+		(*it)->Destroy();
+		delete *it;
+	}
+	itemArray->clear();
+
+	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+		(*it)->Destroy();
+		delete *it;
+	}
+	doorArray->clear();
+
+
 	SDL_Log("Level %d .. setting tile map", level);
 
 	//Choose the path base on current level
@@ -95,12 +159,6 @@ void Level::SetTileMap() {
 	//Open the map
 	std::ifstream map(levelPath);
 
-	// set common variables
-	ItemSpriteState* itemSpriteState = new ItemSpriteState();
-	itemSpriteState->Create(system);
-
-	DoorSpriteState* doorSpriteState = new DoorSpriteState();
-	doorSpriteState->Create(system);
 
 	//Initialize the tiles
 	for (int i = 0; i < TOTAL_TILES; ++i)
@@ -199,8 +257,8 @@ void Level::SetTileMap() {
 				rope->Create((float)x, (float)y - RopeSpriteState::SPRITE_HEIGHT/2 + 5);
 
 				//Set value
-				RopeSpriteState* ropeSpriteState = new RopeSpriteState();
-				ropeSpriteState->Create(system);
+				/*RopeSpriteState* ropeSpriteState = new RopeSpriteState();
+				ropeSpriteState->Create(system);*/
 
 				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
 				spriteSheetRenderComponent->Create(system, rope, NULL, ropeSpriteState, true, camera);
@@ -257,4 +315,6 @@ void Level::SetTileMap() {
 			y += TileSpriteState::TILE_HEIGHT;
 		}
 	}
+
+	map.close();
 }

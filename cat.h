@@ -16,7 +16,6 @@ public:
 		size->w = CatSpriteState::SPRITE_WIDTH;
 		size->h = CatSpriteState::SPRITE_HEIGHT;
 	}
-	virtual ~Cat() { SDL_Log("Cat::~Cat"); }
 	virtual void Init()
 	{
 		SDL_Log("Cat::Init");
