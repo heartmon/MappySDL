@@ -294,13 +294,13 @@ void CameraCollideComponent::Destroy() {
 
 }
 
-void MapCollideComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, std::vector<Tile*>* tileMap) {
+void MapCollideComponent::Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<Tile>* tileMap) {
 	Component::Create(system, go, game_objects);
 	this->tileMap = tileMap;
 }
 void MapCollideComponent::Update(float dt) {
 	int count = 0;
-	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
+	for (std::vector<Tile*>::iterator it = tileMap->pool.begin(); it != tileMap->pool.end(); ++it) {
 		Tile* tile = *it;
 		if (tile->enabled) {
 			int collidedResult = gameEntity->getCollisionRule()->isCollidedWithMap(tile, dt, tileMap);

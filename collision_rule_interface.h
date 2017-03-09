@@ -13,7 +13,7 @@ public:
 	}
 	virtual void didHit(Message* message) {};
 	virtual int isCollided(GameEntity* self, GameEntity* withThisEntity, float dt) { return -1; }
-	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
+	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, ObjectPool<Tile>* tileMap) {
 		//auto -> use default of component
 		return -1; 
 		// return 0 ; false

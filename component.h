@@ -85,11 +85,11 @@ private:
 class MapCollideComponent : public Component {
 	SDL_Rect* camera;
 public:
-	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, std::vector<Tile*>* tileMap);
+	virtual void Create(AvancezLib* system, GameEntity * go, std::vector<GameEntity*> * game_objects, ObjectPool<Tile>* tileMap);
 	virtual void Update(float dt);
 	virtual void Destroy();
 private:
-	std::vector<Tile*>* tileMap;
+	ObjectPool<Tile>* tileMap;
 };
 
 

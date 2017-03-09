@@ -30,9 +30,10 @@ class Game : public GameEntity {
 	ScoreController* scoreController;
 	CatController* catController;
 
-	std::vector<Rope*>* ropeArray;
-	std::vector<Door*>* doorArray;
-	std::vector<Item*>* itemArray;
+	ObjectPool<Item>* itemPool;
+	ObjectPool<Rope>* ropePool;
+	ObjectPool<Tile>* tileMapPool;
+	ObjectPool<Door>* doorPool;
 
 	int levelNo = 1;
 
@@ -55,17 +56,20 @@ public:
 		gameEntities.push_back(level);
 
 		// Item Arrays from Level
-		ropeArray = level->getRopeArray();
-		doorArray = level->getDoorArray();
-		itemArray = level->getItemArray();
+		ropePool = level->getRopePool();
+		doorPool = level->getDoorPool();
+		itemPool = level->getItemPool();
+		tileMapPool = level->getTileMapPool();
 
 		//Door Toggle
 		doorToggle = new DoorToggle();
-		doorToggle->Create(doorArray, camera);
+		doorToggle->Create(doorPool, camera);
 		gameEntities.push_back(doorToggle);
+
 
 		// Mouse init
 		mouse = new Mouse();
+
 
 		//Cat controller
 		catController = new CatController();
@@ -81,16 +85,16 @@ public:
 		mouseSpriteState->Create(system);
 		mouseSpriteSheetRenderComponent->Create(system, mouse, &gameEntities, mouseSpriteState);
 		MapCollideComponent* mapCollideComponent = new MapCollideComponent();
-		mapCollideComponent->Create(system, mouse, &gameEntities, level->getTileMap());
+		mapCollideComponent->Create(system, mouse, &gameEntities, tileMapPool);
 
-		CollideComponent* ropeCollideComponent = new CollideComponent();
-		ropeCollideComponent->Create(system, mouse, &gameEntities, (std::vector<GameEntity*>*)ropeArray);
+		CollidePoolComponent* ropeCollideComponent = new CollidePoolComponent();
+		ropeCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)ropePool);
 
-		CollideComponent* doorCollideCompponent = new CollideComponent();
-		doorCollideCompponent->Create(system, mouse, &gameEntities, (std::vector<GameEntity*>*)doorArray);
+		CollidePoolComponent* doorCollideCompponent = new CollidePoolComponent();
+		doorCollideCompponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)doorPool);
 
-		CollideComponent* itemCollideComponent = new CollideComponent();
-		itemCollideComponent->Create(system, mouse, &gameEntities, (std::vector<GameEntity*>*)itemArray);
+		CollidePoolComponent* itemCollideComponent = new CollidePoolComponent();
+		itemCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)itemPool);
 
 		CollidePoolComponent* catsCollideComponent = new CollidePoolComponent();
 		catsCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)catController->getCats());
@@ -125,22 +129,15 @@ public:
 		gameEntities.push_back(scoreController);
 
 
-	
-
-		this->AddReceiver(info);
-
-		scoreController->AddReceiver(info);
-		catController->AddReceiver(doorToggle);
-
 	}
 
 	void RoundInit() {
-		SDL_Log(" --- Start new round --- ");
-		PositionRoundInit();
-		EntityRoundInit();
+		SDL_Log(" --- YOU HAVE LIFE LEFT ==> CONTINUE WITH THE SAME LEVEL --- ");
+		SetStartPosition();
+		CleanUpEachRound();
 	}
 
-	void PositionRoundInit() {
+	void SetStartPosition() {
 		camera->x = START_CAMERA_X;
 		camera->y = 0;
 		camera->w = SCREEN_WIDTH;
@@ -150,18 +147,26 @@ public:
 		mouse->verticalPosition = START_MOUSE_Y;
 	}
 
-	void ReceiverInit() {
-		SDL_Log("===============================================");
+	void SetupObserver() {
+		SDL_Log("============= Observer / Observable Setup =================");
+
+		this->AddReceiver(info);
+
+		scoreController->AddReceiver(info);
+		catController->AddReceiver(doorToggle);
+
 		mouse->AddReceiver(this);
 		mouse->AddReceiver(doorToggle);
 		mouse->AddReceiver(info);
 
-		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+		for (auto it = ropePool->pool.begin(); it != ropePool->pool.end(); ++it) {
+			if (!(*it)->enabled) continue;
 			Rope* rope = *it;
 			mouse->AddReceiver(rope);
 		}
 
-		for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+		for (auto it = doorPool->pool.begin(); it != doorPool->pool.end(); ++it) {
+			if (!(*it)->enabled) continue;
 			Door* door = *it;
 			mouse->AddReceiver(door);
 			door->AddReceiver(mouse);
@@ -169,16 +174,18 @@ public:
 			door->AddReceiver(catController);
 		}
 
-		for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+		for (auto it = itemPool->pool.begin(); it != itemPool->pool.end(); ++it) {
+			if (!(*it)->enabled) continue;
 			Item* item = *it;
 			item->AddReceiver(scoreController);
 		}
 		
 	}
 
-	void EntityRoundInit() {
+	void CleanUpEachRound() {
 		mouse->RoundInit();
-		for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+		for (auto it = ropePool->pool.begin(); it != ropePool->pool.end(); ++it) {
+			if (!(*it)->enabled) continue;
 			Rope* rope = *it;
 			rope->RoundInit();
 		}
@@ -189,22 +196,17 @@ public:
 		this->Send(new Message(UPDATE_LEVEL, this, levelNo));
 	}
 
-	virtual void Init()
+	virtual void Init(int levelNo)
 	{
-		//mouse->ClearReceivers();
+		this->levelNo = levelNo;
 
+		// Log level start
 		SDL_Log(" ---=== INIT GAME SCREEN LEVEL %d ===--- ", levelNo);
-		levelNo = 1;
 
 		// Set initial position
-		camera->x = START_CAMERA_X;
-		camera->y = 0;
-		camera->w = SCREEN_WIDTH;
-		camera->h = SCREEN_HEIGHT;
+		SetStartPosition();
 
-		mouse->horizontalPosition = START_MOUSE_X;
-		mouse->verticalPosition = START_MOUSE_Y;
-
+		// Init game entities
 		info->Init();
 		mouse->Init();
 		doorToggle->Init();
@@ -212,25 +214,23 @@ public:
 		rainbowController->Init();
 		catController->Init();
 
-		//StartLevel();
+		// Init level
+		level->Init(levelNo);
 
+		// Init once
 		if (!doonce) {
-			// Level Init
-			level->Init(levelNo);
-			ReceiverInit();
+			SetupObserver();
 			doonce = true;
 		}
 
-		EntityRoundInit();
-			
+		// clean up for round
+		CleanUpEachRound();
 
+		// finishing init
 		enabled = true;
 		game_over = false;
 	}
 
-	virtual void StartLevel() {
-		level->Init(levelNo);
-	}
 
 	virtual void Receive(Message* m)
 	{

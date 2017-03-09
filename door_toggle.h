@@ -4,7 +4,7 @@
 #include "door_behavior_component.h"
 
 class DoorToggle : public GameEntity {
-	std::vector<Door*>* doors;
+	ObjectPool<Door>* doors;
 	SDL_Rect* camera;
 
 	float toggleInterval = 0.02f;
@@ -12,7 +12,7 @@ class DoorToggle : public GameEntity {
 	bool canToggle = true;
 
 public:
-	void Create(std::vector<Door*>* doors, SDL_Rect* camera) {
+	void Create(ObjectPool<Door>* doors, SDL_Rect* camera) {
 		GameEntity::Create();
 		this->doors = doors;
 		this->camera = camera;
@@ -49,7 +49,9 @@ public:
 		int xCheck = (int)controlEntityBox.x;
 		Door* nearestDoor = nullptr;
 		int minimumDistance = 9999;
-		for (std::vector<Door*>::iterator it = doors->begin(); it != doors->end(); ++it) {
+		for (auto it = doors->pool.begin(); it != doors->pool.end(); ++it) {
+			if (!(*it)->enabled) continue;
+
 			Door* door = *it;
 			if (door->isToggleEnabled) {
 			

@@ -97,12 +97,7 @@ void GameEntity::AddReceiver(GameEntity * go)
 }
 
 void GameEntity::ClearReceivers() {
-	for (auto it : receivers)
-	{
-		delete it;
-	}
 	receivers.clear();
-	//std::vector<GameEntity*>().swap(receivers);
 }
 
 void GameEntity::Send(Message* m)

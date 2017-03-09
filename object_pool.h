@@ -64,6 +64,7 @@ public:
 		return NULL;
 	}
 
+
 	std::vector<T*> pool;
 private:
 };

@@ -40,8 +40,8 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 	//ropeSpriteState->Create(system);
 
 	// setup pools
-	doorPools.Create(20);
-	for (auto d = doorPools.pool.begin(); d != doorPools.pool.end(); d++) {
+	doorPool.Create(20);
+	for (auto d = doorPool.pool.begin(); d != doorPool.pool.end(); d++) {
 		Door* door = *d;
 		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
 		spriteSheetRenderComponent->Create(system, door, NULL, doorSpriteState, true, camera);
@@ -52,10 +52,79 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 		DoorCollisionRule* doorCollisionRule = new DoorCollisionRule();
 		doorCollisionRule->Create(door, camera, doorBehaviorComponent);
 
+		door->Create();
 		door->SetCollisionRule(doorCollisionRule);
 		door->AddComponent(spriteSheetRenderComponent);
 		door->AddComponent(cameraCollideComponent);
 		door->AddBehaviorComponent(doorBehaviorComponent);
+	}
+
+	//
+	itemPool.Create(15);
+	for (auto i = itemPool.pool.begin(); i != itemPool.pool.end(); i++) {
+		Item* item = *i;
+
+		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+		spriteSheetRenderComponent->Create(system, item, NULL, itemSpriteState, true, camera);
+
+		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+		cameraCollideComponent->Create(system, item, NULL, camera);
+
+		ItemBehaviorComponent* itemBehaviorComponent = new ItemBehaviorComponent();
+		itemBehaviorComponent->Create(system, item, nullptr);
+
+		ItemCollisionRule* itemCollisionRule = new ItemCollisionRule();
+		itemCollisionRule->Create(item, camera, itemBehaviorComponent);
+
+		item->Create();
+		item->SetCollisionRule(itemCollisionRule);
+		item->AddComponent(spriteSheetRenderComponent);
+		item->AddComponent(cameraCollideComponent);
+		item->AddBehaviorComponent(itemBehaviorComponent);
+	}
+
+	//
+	ropePool.Create(10);
+	for (auto r = ropePool.pool.begin(); r != ropePool.pool.end(); r++) {
+		Rope* rope = *r;
+
+		RopeSpriteState* ropeSpriteState = new RopeSpriteState();
+		ropeSpriteState->Create(system);
+
+		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+		spriteSheetRenderComponent->Create(system, rope, NULL, ropeSpriteState, true, camera);
+
+		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+		cameraCollideComponent->Create(system, rope, NULL, camera);
+
+		RopeBehaviorComponent* ropeBehaviorComponent = new RopeBehaviorComponent();
+		ropeBehaviorComponent->Create(system, rope, nullptr, ropeSpriteState);
+
+		RopeCollisionRule* ropeCollisionRule = new RopeCollisionRule();
+		ropeCollisionRule->Create(rope, camera, ropeBehaviorComponent);
+
+		rope->Create();
+		rope->SetCollisionRule(ropeCollisionRule);
+		rope->AddComponent(spriteSheetRenderComponent);
+		rope->AddComponent(cameraCollideComponent);
+		rope->AddBehaviorComponent(ropeBehaviorComponent);
+		
+	}
+
+	//tilemap
+	tileMapPool.Create(TILE_ROWS*TILES_COLUMNS + 10);
+	for (auto it = tileMapPool.pool.begin(); it != tileMapPool.pool.end(); it++) {
+		Tile *tile = *it;
+
+		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+		spriteSheetRenderComponent->Create(system, tile, NULL, tss, true, camera);
+		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+		cameraCollideComponent->Create(system, tile, NULL, camera);
+
+		tile->Create();
+		tile->AddComponent(spriteSheetRenderComponent);
+		tile->AddComponent(cameraCollideComponent);
+
 	}
 }
 
@@ -68,7 +137,7 @@ void Level::Init(int level) {
 	/*for (int i = 0; i < TOTAL_TILES; ++i) {
 		tileSet[i]->Init();
 	}*/
-	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
+	/*for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
 		Tile* tile = *it;
 		tile->Init();
 	}
@@ -86,28 +155,28 @@ void Level::Init(int level) {
 	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
 		Door* door = *it;
 		door->Init();
-	}
+	}*/
 }
 
 void Level::Update(float dt) {
 	GameEntity::Update(dt);
 
-	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
+	for (auto it = tileMapPool.pool.begin(); it != tileMapPool.pool.end(); it++) {
 		Tile* tile = *it;
 		tile->Update(dt);
 	}
 
-	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
+	for (auto it = ropePool.pool.begin(); it != ropePool.pool.end(); it++) {
 		Rope* rope = *it;
 		rope->Update(dt);
 	}
 
-	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
+	for (auto it = itemPool.pool.begin(); it != itemPool.pool.end(); it++) {
 		Item* item = *it;
 		item->Update(dt);
 	}
 
-	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
+	for (auto it = doorPool.pool.begin(); it != doorPool.pool.end(); it++) {
 		Door* door = *it;
 		door->Update(dt);
 	}
@@ -119,29 +188,21 @@ void Level::RoundInit(int level) {
 
 void Level::SetTileMap(int level) {
 	// clean everyting up
-	for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
-		(*it)->Destroy();
-		delete *it;
+	for (auto it = tileMapPool.pool.begin(); it != tileMapPool.pool.end(); it++) {
+		(*it)->enabled = false;
 	}
-	tileMap->clear();
 
-	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
-		(*it)->Destroy();
-		delete *it;
+	for (auto it = ropePool.pool.begin(); it != ropePool.pool.end(); it++) {
+		(*it)->enabled = false;
 	}
-	ropeArray->clear();
 
-	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
-		(*it)->Destroy();
-		delete *it;
+	for (auto it = itemPool.pool.begin(); it != itemPool.pool.end(); it++) {
+		(*it)->enabled = false;
 	}
-	itemArray->clear();
 
-	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
-		(*it)->Destroy();
-		delete *it;
+	for (auto it = doorPool.pool.begin(); it != doorPool.pool.end(); it++) {
+		(*it)->enabled = false;
 	}
-	doorArray->clear();
 
 
 	SDL_Log("Level %d .. setting tile map", level);
@@ -184,41 +245,25 @@ void Level::SetTileMap(int level) {
 		if ((tileType >= 0))
 		{
 			int isDoorType = true;
-			Door* door = new Door();
+			Door* door = doorPool.FirstAvailable();
 			int doorOffsetY = -27;
 			switch (tileType) {
 				case TileSpriteState::STATE_TILE_DOOR_LEFT:
-					door->Create((float)x - 26, (float)y + doorOffsetY, 0);
+					door->Init((float)x - 26, (float)y + doorOffsetY, 0);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_RIGHT:
-					door->Create((float)x + 3, (float)y + doorOffsetY, 1);
+					door->Init((float)x + 3, (float)y + doorOffsetY, 1);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_LEFT:
-					door->Create((float)x - 26, (float)y + doorOffsetY, 2);
+					door->Init((float)x - 26, (float)y + doorOffsetY, 2);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_RIGHT:
-					door->Create((float)x + 3, (float)y + doorOffsetY, 3);
+					door->Init((float)x + 3, (float)y + doorOffsetY, 3);
 					break;
 				default:
 					isDoorType = false;
 			}
 
-			if (isDoorType) {
-				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
-				spriteSheetRenderComponent->Create(system, door, NULL, doorSpriteState, true, camera);
-				CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
-				cameraCollideComponent->Create(system, door, NULL, camera);
-				DoorBehaviorComponent* doorBehaviorComponent = new DoorBehaviorComponent();
-				doorBehaviorComponent->Create(system, door, doorArray, camera);
-				DoorCollisionRule* doorCollisionRule = new DoorCollisionRule();
-				doorCollisionRule->Create(door, camera, doorBehaviorComponent);
-
-				door->SetCollisionRule(doorCollisionRule);
-				door->AddComponent(spriteSheetRenderComponent);
-				door->AddComponent(cameraCollideComponent);
-				door->AddBehaviorComponent(doorBehaviorComponent);
-				doorArray->push_back(door);
-			}
 			switch (tileType) {
 				case  TileSpriteState::STATE_TILE_ITEM_100:
 				case  TileSpriteState::STATE_TILE_ITEM_200:
@@ -226,72 +271,22 @@ void Level::SetTileMap(int level) {
 				case  TileSpriteState::STATE_TILE_ITEM_400:
 				case  TileSpriteState::STATE_TILE_ITEM_500:
 					SDL_Log("Item is being created?");
-					Item* item = new Item();
-					item->Create((float)x, (float)y, tileType - 10 - 1, (tileType - 10)*100);
-
-					SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
-					spriteSheetRenderComponent->Create(system, item, NULL, itemSpriteState, true, camera);
-
-					CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
-					cameraCollideComponent->Create(system, item, NULL, camera);
-
-					ItemBehaviorComponent* itemBehaviorComponent = new ItemBehaviorComponent();
-					itemBehaviorComponent->Create(system, item, nullptr);
-
-					ItemCollisionRule* itemCollisionRule = new ItemCollisionRule();
-					itemCollisionRule->Create(item, camera, itemBehaviorComponent);
-
-					item->SetCollisionRule(itemCollisionRule);
-					item->AddComponent(spriteSheetRenderComponent);
-					item->AddComponent(cameraCollideComponent);
-					item->AddBehaviorComponent(itemBehaviorComponent);
-					itemArray->push_back(item);
-
-					//break;
+					Item* item = itemPool.FirstAvailable();
+					item->Init((float)x, (float)y, tileType - 10 - 1, (tileType - 10)*100);
+					break;
 			}
 
 			// special adding
 			if (tileType == TileSpriteState::STATE_TILE_ROPE) {
 				SDL_Log("Rope is being created?");
-				Rope* rope = new Rope();
-				rope->Create((float)x, (float)y - RopeSpriteState::SPRITE_HEIGHT/2 + 5);
-
-				//Set value
-				/*RopeSpriteState* ropeSpriteState = new RopeSpriteState();
-				ropeSpriteState->Create(system);*/
-
-				SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
-				spriteSheetRenderComponent->Create(system, rope, NULL, ropeSpriteState, true, camera);
-
-				CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
-				cameraCollideComponent->Create(system, rope, NULL, camera);
-
-				RopeBehaviorComponent* ropeBehaviorComponent = new RopeBehaviorComponent();
-				ropeBehaviorComponent->Create(system, rope, nullptr, ropeSpriteState);
-
-				RopeCollisionRule* ropeCollisionRule = new RopeCollisionRule();
-				ropeCollisionRule->Create(rope, camera, ropeBehaviorComponent);
-				
-				rope->SetCollisionRule(ropeCollisionRule);
-				rope->AddComponent(spriteSheetRenderComponent);
-				rope->AddComponent(cameraCollideComponent);
-				rope->AddBehaviorComponent(ropeBehaviorComponent);
-				ropeArray->push_back(rope);
+				Rope* rope = ropePool.FirstAvailable();
+				rope->Init((float)x, (float)y - RopeSpriteState::SPRITE_HEIGHT/2 + 5);
 			}
 
-			Tile* tile = new Tile();
-			tile->Create(x, y, tileType);
-
-			// set component to each tile
-			SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
-			spriteSheetRenderComponent->Create(system, tile, NULL, tss, true, camera);
-			CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
-			cameraCollideComponent->Create(system, tile, NULL, camera);
-			tile->AddComponent(spriteSheetRenderComponent);
-			tile->AddComponent(cameraCollideComponent);
-
-			tileMap->push_back(tile);
+			Tile* tile = tileMapPool.FirstAvailable();
+			tile->Init(x, y, tileType, i);
 		}
+
 		//If we don't recognize the tile type
 		else
 		{

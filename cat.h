@@ -8,11 +8,8 @@ public:
 	int lives;
 
 	//
-	virtual void Create(float x, float y) {
+	virtual void Create() {
 		GameEntity::Create();
-		horizontalPosition = x;
-		verticalPosition = y;
-
 		size->w = CatSpriteState::SPRITE_WIDTH;
 		size->h = CatSpriteState::SPRITE_HEIGHT;
 	}
@@ -39,8 +36,12 @@ public:
 		return CLASS_CAT;
 	}
 
-	virtual SDL_Rect* getSize() {
-		return size;
+	virtual int getWidth() {
+		return CatSpriteState::SPRITE_WIDTH;
+	}
+
+	virtual int getHeight() {
+		return CatSpriteState::SPRITE_HEIGHT;
 	}
 
 private:

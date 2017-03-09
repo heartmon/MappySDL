@@ -24,7 +24,7 @@ public:
 		this->gameEntity = gameEntity;
 	}
 
-	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, std::vector<Tile*>* tileMap) {
+	virtual int isCollidedWithMap(GameEntity* withThisEntity, float dt, ObjectPool<Tile>* tileMap) {
 		// Setup
 		int result = -1;
 
@@ -70,11 +70,6 @@ public:
 
 				bool isTileBelowIsSpace = false;
 
-				if (pos + TILE_ROWS < tileMap->size()) {
-					Tile* extraTile = tileMap->at(pos + TILE_ROWS);
-					isTileBelowIsSpace = TileSpriteState::STATE_TILE_SPACE == extraTile->getCurrentStateType();
-				}
-
 				if ((leftSide.y + leftSide.h - 2 <= tileBox.y + tileBox.h + 5 && leftSide.y + leftSide.h >= tileBox.y + tileBox.h - 2)
 					&& (leftSide.x + leftSide.w >= tileBox.x)
 					&& (leftSide.x <= tileBox.x + tileBox.w)
@@ -88,8 +83,8 @@ public:
 					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
 						|| tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_RIGHT
 						) {
-						if (pos + 3 < tileMap->size()) {
-							Tile* extraTile = tileMap->at(pos + 3);
+						if (pos + 3 < tileMap->pool.size()) {
+							Tile* extraTile = SearchTileMapByPosition(tileMap, pos + 3);
 							if (TileSpriteState::STATE_TILE_SPACE == extraTile->getCurrentStateType()) {
 								SDL_Log("LEFT WALL");
 								result = WhenReadyToJumpbackToTheLeft(tile, dt);
@@ -113,8 +108,8 @@ public:
 					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
 						|| tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_RIGHT
 						) {
-						if (pos - 3 < tileMap->size()) {
-							Tile* extraTile = tileMap->at(pos - 3);
+						if (pos - 3 < tileMap->pool.size()) {
+							Tile* extraTile = SearchTileMapByPosition(tileMap, pos - 3);
 							if (TileSpriteState::STATE_TILE_SPACE == extraTile->getCurrentStateType()) {
 								result = WhenReadyToJumpbackToTheRight(tile, dt);
 							}
@@ -170,6 +165,17 @@ public:
 
 		}
 		return result;
+	}
+
+	Tile* SearchTileMapByPosition(ObjectPool<Tile>* tileMapPool, int search) {
+		for (auto it = tileMapPool->pool.begin(); it != tileMapPool->pool.end(); it++)
+		{
+			if (search == (*it)->getId()) {
+				return (*it);
+			}
+		}
+
+		return NULL;
 	}
 
 };

@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
 	Game game;
 	game.Create(&system);
-	game.Init();
+	game.Init(1);
 
 	bool isGameInit = true;
 
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 			gameOverScreen.Update(dt);
 			gameOverScreen.Draw();
 			if (!isGameInit) {
-				game.Init();
+				game.Init(1);
 				isGameInit = true;
 			}
 		}

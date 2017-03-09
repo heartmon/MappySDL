@@ -26,10 +26,10 @@ class Level : public GameEntity {
 	std::vector<Tile*>* tileMap;
 	std::vector<Door*>* doorArray;
 
-	ObjectPool<Item> itemPools;
-	ObjectPool<Rope> ropePools;
-	ObjectPool<Tile> tileMapPools;
-	ObjectPool<Door> doorPools;
+	ObjectPool<Item> itemPool;
+	ObjectPool<Rope> ropePool;
+	ObjectPool<Tile> tileMapPool;
+	ObjectPool<Door> doorPool;
 
 
 	//SDL_Rect tileClips[6];
@@ -47,6 +47,20 @@ public:
 	void Init(int level);
 	void Update(float dt);
 	void RoundInit(int level);
+
+	ObjectPool<Tile>* getTileMapPool() {
+		return &tileMapPool;
+	}
+	ObjectPool<Rope>* getRopePool() {
+		return &ropePool;
+	}
+	ObjectPool<Item>* getItemPool() {
+		return &itemPool;
+	}
+	ObjectPool<Door>* getDoorPool() {
+		return &doorPool;
+	}
+
 	std::vector<Tile*>* getTileMap() {
 		return tileMap;
 	}

@@ -29,10 +29,42 @@ public:
 		this->camera = camera;
 		this->level = level;
 		this->mouse = mouse;
-		cats_pool.Create(6);
 
 		spriteState = new CatSpriteState();
 		spriteState->Create(system);
+
+		//setup object pool
+		cats_pool.Create(7);
+
+		for (auto it = cats_pool.pool.begin(); it != cats_pool.pool.end(); it++) {
+			Cat* cat = (*it);
+
+			SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
+			spriteComponent->Create(system, cat, nullptr, spriteState, true, camera, true);
+			CatBehaviorComponent* behaviorComponent = new CatBehaviorComponent();
+			behaviorComponent->Create(system, cat, nullptr, camera, mouse);
+			CatCollisionRule* collisionRule = new CatCollisionRule();
+			collisionRule->Create(cat, camera, behaviorComponent);
+			MapCollideComponent* mapCollideComponent = new MapCollideComponent();
+			mapCollideComponent->Create(system, cat, nullptr, level->getTileMapPool());
+			CollidePoolComponent* ropeCollideComponent = new CollidePoolComponent();
+			ropeCollideComponent->Create(system, cat, nullptr, (ObjectPool<GameEntity>*)level->getRopePool());
+			CollidePoolComponent* doorCollideCompponent = new CollidePoolComponent();
+			doorCollideCompponent->Create(system, cat, nullptr, (ObjectPool<GameEntity>*)level->getDoorPool());
+
+			cat->Create();
+			cat->SetCollisionRule(collisionRule);
+			cat->AddComponent(spriteComponent);
+			cat->AddComponent(mapCollideComponent);
+			cat->AddComponent(ropeCollideComponent);
+			cat->AddComponent(doorCollideCompponent);
+			cat->AddBehaviorComponent(behaviorComponent);
+
+			cat->AddReceiver(this);
+			this->AddReceiver(cat);
+
+		}
+
 	}
 
 	ObjectPool<Cat>* getCats() {
@@ -41,11 +73,13 @@ public:
 
 	void Init() {
 		GameEntity::Init();
+		firstTimeSpawn = true;
 		SDL_Log("CatController::Init");
 	}
 
 
 	void Update(float dt) {
+		if (!enabled) return;
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->Update(dt);
 		}
@@ -104,20 +138,15 @@ public:
 		}
 
 		if (m->getMessageType() == DOOR_OPEN || m->getMessageType() == DOOR_CLOSE) {
-			//SDL_Log("CAT CONTROLLER GET DOOR OPEN =====================");
 			Send(m);
 		}
 	}
 
 	void RoundInit() {
-		//cats_pool.Deallocate();
-		//cats_pool.Create(20);
-	
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->enabled = false;
 		}
 		activeCats = 0;
-		//Spawn();
 	}
 
 	void Spawn() {
@@ -135,35 +164,6 @@ public:
 			return; 
 		}
 
-		if (cat->getBehaviorComponent() != nullptr) {
-			cat->Init(x, y);
-			return;
-		}
-
-		cat->Create(x, y);		
-		SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
-		spriteComponent->Create(system, cat, nullptr, spriteState, true, camera, true);
-		CatBehaviorComponent* behaviorComponent = new CatBehaviorComponent();
-		behaviorComponent->Create(system, cat, nullptr, camera, mouse);
-		CatCollisionRule* collisionRule = new CatCollisionRule();
-		collisionRule->Create(cat, camera, behaviorComponent);
-		MapCollideComponent* mapCollideComponent = new MapCollideComponent();
-		mapCollideComponent->Create(system, cat, nullptr, level->getTileMap());
-		CollideComponent* ropeCollideComponent = new CollideComponent();
-		ropeCollideComponent->Create(system, cat, nullptr, (std::vector<GameEntity*>*)level->getRopeArray());
-		CollideComponent* doorCollideCompponent = new CollideComponent();
-		doorCollideCompponent->Create(system, cat, nullptr, (std::vector<GameEntity*>*)level->getDoorArray());
-
-		cat->SetCollisionRule(collisionRule);
-		cat->AddComponent(spriteComponent);
-		cat->AddComponent(mapCollideComponent);
-		cat->AddComponent(ropeCollideComponent);
-		cat->AddComponent(doorCollideCompponent);
-		cat->AddBehaviorComponent(behaviorComponent);
-		
-		cat->AddReceiver(this);
-		this->AddReceiver(cat);
-		
-		cat->Init();
+		cat->Init(x, y);
 	}
 };

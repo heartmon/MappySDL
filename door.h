@@ -9,6 +9,9 @@ public:
 	bool isOpen = false;
 	int defaultState;
 
+	void Create() {
+		GameEntity::Create();
+	}
 	void Create(float x, float y, int state) {
 		GameEntity::Create(x, y);
 		setCurrentStateType(state);
@@ -65,6 +68,15 @@ public:
 	virtual void Receive(Message* m) {
 		GameEntity::Receive(m);
 	}
+
+	virtual int getWidth() {
+		return DoorSpriteState::SPRITE_WIDTH;
+	}
+
+	virtual int getHeight() {
+		return DoorSpriteState::SPRITE_HEIGHT;
+	}
+
 private:
 
 };

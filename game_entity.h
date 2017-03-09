@@ -12,7 +12,7 @@ protected:
 	// observer pattern
 	std::vector<GameEntity*> receivers;
 	std::vector<Component*> components;
-
+	unsigned int id;
 public:
 	// describes an axis-aligned rectangle with a velocity
 	struct Box
@@ -30,6 +30,9 @@ public:
 	virtual std::string getName() {
 		return "";
 	}
+	virtual unsigned int getId() {
+		return id;
+	}
 
 	virtual void Create();
 	virtual void Create(float x, float y) {
@@ -40,6 +43,7 @@ public:
 	virtual void AddComponent(Component * component);
 	virtual void AddBehaviorComponent(Component * component);
 	virtual SDL_Rect* getSize() {
+		if (size->w == 0) SDL_Log("*********** %s::Not specified size->w and size->h", getName());
 		return size;
 	}
 
@@ -60,6 +64,8 @@ public:
 
 	virtual int getCurrentStateType();
 	virtual void setCurrentStateType(int currentStateType);
+	virtual int getWidth() { return 0; };
+	virtual int getHeight() { return 0; };
 
 	float horizontalPosition;
 	float verticalPosition;
@@ -86,8 +92,6 @@ public:
 			x += camera->x;
 			y += camera->y;
 		}
-		//SDL_Rect a = { x, y, size->w, size->h };
-		//return a;
 
 		GameEntity::Box collisionBox;
 		collisionBox.x = x;

@@ -5,7 +5,9 @@
 
 class Item : public GameEntity {
 public:
-
+	void Create() {
+		GameEntity::Create();
+	}
 	void Create(float x, float y, int state, int baseScore) {
 		GameEntity::Create(x, y);
 		setCurrentStateType(state);

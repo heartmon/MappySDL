@@ -5,8 +5,10 @@
 
 class Tile : public GameEntity {
 public:
+	virtual void Create();
 	virtual void Create(int x, int y, int tileType);
 	virtual void Update(float dt);
+	virtual void Init(float x, float y, int tileType, unsigned int id);
 
 	virtual std::string getName() {
 		return CLASS_TILE;
