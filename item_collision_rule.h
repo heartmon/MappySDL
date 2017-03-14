@@ -20,7 +20,7 @@ public:
 	virtual void didHit(Message* m) {
 		if (m->getArg1()->getName() == CLASS_MOUSE) {
 			gameEntity->enabled = false;
-			gameEntity->Send(new Message(COLLECT_ITEM, gameEntity));
+			gameEntity->Send(new Message(IS_COLLECTED, gameEntity));
 		}
 	}
 

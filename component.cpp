@@ -47,9 +47,12 @@ void CollidePoolComponent::Create(AvancezLib* system, GameEntity * go, std::vect
 
 void CollidePoolComponent::Update(float dt)
 {
+	if (gameEntity->isStop) return;
+
 	for (auto i = 0; i < coll_objects->pool.size(); i++)
 	{
 		GameEntity * go0 = coll_objects->pool[i];
+		if (go0->isStop) return;
 		if (go0->enabled)
 		{
 		
@@ -85,6 +88,7 @@ void CollideComponent::Update(float dt)
 	for (std::vector<GameEntity*>::iterator it = collObjects->begin(); it != collObjects->end(); ++it)
 	{
 		GameEntity * go0 = *it;
+		if (go0->isStop) return;
 		if (go0->enabled)
 		{
 			int collidedResult = gameEntity->getCollisionRule()->isCollided(gameEntity, go0, dt);
@@ -219,21 +223,9 @@ void DrawTextRenderComponent::Update(float dt) {
 		offsetCameraY = camera->y;
 	}
 
-	// Get color
-	//SDL_Color defaultColor = { 255,255,255 };
 	SDL_Color color = drawEntity->getColor();
-
-	//SDL_Log("%d", &(drawEntity->getMsg()));
 	
-	system->drawText(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, drawEntity->getMsg().c_str(), color);
-
-	// Render using the spritesheet (SpriteSheet.render)
-	/*if (this->flip == true) {
-		s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame, gameEntity->direction == GameEntity::RIGHT);
-	}
-	else {
-		s->Render(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, frame);
-	}*/
+	system->drawText(gameEntity->horizontalPosition - offsetCameraX, gameEntity->verticalPosition - offsetCameraY, drawEntity->getMsg().c_str(), color, drawEntity->isLargeFont());
 
 }
 void DrawTextRenderComponent::Destroy() {
@@ -299,9 +291,11 @@ void MapCollideComponent::Create(AvancezLib* system, GameEntity * go, std::vecto
 	this->tileMap = tileMap;
 }
 void MapCollideComponent::Update(float dt) {
+	if (gameEntity->isStop) return;
 	int count = 0;
 	for (std::vector<Tile*>::iterator it = tileMap->pool.begin(); it != tileMap->pool.end(); ++it) {
 		Tile* tile = *it;
+		if (tile->isStop) return;
 		if (tile->enabled) {
 			int collidedResult = gameEntity->getCollisionRule()->isCollidedWithMap(tile, dt, tileMap);
 			if (collidedResult == -1) {

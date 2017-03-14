@@ -35,6 +35,7 @@ bool AvancezLib::init(int width, int height, Router* router, GameViewport* gameV
 
 	TTF_Init();
 	font = TTF_OpenFont("data/space_invaders.ttf", 16); //this opens a font style and sets a size
+	fontLarge = TTF_OpenFont("data/space_invaders.ttf", 24); //this opens a font style and sets a size
 	if (font == NULL)
 	{
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "font cannot be created! SDL_Error: %s\n", SDL_GetError());
@@ -68,6 +69,7 @@ void AvancezLib::destroy()
 	SDL_DestroyWindow(window);
 
 	TTF_CloseFont(font);
+	TTF_CloseFont(fontLarge);
 
 	TTF_Quit();
 	SDL_Quit();
@@ -254,13 +256,19 @@ Sprite * AvancezLib::createSpriteNonBmp(const char * path) {
 }
 void AvancezLib::drawText(int x, int y, const char * msg) {
 	SDL_Color white = { 255, 255, 255 };
-	drawText(x, y, msg, white);
+	drawText(x, y, msg, white, false);
 }
-void AvancezLib::drawText(int x, int y, const char * msg, SDL_Color color)
+void AvancezLib::drawText(int x, int y, const char * msg, SDL_Color color, bool isLargeFont)
 {
 	//SDL_Color black = { 255, 255, 255 };  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
-
-	SDL_Surface* surf = TTF_RenderText_Solid(font, msg, color); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
+	TTF_Font* toBeRenderedFont;
+	if (isLargeFont) {
+		toBeRenderedFont = fontLarge;
+	}
+	else {
+		toBeRenderedFont = font;
+	}
+	SDL_Surface* surf = TTF_RenderText_Solid(toBeRenderedFont, msg, color); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
 
 	SDL_Texture* msg_texture = SDL_CreateTextureFromSurface(renderer, surf); //now you can convert it into a texture
 

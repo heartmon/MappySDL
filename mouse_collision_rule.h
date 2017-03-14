@@ -9,6 +9,7 @@
 #include "rope.h"
 #include "door.h"
 #include "item.h"
+#include "cat_sprite_state.h"
 
 class MouseCollisionRule : virtual public PlayerCollisionRule {
 	Mouse* mouse;
@@ -25,6 +26,8 @@ public:
 	}
 	void didHit(Message* m) {
 		if (m->getArg1()->getName() == CLASS_CAT) {
+			//SDL_Log("Dead by cat");
+			mouse->Receive(new Message(MOUSE_DIE, mouse));
 		}
 		if (m->getArg1()->getName() == CLASS_TILE) {
 			//mouse->isCollidedWithMap = true;
@@ -69,8 +72,19 @@ public:
 			return isCollided;
 		}
 		if (withThisEntity->getName() == CLASS_CAT) {
-			if(checkSquareCollision(self->getCollisionBox(camera), withThisEntity->getCollisionBox())) {
-			}
+			GameEntity::Box mouseBox = self->getCollisionBox(camera);
+			mouseBox.x = mouseBox.x + mouseBox.w / 2 - 5;
+			mouseBox.w = 10;
+			bool isCollided = checkSquareCollision(mouseBox, withThisEntity->getCollisionBox());
+			bool isCatCollidable =
+				withThisEntity->getCurrentStateType() == CatSpriteState::STATE_WALK
+				//|| withThisEntity->getCurrentStateType() == CatSpriteState::STATE_STAND
+				;
+			bool isSelfCollidable =
+				self->getCurrentStateType() == MouseSpriteState::STATE_STAND
+				|| self->getCurrentStateType() == MouseSpriteState::STATE_WALK
+				|| self->getCurrentStateType() == MouseSpriteState::STATE_WALK_RIGHT;
+			return isCollided && isCatCollidable && isSelfCollidable;
 		}
 
 		return -1;

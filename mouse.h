@@ -16,7 +16,7 @@ public:
 	virtual void Init()
 	{
 		SDL_Log("Mouse::Init");
-		lives = 0;
+		lives = 2;
 		GameEntity::Init();
 
 		setCurrentStateType(MouseSpriteState::STATE_STAND);

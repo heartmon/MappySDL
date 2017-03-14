@@ -1,26 +1,25 @@
 #pragma once
 #include "game_entity.h"
 #include "avancezlib.h"
-#include "cat_sprite_state.h"
+#include "big_cat_sprite_state.h"
 
-class Cat : public GameEntity {
+class BigCat : public GameEntity {
 public:
 	int lives;
 
 	//
 	virtual void Create() {
 		GameEntity::Create();
-		size->w = CatSpriteState::SPRITE_WIDTH;
-		size->h = CatSpriteState::SPRITE_HEIGHT;
+		size->w = BigCatSpriteState::SPRITE_WIDTH;
+		size->h = BigCatSpriteState::SPRITE_HEIGHT;
 	}
 	virtual void Init()
 	{
-		SDL_Log("Cat::Init");
+		SDL_Log("BigCat::Init");
 		GameEntity::Init();
 		vy = 0;
 		vx = 160.0f;
-		setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
-		
+		setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
 	}
 	virtual void Init(float x, float y) {
 		Init();
@@ -38,11 +37,11 @@ public:
 	}
 
 	virtual int getWidth() {
-		return CatSpriteState::SPRITE_WIDTH;
+		return BigCatSpriteState::SPRITE_WIDTH;
 	}
 
 	virtual int getHeight() {
-		return CatSpriteState::SPRITE_HEIGHT;
+		return BigCatSpriteState::SPRITE_HEIGHT;
 	}
 
 private:

@@ -64,6 +64,15 @@ public:
 		return NULL;
 	}
 
+	int Count() {
+		int count = 0;
+		for (std::vector<T*>::iterator it = pool.begin(); it != pool.end(); it++) {
+			if ((**it).enabled) count++;
+		}
+
+		return count;
+	}
+
 
 	std::vector<T*> pool;
 private:

@@ -4,9 +4,10 @@
 #include "door.h"
 #include "rainbow_sprite_state.h"
 #include "rainbow_behavior_component.h"
+#include "rainbow_collision_rule.h"
 
 class RainbowController : public GameEntity {
-	std::vector<Rainbow*> rainbows;
+	ObjectPool<Rainbow> rainbow_pool;
 	SDL_Rect* camera;
 	AvancezLib* system;
 	RainbowSpriteState* spriteState;
@@ -20,6 +21,30 @@ public:
 
 		spriteState = new RainbowSpriteState();
 		spriteState->Create(system);
+
+		rainbow_pool.Create(10);
+		for (auto it = rainbow_pool.pool.begin(); it != rainbow_pool.pool.end(); it++) {
+			Rainbow* rainbow = (*it);
+
+			rainbow->Create();
+
+			CameraCollideComponent* cameraComponent = new CameraCollideComponent();
+			cameraComponent->Create(system, rainbow, nullptr, camera);
+			SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
+			spriteComponent->Create(system, rainbow, nullptr, spriteState, false, camera, true);
+			RainbowBehaviorComponent* behaviorComponent = new RainbowBehaviorComponent();
+			behaviorComponent->Create(system, rainbow, camera);
+			RainbowCollisionRule* collisionRule = new RainbowCollisionRule();
+			collisionRule->Create(rainbow, camera, behaviorComponent);
+
+			rainbow->SetCollisionRule(collisionRule);
+			rainbow->AddComponent(cameraComponent);
+			rainbow->AddComponent(spriteComponent);
+			rainbow->AddComponent(behaviorComponent);
+
+			this->AddReceiver(rainbow);
+			rainbow->AddReceiver(this);
+		}
 	}
 
 	void Init() {
@@ -28,12 +53,13 @@ public:
 	}
 
 	void Update(float dt) {
-		for (auto go = rainbows.begin(); go != rainbows.end(); go++) {
+		for (auto go = rainbow_pool.pool.begin(); go != rainbow_pool.pool.end(); go++) {
 			(*go)->Update(dt);
 		}
 	}
 
 	void MakeRainbowFrom(Door* door) {
+
 		SDL_Log("Rainbow is creating !!");
 		SDL_Log("With door %f, %f", door->horizontalPosition, door->verticalPosition);
 		//rainbow will start from the door position and move toward the direction
@@ -49,24 +75,13 @@ public:
 			return;
 		}
 
-		Rainbow* rainbow = new Rainbow();
-		rainbow->Create(door->horizontalPosition, door->verticalPosition, direction);
+		Rainbow* rainbow = rainbow_pool.FirstAvailable();
+		if (rainbow == NULL) {
+			return;
+		}
 
-		CameraCollideComponent* cameraComponent = new CameraCollideComponent();
-		cameraComponent->Create(system, rainbow, nullptr, camera);
-		SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
-		spriteComponent->Create(system, rainbow, nullptr, spriteState, false, camera, true);
-		RainbowBehaviorComponent* behaviorComponent = new RainbowBehaviorComponent();
-		behaviorComponent->Create(system, rainbow, camera);
+		rainbow->Init(door->horizontalPosition, door->verticalPosition, direction);
 
-		rainbow->AddComponent(cameraComponent);
-		rainbow->AddComponent(spriteComponent);
-		rainbow->AddComponent(behaviorComponent);
-
-
-		rainbow->Init();
-
-		rainbows.push_back(rainbow);
 	}
 
 	virtual void Receive(Message* m) {
@@ -74,7 +89,17 @@ public:
 		if (m->getMessageType() == RELEASE_RAINBOW && m->getArg1()->getName() == CLASS_DOOR) {
 			MakeRainbowFrom((Door*)m->getArg1());
 		}
+
+		if (m->getMessageType() == RAINBOW_GONE) {
+			Send(m);
+		}
+
 	}
+
+	ObjectPool<Rainbow>* getRainbowPool() {
+		return &rainbow_pool;
+	}
+
 private:
 
 

@@ -14,6 +14,8 @@
 #include "item.h"
 #include "score_controller.h"
 #include "cat_controller.h"
+#include "item_controller.h"
+#include "big_cat_controller.h"
 
 class Game : public GameEntity {
 	Mouse* mouse;
@@ -29,6 +31,8 @@ class Game : public GameEntity {
 	Info* info;
 	ScoreController* scoreController;
 	CatController* catController;
+	ItemController* itemController;
+	BigCatController* bigCatController;
 
 	ObjectPool<Item>* itemPool;
 	ObjectPool<Rope>* ropePool;
@@ -67,13 +71,23 @@ public:
 		gameEntities.push_back(doorToggle);
 
 
+		//Rainbow controller
+		rainbowController = new RainbowController();
+		rainbowController->Create(system, camera);
+		gameEntities.push_back(rainbowController);
+
 		// Mouse init
 		mouse = new Mouse();
+
+		// BigCat Controller
+		bigCatController = new BigCatController();
+		bigCatController->Create(system, camera, level, mouse, rainbowController);
+		gameEntities.push_back(bigCatController);
 
 
 		//Cat controller
 		catController = new CatController();
-		catController->Create(system, camera, level, mouse);
+		catController->Create(system, camera, level, mouse, rainbowController);
 		gameEntities.push_back(catController);
 
 		MouseBehaviorComponent* mouseBehaviorComponent = new MouseBehaviorComponent();
@@ -99,6 +113,9 @@ public:
 		CollidePoolComponent* catsCollideComponent = new CollidePoolComponent();
 		catsCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)catController->getCats());
 
+		CollidePoolComponent* bigCatsCollideComponent = new CollidePoolComponent();
+		bigCatsCollideComponent->Create(system, mouse, &gameEntities, (ObjectPool<GameEntity>*)bigCatController->getCats());
+
 		mouse->Create(START_MOUSE_X, START_MOUSE_Y);
 		mouse->AddBehaviorComponent(mouseBehaviorComponent);
 		mouse->AddComponent(mouseSpriteSheetRenderComponent);
@@ -107,27 +124,29 @@ public:
 		mouse->AddComponent(ropeCollideComponent);
 		mouse->AddComponent(doorCollideCompponent);
 		mouse->AddComponent(catsCollideComponent);
+		mouse->AddComponent(bigCatsCollideComponent);
 		
 		mouse->SetCollisionRule(mouseCollisionRule);
 		gameEntities.push_back(mouse);
 
 
-		//Rainbow controller
-		rainbowController = new RainbowController();
-		rainbowController->Create(system, camera);
-		gameEntities.push_back(rainbowController);
 
 		// Info
 		info = new Info();
 		info->Create(system);
 		gameEntities.push_back(info);
-		
+
+		// Item Controller
+		itemController = new ItemController();
+		itemController->Create(system, camera, level, mouse);
+		gameEntities.push_back(itemController);
+
+
 
 		//Score controller
 		scoreController = new ScoreController();
 		scoreController->Create(system, camera);
 		gameEntities.push_back(scoreController);
-
 
 	}
 
@@ -154,32 +173,36 @@ public:
 
 		scoreController->AddReceiver(info);
 		catController->AddReceiver(doorToggle);
+		bigCatController->AddReceiver(doorToggle);
 
 		mouse->AddReceiver(this);
 		mouse->AddReceiver(doorToggle);
 		mouse->AddReceiver(info);
 
 		for (auto it = ropePool->pool.begin(); it != ropePool->pool.end(); ++it) {
-			if (!(*it)->enabled) continue;
 			Rope* rope = *it;
 			mouse->AddReceiver(rope);
 		}
 
 		for (auto it = doorPool->pool.begin(); it != doorPool->pool.end(); ++it) {
-			if (!(*it)->enabled) continue;
 			Door* door = *it;
 			mouse->AddReceiver(door);
 			door->AddReceiver(mouse);
 			door->AddReceiver(rainbowController);
 			door->AddReceiver(catController);
+			door->AddReceiver(bigCatController);
 		}
 
 		for (auto it = itemPool->pool.begin(); it != itemPool->pool.end(); ++it) {
-			if (!(*it)->enabled) continue;
 			Item* item = *it;
-			item->AddReceiver(scoreController);
+			item->AddReceiver(itemController);
 		}
-		
+
+		itemController->AddReceiver(scoreController);
+		itemController->AddReceiver(this);
+		rainbowController->AddReceiver(scoreController);
+
+
 	}
 
 	void CleanUpEachRound() {
@@ -191,15 +214,14 @@ public:
 		}
 
 		catController->RoundInit();
+		bigCatController->RoundInit();
 		//catController->Spawn();
 
 		this->Send(new Message(UPDATE_LEVEL, this, levelNo));
 	}
 
-	virtual void Init(int levelNo)
+	virtual void Init()
 	{
-		this->levelNo = levelNo;
-
 		// Log level start
 		SDL_Log(" ---=== INIT GAME SCREEN LEVEL %d ===--- ", levelNo);
 
@@ -207,15 +229,21 @@ public:
 		SetStartPosition();
 
 		// Init game entities
-		info->Init();
+		if (levelNo == 1) {
+			info->Init();
+		}
+
 		mouse->Init();
 		doorToggle->Init();
 		scoreController->Init();
 		rainbowController->Init();
 		catController->Init();
+		bigCatController->Init();
 
 		// Init level
 		level->Init(levelNo);
+
+		itemController->Init();
 
 		// Init once
 		if (!doonce) {
@@ -238,11 +266,17 @@ public:
 			RoundInit();
 		}
 
-		if (m->getMessageType() == GAME_OVER)
+		if (m->getMessageType() == GAME_OVER) {
 			game_over = true;
+			levelNo = 1;
+			gameSpeed = 1.f;
+		}
 
 		if (m->getMessageType() == LEVEL_CLEAR) {
+			SDL_Log("Level clear");
 			levelNo++;
+			gameSpeed += .075f;
+			Init();
 		}
 	}
 

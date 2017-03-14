@@ -6,6 +6,7 @@
 #include "cat_behavior_component.h"
 #include "cat_collision_rule.h"
 #include "level.h"
+#include "rainbow_controller.h"
 
 class CatController : public GameEntity {
 	AvancezLib* system;
@@ -15,6 +16,7 @@ class CatController : public GameEntity {
 	Level* level;
 	Mouse* mouse;
 	CatSpriteState* spriteState;
+	RainbowController* rainbowController;
 
 	float spawnDelayTime = 0.f;
 	float spawnInterval = .3f;
@@ -23,12 +25,13 @@ class CatController : public GameEntity {
 	int maximumSpawn = 4;
 	int activeCats = 0;
 public:
-	void Create(AvancezLib* system, SDL_Rect* camera, Level* level, Mouse* mouse) {
+	void Create(AvancezLib* system, SDL_Rect* camera, Level* level, Mouse* mouse, RainbowController* rainbowController) {
 		GameEntity::Create();
 		this->system = system;
 		this->camera = camera;
 		this->level = level;
 		this->mouse = mouse;
+		this->rainbowController = rainbowController;
 
 		spriteState = new CatSpriteState();
 		spriteState->Create(system);
@@ -51,6 +54,8 @@ public:
 			ropeCollideComponent->Create(system, cat, nullptr, (ObjectPool<GameEntity>*)level->getRopePool());
 			CollidePoolComponent* doorCollideCompponent = new CollidePoolComponent();
 			doorCollideCompponent->Create(system, cat, nullptr, (ObjectPool<GameEntity>*)level->getDoorPool());
+			CollidePoolComponent* rainbowCollideComponent = new CollidePoolComponent();
+			rainbowCollideComponent->Create(system, cat, nullptr, (ObjectPool<GameEntity>*)rainbowController->getRainbowPool());
 
 			cat->Create();
 			cat->SetCollisionRule(collisionRule);
@@ -58,6 +63,7 @@ public:
 			cat->AddComponent(mapCollideComponent);
 			cat->AddComponent(ropeCollideComponent);
 			cat->AddComponent(doorCollideCompponent);
+			cat->AddComponent(rainbowCollideComponent);
 			cat->AddBehaviorComponent(behaviorComponent);
 
 			cat->AddReceiver(this);
@@ -139,6 +145,10 @@ public:
 
 		if (m->getMessageType() == DOOR_OPEN || m->getMessageType() == DOOR_CLOSE) {
 			Send(m);
+		}
+
+		if (m->getMessageType() == CAT_DIE) {
+			activeCats--;
 		}
 	}
 

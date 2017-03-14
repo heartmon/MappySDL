@@ -4,6 +4,7 @@
 #include "object_pool.h"
 #include "game_viewport.h"
 #include "message.h"
+#include "config.h"
 
 class GameEntity;
 class DrawEntity;

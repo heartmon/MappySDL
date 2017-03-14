@@ -81,6 +81,15 @@
     <ClCompile Include="cat_behavior_component.cpp">
       <Filter>Source Files\cat</Filter>
     </ClCompile>
+    <ClCompile Include="big_cat_behavior_component.cpp">
+      <Filter>Source Files\big_cat</Filter>
+    </ClCompile>
+    <ClCompile Include="item_behavior_component.cpp">
+      <Filter>Source Files\item</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mouse.h">
@@ -235,6 +244,24 @@
     </ClInclude>
     <ClInclude Include="player_collision_rule.h">
       <Filter>Source Files\base</Filter>
+    </ClInclude>
+    <ClInclude Include="big_cat.h">
+      <Filter>Source Files\big_cat</Filter>
+    </ClInclude>
+    <ClInclude Include="big_cat_behavior_component.h">
+      <Filter>Source Files\big_cat</Filter>
+    </ClInclude>
+    <ClInclude Include="big_cat_collision_rule.h">
+      <Filter>Source Files\big_cat</Filter>
+    </ClInclude>
+    <ClInclude Include="big_cat_sprite_state.h">
+      <Filter>Source Files\big_cat</Filter>
+    </ClInclude>
+    <ClInclude Include="big_cat_controller.h">
+      <Filter>Source Files\big_cat</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

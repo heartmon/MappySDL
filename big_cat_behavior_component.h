@@ -1,20 +1,19 @@
 #pragma once
+#pragma once
 #include "avancezlib.h"
 #include "game_entity.h"
 #include <vector>
 #include "component.h"
-#include "cat_sprite_state.h"
+#include "big_cat_sprite_state.h"
+#include "cat_behavior_component.h"
 
-enum CatAction { NOTHING, CAT_STAND, CAT_MOVE_LEFT, CAT_MOVE_RIGHT, CAT_JUMP_BACK_LEFT, CAT_JUMP_BACK_RIGHT, CAT_TOGGLE_DOOR };
-class Cat;
+//enum BigCatAction { NOTHING, CAT_STAND, CAT_MOVE_LEFT, CAT_MOVE_RIGHT, CAT_JUMP_BACK_LEFT, CAT_JUMP_BACK_RIGHT, CAT_TOGGLE_DOOR };
+class BigCat;
 class Mouse;
-class CatBehaviorComponent : public Component {
+class BigCatBehaviorComponent : public Component {
 	SDL_Rect* camera;
-	Cat* cat;
-	Cat* gameEntity;
+	BigCat* gameEntity;
 	Mouse* mouse;
-
-	float catWalkingSpeed = 150.f;
 
 	float defaultVx;
 	float defaultVy;
@@ -62,7 +61,7 @@ public:
 	bool jumpAgainstWall = false;
 	bool isGoingToDie = false;
 
-	void Create(AvancezLib* system, Cat * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse);
+	void Create(AvancezLib* system, BigCat * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse);
 	void Init();
 	void RoundInit();
 	void Update(float dt);
@@ -85,14 +84,14 @@ public:
 
 	bool isOnTheGround(int currentState) {
 		switch (currentState) {
-			case CatSpriteState::STATE_STAND:
-			case CatSpriteState::STATE_WALK:
-				return true;
-			}
+		case BigCatSpriteState::STATE_STAND:
+		case BigCatSpriteState::STATE_WALK:
+			return true;
+		}
 		return false;
 	}
 
 private:
-	
+
 
 };

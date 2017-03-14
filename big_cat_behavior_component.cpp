@@ -1,34 +1,31 @@
-#include "cat_behavior_component.h"
+#include "big_cat_behavior_component.h"
 #include <cmath>
 #include "door.h"
-#include "cat.h"
+#include "big_cat.h"
 #include "mouse.h"
 #include "tile_sprite_state.h"
 #include "mouse_sprite_state.h"
 
-void CatBehaviorComponent::Create(AvancezLib* system, Cat* go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse) {
+void BigCatBehaviorComponent::Create(AvancezLib* system, BigCat* go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse) {
 	Component::Create(system, go, game_objects);
 	this->gameEntity = go;
-	this->cat = go;
 	this->camera = camera;
 	this->mouse = mouse;
 }
 
-void CatBehaviorComponent::Init() {
+void BigCatBehaviorComponent::Init() {
 	defaultVx = gameEntity->vx;
 	defaultVy = gameEntity->vy;
 
 	currentOrder = NOTHING;
 	nextOrder = NOTHING;
-
-	toBeKnockedBack = false;
 }
 
-void CatBehaviorComponent::RoundInit() {
-	gameEntity->setCurrentStateType(CatSpriteState::STATE_STAND);
+void BigCatBehaviorComponent::RoundInit() {
+	gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
 }
 
-void CatBehaviorComponent::Update(float dt) {
+void BigCatBehaviorComponent::Update(float dt) {
 	bool go_on = true;
 	float g = 200.f;
 
@@ -45,7 +42,7 @@ void CatBehaviorComponent::Update(float dt) {
 		}
 		return;
 	}
-	
+
 	// sum
 	spaceTriggerTime += dt;
 
@@ -55,19 +52,19 @@ void CatBehaviorComponent::Update(float dt) {
 	}
 
 	// input processing
-	if (isOnTheGround(gameEntity->getCurrentStateType()) && 
-		(gameEntity->getCurrentStateType() != CatSpriteState::STATE_KNOCKBACK && gameEntity->getCurrentStateType() != CatSpriteState::STATE_AFTER_KNOCKBACK)
+	if (isOnTheGround(gameEntity->getCurrentStateType()) &&
+		(gameEntity->getCurrentStateType() != BigCatSpriteState::STATE_KNOCKBACK && gameEntity->getCurrentStateType() != BigCatSpriteState::STATE_AFTER_KNOCKBACK)
 		) {
 		if (currentOrder == CAT_MOVE_RIGHT) {
 			gameEntity->direction = GameEntity::RIGHT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_WALK);
-			ChangeSpeedX(catWalkingSpeed*gameSpeed);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_WALK);
+			ChangeSpeedX(160.f);
 		}
 
 		if (currentOrder == CAT_MOVE_LEFT) {
 			gameEntity->direction = GameEntity::LEFT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_WALK);
-			ChangeSpeedX(catWalkingSpeed*gameSpeed);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_WALK);
+			ChangeSpeedX(160.f);
 		}
 
 		////space
@@ -85,7 +82,7 @@ void CatBehaviorComponent::Update(float dt) {
 
 	// Update position
 	float distanceX = dt * gameEntity->vx * gameEntity->direction;
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_KNOCKBACK || gameEntity->getCurrentStateType() == CatSpriteState::STATE_AFTER_KNOCKBACK) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_KNOCKBACK || gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_AFTER_KNOCKBACK) {
 		distanceX = 0;
 	}
 
@@ -106,11 +103,11 @@ void CatBehaviorComponent::Update(float dt) {
 	// state processing
 	// State = Knockback
 	if (toBeKnockedBack) {
-		gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
+		gameEntity->setCurrentStateType(BigCatSpriteState::STATE_KNOCKBACK);
 		toBeKnockedBack = false;
 	}
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_KNOCKBACK) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_KNOCKBACK) {
 		knockbackTime += dt;
 		knockbackInterval = 0.2f;
 		if (knockbackTime < knockbackInterval) {
@@ -118,30 +115,30 @@ void CatBehaviorComponent::Update(float dt) {
 		}
 		if (knockbackTime > knockbackInterval + 1.f) {
 			knockbackTime = 0;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_AFTER_KNOCKBACK);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_AFTER_KNOCKBACK);
 		}
 	}
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_AFTER_KNOCKBACK) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_AFTER_KNOCKBACK) {
 		afterKnockbackTime += dt;
 		if (afterKnockbackTime > afterKnockbackInterval) {
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_STAND);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
 			afterKnockbackTime = 0;
 		}
 	}
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_INTHEAIR) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_INTHEAIR) {
 		if (gameEntity->vy <= 0) {
 			// process key when in the air
 			if (currentOrder == CAT_JUMP_BACK_RIGHT) {
 				gameEntity->direction = GameEntity::RIGHT;
-				gameEntity->setCurrentStateType(CatSpriteState::STATE_PRE_JUMP_BACK);
+				gameEntity->setCurrentStateType(BigCatSpriteState::STATE_PRE_JUMP_BACK);
 				goingToJumpTo = GameEntity::RIGHT;
 			}
 
 			if (currentOrder == CAT_JUMP_BACK_LEFT) {
 				gameEntity->direction = GameEntity::LEFT;
-				gameEntity->setCurrentStateType(CatSpriteState::STATE_PRE_JUMP_BACK);
+				gameEntity->setCurrentStateType(BigCatSpriteState::STATE_PRE_JUMP_BACK);
 				goingToJumpTo = GameEntity::LEFT;
 			}
 		}
@@ -153,14 +150,14 @@ void CatBehaviorComponent::Update(float dt) {
 
 
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_PRE_JUMP_BACK) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_PRE_JUMP_BACK) {
 		if (gameEntity->vy > 0) {
 			goingToJumpTo = 0;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
 		}
 	}
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_JUMP_BACK) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_JUMP_BACK) {
 		//gameEntity->direction = goingToJumpTo;
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
@@ -181,7 +178,7 @@ void CatBehaviorComponent::Update(float dt) {
 			Move(dt*gameEntity->vx*gameEntity->direction, 0);
 		}
 		else {
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
@@ -189,19 +186,19 @@ void CatBehaviorComponent::Update(float dt) {
 			resetStateIndicator = false;
 
 			/*if (gameEntity->direction == GameEntity::RIGHT) {
-				ChangeSpeedX(160);
-				nextOrder = CAT_MOVE_RIGHT;
+			ChangeSpeedX(160);
+			nextOrder = CAT_MOVE_RIGHT;
 			}
 			else {
-				ChangeSpeedX(160);
-				nextOrder = CAT_MOVE_LEFT;
+			ChangeSpeedX(160);
+			nextOrder = CAT_MOVE_LEFT;
 			}*/
 		}
 
 		return;
 	}
 	//hopping
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_PREJUMP) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_PREJUMP) {
 		if (!resetStateIndicator) {
 			//SDL_Log("Pre jump");
 			float jumpSpeed = 100;
@@ -221,7 +218,7 @@ void CatBehaviorComponent::Update(float dt) {
 			Move(dt*gameEntity->vx*gameEntity->direction, 0);
 		}
 		else {
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
@@ -233,7 +230,7 @@ void CatBehaviorComponent::Update(float dt) {
 		return;
 	}
 
-	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_STAND) {
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_STAND) {
 		clearOrder();
 		ThinkWhereToMove();
 	}
@@ -249,7 +246,7 @@ void CatBehaviorComponent::Update(float dt) {
 
 }
 
-void CatBehaviorComponent::ThinkWhereToMove() {
+void BigCatBehaviorComponent::ThinkWhereToMove() {
 	if (nextOrder != NOTHING) {
 		return;
 	}
@@ -259,14 +256,14 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 	//}
 
 	GameEntity::Box mouseBox = mouse->getCollisionBox(camera);
-	GameEntity::Box catBox = cat->getCollisionBox();
+	GameEntity::Box catBox = gameEntity->getCollisionBox();
 
 	int mouseBlockYPos = ceil(mouseBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
 
 	switch (gameEntity->getCurrentStateType()) {
-	case CatSpriteState::STATE_STAND:
-	case CatSpriteState::STATE_WALK:
+	case BigCatSpriteState::STATE_STAND:
+	case BigCatSpriteState::STATE_WALK:
 		if (gameEntity->horizontalPosition < mouseBox.x) {
 			//SDL_Log("Cat will move right");
 			nextOrder = CAT_MOVE_RIGHT;
@@ -279,8 +276,8 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 	}
 }
 
-void CatBehaviorComponent::ChangeDirection() {
-	if(currentOrder == CAT_MOVE_RIGHT) {
+void BigCatBehaviorComponent::ChangeDirection() {
+	if (currentOrder == CAT_MOVE_RIGHT) {
 		//SDL_Log("From right to left");
 		nextOrder = CAT_MOVE_LEFT;
 	}
@@ -290,14 +287,14 @@ void CatBehaviorComponent::ChangeDirection() {
 	}
 }
 
-void CatBehaviorComponent::NumbMind() {
+void BigCatBehaviorComponent::NumbMind() {
 	isNumb = true;
 	numbTime = 0;
 	numbCount++;
 	SDL_Log("Numb");
 }
 
-void CatBehaviorComponent::NumbProgress(float dt) {
+void BigCatBehaviorComponent::NumbProgress(float dt) {
 	if (isNumb) {
 		numbTime += dt;
 		if (numbTime > numbInterval) {
@@ -306,20 +303,20 @@ void CatBehaviorComponent::NumbProgress(float dt) {
 	}
 }
 
-void CatBehaviorComponent::ThinkWhereToJump() {
+void BigCatBehaviorComponent::ThinkWhereToJump() {
 	clearOrder();
 	if (isNumb) {
 		return;
 	}
 
 	GameEntity::Box mouseBox = mouse->getCollisionBox(camera);
-	GameEntity::Box catBox = cat->getCollisionBox();
+	GameEntity::Box catBox = gameEntity->getCollisionBox();
 
 	int mouseBlockYPos = ceil(mouseBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
 
 	switch (gameEntity->getCurrentStateType()) {
-	case CatSpriteState::STATE_INTHEAIR:
+	case BigCatSpriteState::STATE_INTHEAIR:
 		if (gameEntity->vy > 0) {
 			return;
 		}
@@ -354,11 +351,11 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 	}
 }
 
-void CatBehaviorComponent::Destroy() {
+void BigCatBehaviorComponent::Destroy() {
 
 }
 
-void CatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
+void BigCatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 	// check if mouse is at the range of the door >> knockback
 	Door* door = (Door*)ent;
 	GameEntity::Box catBox = gameEntity->getCollisionBox();
@@ -375,7 +372,7 @@ void CatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
 			gameEntity->direction = GameEntity::LEFT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_KNOCKBACK);
 		}
 	}
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
@@ -387,12 +384,12 @@ void CatBehaviorComponent::WhenDoorOpen(GameEntity* ent) {
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
 			gameEntity->direction = GameEntity::RIGHT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_KNOCKBACK);
 		}
 	}
 }
 
-void CatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
+void BigCatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 	Door* door = (Door*)ent;
 	GameEntity::Box catBox = gameEntity->getCollisionBox();
 	GameEntity::Box doorBox = door->getCollisionBox();
@@ -407,7 +404,7 @@ void CatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_KNOCKBACK);
 		}
 	}
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
@@ -418,35 +415,35 @@ void CatBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_KNOCKBACK);
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_KNOCKBACK);
 		}
 	}
 }
 
-void CatBehaviorComponent::Move(float x, float y) {
+void BigCatBehaviorComponent::Move(float x, float y) {
 	gameEntity->horizontalPosition += x;
 	gameEntity->verticalPosition += y;
 }
 
-void CatBehaviorComponent::ChangeSpeedX(float newVx) {
+void BigCatBehaviorComponent::ChangeSpeedX(float newVx) {
 	gameEntity->vx = newVx;
 }
-void CatBehaviorComponent::ChangeSpeedY(float newVy) {
+void BigCatBehaviorComponent::ChangeSpeedY(float newVy) {
 	gameEntity->vy = newVy;
 }
 
-void CatBehaviorComponent::WhenHeadHit() {
+void BigCatBehaviorComponent::WhenHeadHit() {
 	ChangeSpeedY(-gameEntity->vy);
 	//gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
 }
 
-void CatBehaviorComponent::WhenDie() {
+void BigCatBehaviorComponent::WhenDie() {
 	//SDL_Log("DEAD :(");
 	//gameEntity->setCurrentStateType(CatSpriteState::STATE_DEAD);
 }
 
-void CatBehaviorComponent::Receive(Message* m) {
-	
+void BigCatBehaviorComponent::Receive(Message* m) {
+
 	if (m->getMessageType() == DOOR_OPEN) {
 		WhenDoorOpen(m->getArg1());
 	}
@@ -459,7 +456,7 @@ void CatBehaviorComponent::Receive(Message* m) {
 
 }
 
-void CatBehaviorComponent::clearOrder() {
+void BigCatBehaviorComponent::clearOrder() {
 	currentOrder = NOTHING;
 	nextOrder = NOTHING;
 	nextOrderReady = true;

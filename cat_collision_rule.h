@@ -23,6 +23,13 @@ public:
 		this->behaviorComponent = behaviorComponent;
 	}
 	virtual void didHit(Message* m) {
+		if (m->getArg1()->getName() == CLASS_RAINBOW) {
+			Rainbow* rainbow = (Rainbow*)m->getArg1();
+			// hit with rainbow
+			SDL_Log("Rainbow Hit111111111111!!");
+			gameEntity->isStop = true;
+			gameEntity->direction = rainbow->direction;
+		}
 		if (m->getArg1()->getName() == CLASS_TILE) {
 			//mouse->isCollidedWithMap = true;
 		}
@@ -61,6 +68,10 @@ public:
 		if (withThisEntity->getName() == CLASS_DOOR && behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType())) {
 			Door* door = (Door*)withThisEntity;
 			bool isCollided = door->getCollisionRule()->isCollided(door, self, dt);
+			return isCollided;
+		}
+		if (withThisEntity->getName() == CLASS_RAINBOW) {
+			bool isCollided(checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox()));
 			return isCollided;
 		}
 

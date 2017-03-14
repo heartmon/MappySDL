@@ -14,5 +14,7 @@ public:
 	virtual SDL_Color getColor() = 0;
 	virtual std::string getMsg() = 0;
 
-
+	virtual bool isLargeFont() {
+		return false;
+	}
 };

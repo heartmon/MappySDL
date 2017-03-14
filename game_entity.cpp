@@ -15,6 +15,7 @@ void GameEntity::Create()
 	direction = 0;
 	size = new SDL_Rect;
 	setCurrentStateType(0);
+	isStop = false;
 }
 
 void GameEntity::AddComponent(Component * component)
@@ -41,6 +42,7 @@ void GameEntity::Init()
 
 	enabled = true;
 	isVisibleWithinCamera = true;
+	isStop = false;
 
 	ay = 1;
 }
@@ -122,7 +124,7 @@ void GameEntity::setCurrentStateType(int currentStateType) {
 
 void GameEntity::Receive(Message* m) {
 	// Check HIT = collided
-	if (m->getMessageType() == HIT) {
+	if (m->getMessageType() == HIT && collisionRule != NULL) {
 		collisionRule->didHit(m);
 	}
 }

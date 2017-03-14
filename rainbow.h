@@ -5,6 +5,9 @@
 class Rainbow : public GameEntity {
 
 public:
+	virtual void Create() {
+		GameEntity::Create();
+	}
 	virtual void Create(float x, float y, int direction) {
 		GameEntity::Create();
 		horizontalPosition = x;
@@ -17,9 +20,13 @@ public:
 		GameEntity::Receive(m);
 	}
 
-	virtual void Init() {
+	virtual void Init(float x, float y, int direction) {
 		SDL_Log("Rainbow::Init");
 		GameEntity::Init();
+
+		horizontalPosition = x;
+		verticalPosition = y;
+		this->direction = direction;
 		size->w = RainbowSpriteState::SPRITE_WIDTH;
 		size->h = RainbowSpriteState::SPRITE_HEIGHT;
 

@@ -18,7 +18,6 @@ const int TILE_ROWS = 30;
 const int TILES_COLUMNS = 12;
 const int TOTAL_TILES = TILE_ROWS * TILES_COLUMNS;
 
-
 //Tile constants
 //const int TILE_WIDTH = 24;
 //const int TILE_HEIGHT = 24;

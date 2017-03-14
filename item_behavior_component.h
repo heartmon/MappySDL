@@ -3,20 +3,13 @@
 #include "message.h"
 #include "global_constant.h"
 
+class Item;
 class ItemBehaviorComponent : public Component {
-
+	Item* gameEntity;
 public:
-	virtual void Create(AvancezLib* system, GameEntity* go, std::vector<GameEntity*> * gameObjects) {
-		Component::Create(system, go, gameObjects);
-	}
-
-	virtual void Init() {
-		
-	}
-
-	void Update(float dt) {
-
-	}
+	virtual void Create(AvancezLib* system, Item* go, std::vector<GameEntity*> * gameObjects);
+	virtual void Init();
+	void Update(float dt);
 
 private:
 

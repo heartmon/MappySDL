@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="avancezlib.cpp" />
+    <ClCompile Include="big_cat_behavior_component.cpp" />
     <ClCompile Include="cat_behavior_component.cpp" />
     <ClCompile Include="component.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="entity_state.cpp" />
     <ClCompile Include="game_entity.cpp" />
+    <ClCompile Include="item_behavior_component.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="mouse_behavior_component.cpp" />
@@ -34,6 +37,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="avancezlib.h" />
+    <ClInclude Include="big_cat.h" />
+    <ClInclude Include="big_cat_behavior_component.h" />
+    <ClInclude Include="big_cat_collision_rule.h" />
+    <ClInclude Include="big_cat_controller.h" />
+    <ClInclude Include="big_cat_sprite_state.h" />
     <ClInclude Include="cat.h" />
     <ClInclude Include="cat_behavior_component.h" />
     <ClInclude Include="cat_collision_rule.h" />
@@ -41,6 +49,7 @@
     <ClInclude Include="cat_sprite_state.h" />
     <ClInclude Include="collision_rule_interface.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="door.h" />
     <ClInclude Include="door_behavior_component.h" />
     <ClInclude Include="door_collision_rule.h" />

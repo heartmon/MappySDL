@@ -40,15 +40,15 @@ public:
 		// Static text
 		char scoreTitle[10];
 		sprintf(scoreTitle, "SCORE");
-		system->drawText(150, 8, scoreTitle, red);
+		system->drawText(150, 8, scoreTitle, red, false);
 
 		char lifeTitle[10];
 		sprintf(lifeTitle, "MAPPY");
-		system->drawText(300, 8, lifeTitle, blue);
+		system->drawText(300, 8, lifeTitle, blue, false);
 
 		char levelTitle[10];
 		sprintf(levelTitle, "LEVEL");
-		system->drawText(450, 8, levelTitle, blue);
+		system->drawText(450, 8, levelTitle, blue, false);
 
 		// Dynamic
 		char scoreText[20], mouseLifeText[5], levelText[5];

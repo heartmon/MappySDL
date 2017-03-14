@@ -272,7 +272,7 @@ void Level::SetTileMap(int level) {
 				case  TileSpriteState::STATE_TILE_ITEM_500:
 					SDL_Log("Item is being created?");
 					Item* item = itemPool.FirstAvailable();
-					item->Init((float)x, (float)y, tileType - 10 - 1, (tileType - 10)*100);
+					item->Init((float)x, (float)y, tileType - 10 - 1, tileType - 10 - 1 + 5, (tileType - 10)*100);
 					break;
 			}
 

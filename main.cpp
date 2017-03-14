@@ -35,7 +35,6 @@ char msg[256];
 
 int main(int argc, char** argv)
 {
-
 	AvancezLib system;
 
 	Router router;
@@ -57,7 +56,7 @@ int main(int argc, char** argv)
 
 	Game game;
 	game.Create(&system);
-	game.Init(1);
+	game.Init();
 
 	bool isGameInit = true;
 
@@ -106,7 +105,7 @@ int main(int argc, char** argv)
 			gameOverScreen.Update(dt);
 			gameOverScreen.Draw();
 			if (!isGameInit) {
-				game.Init(1);
+				game.Init();
 				isGameInit = true;
 			}
 		}

@@ -74,6 +74,7 @@ public:
 	bool isVisibleWithinCamera;
 	bool isXCollidedWithMap;
 	bool isYCollidedWithMap;
+	bool isStop;
 	int animationFrame = 0;
 	float arbitaryTrackingNumber = 0.f;
 	const int static LEFT = -1;
