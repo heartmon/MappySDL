@@ -89,6 +89,8 @@
     <ClInclude Include="score.h" />
     <ClInclude Include="score_controller.h" />
     <ClInclude Include="score_total.h" />
+    <ClInclude Include="sound.h" />
+    <ClInclude Include="sound_controller.h" />
     <ClInclude Include="sprite_state_interface.h" />
     <ClInclude Include="start_screen.h" />
     <ClInclude Include="tile.h" />
@@ -155,8 +157,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_image-2.0.1\include;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_ttf-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_image-2.0.1\lib\x64;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_ttf-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_mixer-2.0.1\include;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_image-2.0.1\include;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_ttf-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_image-2.0.1\lib\x64;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_ttf-2.0.14\lib\x64;D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2_mixer-2.0.1\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -192,7 +194,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\MySelf\Chalmers\Game Engine Architecture 2017\dev\SDL2-2.0.5\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

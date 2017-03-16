@@ -15,14 +15,13 @@ class MouseBehaviorComponent : public Component {
 	float cameraVerticalFloat;
 	bool isMovable = false;
 
-	float prevX;
-	float prevY;
-	int prevState;
-
 	float defaultVx;
 	float defaultVy;
 
 	float trackingNumber;
+
+	float prejumpInterval = 0.2f;
+	float prejumpTime = 0;
 
 	float spaceTriggerInterval = 0.35f;
 	float spaceTriggerTime = 0;
@@ -37,6 +36,9 @@ class MouseBehaviorComponent : public Component {
 	float deadTime = 0;
 	float deadMovingInterval = 1.5f;
 	float deadMovingTime = 0;
+
+	float intheairDeadTime = 0;
+	float intheairDeadInterval = 1.5f;
 	
 public:
 	bool resetStateIndicator;
@@ -55,9 +57,7 @@ public:
 	bool isOnTheGround(int currentState) {
 		switch (currentState) {
 		case MouseSpriteState::STATE_STAND:
-		case MouseSpriteState::STATE_STAND_RIGHT:
 		case MouseSpriteState::STATE_WALK:
-		case MouseSpriteState::STATE_WALK_RIGHT:
 			return true;
 		}
 		return false;

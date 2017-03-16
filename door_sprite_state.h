@@ -52,6 +52,16 @@ public:
 		return SPRITE_HEIGHT;
 	}
 
+	bool static isPowerDoor(int state) {
+		switch (state) {
+			case STATE_DOOR_POWER_LEFT:
+			case STATE_DOOR_POWER_RIGHT:
+				return true;
+		}
+
+		return false;
+	}
+
 
 private:
 	SDL_Rect dl[FRAME_NO_MOVE], dr[FRAME_NO_MOVE], dpl[FRAME_DOOR_POWER], dpr[FRAME_DOOR_POWER], dopen[FRAME_NO_MOVE];

@@ -52,13 +52,16 @@ int main(int argc, char** argv)
 
 	GameOverScreen gameOverScreen;
 	gameOverScreen.Create(&system);
-	gameOverScreen.Init();
+	//gameOverScreen.Init();
 
 	Game game;
 	game.Create(&system);
-	game.Init();
 
-	bool isGameInit = true;
+	game.AddReceiver(&startScreen);
+	game.AddReceiver(&gameOverScreen);
+	//game.Init();
+
+	bool isGameInit = false;
 
 	new GameViewport();
 
@@ -73,25 +76,21 @@ int main(int argc, char** argv)
 		lastTime = newTime;
 
 		sum_delta += dt;
-		//SDL_Log("%f", dt);
-	
 
-		//num_frames++;
-
-		//if (sum_delta > 100)
-		//{
-		//	avg_fps = ((float)num_frames / sum_delta) * 1000;
-		//	num_frames = 0;
-		//	sum_delta = 0;
-		//}
-		//sprintf(msg, "%.3f fps", avg_fps);
-		//system.drawText(12, 12, msg);
 		if (router.getCurrentScreen() == START_SCREEN) {
+			if (!startScreen.enabled) {
+				startScreen.enabled = true;
+				game.Send(new Message(HIGH_SCORE, &game, game.getHighscore()));
+			}
 			startScreen.Update(dt);
 			startScreen.Draw();
 		}
 
 		if (router.getCurrentScreen() == PLAY_SCREEN) {
+			if (!isGameInit) {
+				game.Init();
+				isGameInit = true;
+			}
 			if (!game.isGameOver()) {
 				game.Update(dt);
 			}
@@ -102,12 +101,16 @@ int main(int argc, char** argv)
 		}
 
 		if (router.getCurrentScreen() == GAME_OVER_SCREEN) {
+			if (!gameOverScreen.enabled) {
+				gameOverScreen.Init();
+				game.Send(new Message(HIGH_SCORE, &game, game.getCurrentScore()));
+			}
 			gameOverScreen.Update(dt);
 			gameOverScreen.Draw();
-			if (!isGameInit) {
+			/*if (!isGameInit) {
 				game.Init();
 				isGameInit = true;
-			}
+			}*/
 		}
 
 		//game.Draw();

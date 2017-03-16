@@ -16,6 +16,7 @@
 #include "cat_controller.h"
 #include "item_controller.h"
 #include "big_cat_controller.h"
+#include "sound_controller.h"
 
 class Game : public GameEntity {
 	Mouse* mouse;
@@ -33,6 +34,7 @@ class Game : public GameEntity {
 	CatController* catController;
 	ItemController* itemController;
 	BigCatController* bigCatController;
+	SoundController* soundController;
 
 	ObjectPool<Item>* itemPool;
 	ObjectPool<Rope>* ropePool;
@@ -46,6 +48,13 @@ class Game : public GameEntity {
 	const int START_MOUSE_Y = 400;
 
 	bool doonce = false;
+
+	bool isLevelReadyToBeCleared = false;
+	float levelClearDelayTimeCount = 0;
+	float levelClearDelayInterval = 2.f;
+
+	int highscore = 0;
+	int currentscore = 0;
 
 public:
 	virtual void Create(AvancezLib* system) {
@@ -97,7 +106,7 @@ public:
 		SpriteSheetRenderComponent* mouseSpriteSheetRenderComponent = new SpriteSheetRenderComponent();
 		MouseSpriteState* mouseSpriteState = new MouseSpriteState();
 		mouseSpriteState->Create(system);
-		mouseSpriteSheetRenderComponent->Create(system, mouse, &gameEntities, mouseSpriteState);
+		mouseSpriteSheetRenderComponent->Create(system, mouse, &gameEntities, mouseSpriteState, false, NULL, true);
 		MapCollideComponent* mapCollideComponent = new MapCollideComponent();
 		mapCollideComponent->Create(system, mouse, &gameEntities, tileMapPool);
 
@@ -148,6 +157,11 @@ public:
 		scoreController->Create(system, camera);
 		gameEntities.push_back(scoreController);
 
+		// Sound controller
+		soundController = new SoundController();
+		soundController->Create(system);
+		gameEntities.push_back(soundController);
+
 	}
 
 	void RoundInit() {
@@ -178,6 +192,7 @@ public:
 		mouse->AddReceiver(this);
 		mouse->AddReceiver(doorToggle);
 		mouse->AddReceiver(info);
+		mouse->AddReceiver(catController);
 
 		for (auto it = ropePool->pool.begin(); it != ropePool->pool.end(); ++it) {
 			Rope* rope = *it;
@@ -201,8 +216,15 @@ public:
 		itemController->AddReceiver(scoreController);
 		itemController->AddReceiver(this);
 		rainbowController->AddReceiver(scoreController);
+		bigCatController->AddReceiver(info);
 
-
+		this->AddReceiver(soundController);
+		mouse->AddReceiver(soundController);
+		itemController->AddReceiver(soundController);
+		rainbowController->AddReceiver(soundController);
+		itemController->AddReceiver(catController);
+		itemController->AddReceiver(bigCatController);
+		itemController->AddReceiver(mouse);
 	}
 
 	void CleanUpEachRound() {
@@ -222,6 +244,9 @@ public:
 
 	virtual void Init()
 	{
+		for (auto go = gameEntities.begin(); go != gameEntities.end(); go++)
+			(*go)->isStop = false;
+
 		// Log level start
 		SDL_Log(" ---=== INIT GAME SCREEN LEVEL %d ===--- ", levelNo);
 
@@ -230,15 +255,16 @@ public:
 
 		// Init game entities
 		if (levelNo == 1) {
+			mouse->Init();
 			info->Init();
 		}
 
-		mouse->Init();
 		doorToggle->Init();
 		scoreController->Init();
 		rainbowController->Init();
 		catController->Init();
 		bigCatController->Init();
+		soundController->Init();
 
 		// Init level
 		level->Init(levelNo);
@@ -257,6 +283,9 @@ public:
 		// finishing init
 		enabled = true;
 		game_over = false;
+
+		Send(new Message(GAME_INIT));
+		Send(new Message(HIGH_SCORE, this, getHighscore()));
 	}
 
 
@@ -264,19 +293,24 @@ public:
 	{
 		if (m->getMessageType() == LIFE_DECREASE) {
 			RoundInit();
+			Send(new Message(ROUND_INIT));
 		}
 
 		if (m->getMessageType() == GAME_OVER) {
 			game_over = true;
 			levelNo = 1;
 			gameSpeed = 1.f;
+
+			//calculate highscore
+			if (info->getScoreTotal() > highscore) {
+				highscore = info->getScoreTotal();
+			}
+			currentscore = info->getScoreTotal();
 		}
 
 		if (m->getMessageType() == LEVEL_CLEAR) {
 			SDL_Log("Level clear");
-			levelNo++;
-			gameSpeed += .075f;
-			Init();
+			isLevelReadyToBeCleared = true;
 		}
 	}
 
@@ -287,6 +321,19 @@ public:
 
 		for (auto go = gameEntities.begin(); go != gameEntities.end(); go++)
 			(*go)->Update(dt);
+
+		if (isLevelReadyToBeCleared) {
+			levelClearDelayTimeCount += dt;
+			if (levelClearDelayTimeCount > levelClearDelayInterval) {
+				levelClearDelayTimeCount = 0;
+				isLevelReadyToBeCleared = false;
+
+				levelNo++;
+				gameSpeed += .075f;
+				Init();
+			}
+		}
+
 	}
 
 	virtual void Destroy()
@@ -301,6 +348,14 @@ public:
 
 	bool isGameOver() {
 		return game_over;
+	}
+
+	int getHighscore() {
+		return highscore;
+	}
+
+	int getCurrentScore() {
+		return currentscore;
 	}
 
 private:

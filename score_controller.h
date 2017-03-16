@@ -11,6 +11,7 @@ class ScoreController : public GameEntity {
 
 	int scorePowerBase = 2;
 	int scoreMultiplier = 100;
+	int bigcatScore = 800;
 public:
 	void Create(AvancezLib* system, SDL_Rect* camera) {
 		this->camera = camera;
@@ -62,15 +63,15 @@ public:
 		}
 	}
 
-	void MakeRainbowScore(int score) {
+	void MakeRainbowScore(int score, int multiplier = 1) {
 		Score * scoreEntity = scores_pool.FirstAvailable();
 		if (scoreEntity == NULL) {
 			return;
 		}
 		//scoreEntity->Init(SCREEN_WIDTH / 2 - 50, 0, Score::SCORE_FROM_POWER, score);
-		scoreEntity->Init(0, SCREEN_HEIGHT / 2, Score::SCORE_FROM_POWER, score);
+		scoreEntity->Init(0, SCREEN_HEIGHT / 2, Score::SCORE_FROM_POWER, score, multiplier);
 
-		this->Send(new Message(UPDATE_SCORE, scoreEntity, score));
+		this->Send(new Message(UPDATE_SCORE, scoreEntity, score*multiplier));
 	}
 
 	void Receive(Message* m) {
@@ -81,10 +82,18 @@ public:
 		}
 
 		if (m->getMessageType() == RAINBOW_GONE) {
-			SDL_Log("Cat die : %d", m->getData());
+			RainbowBehaviorComponent* behaviorComponent = (RainbowBehaviorComponent*)m->getArg1()->getBehaviorComponent();
+			SDL_Log("Cat die : %d, Big cat die : %d", behaviorComponent->numberOfCats, behaviorComponent->numberOfBigCats);
+			int catScore = pow(scorePowerBase, behaviorComponent->numberOfCats)*scoreMultiplier;
+			if (behaviorComponent->numberOfCats == 0) {
+				catScore = 0;
+			}
+			int bigCatScore = bigcatScore * behaviorComponent->numberOfBigCats;
+			int multiplier = behaviorComponent->numberOfBigCats * 2;
 
-			if (m->getData()) {
-				MakeRainbowScore(pow(scorePowerBase, m->getData())*scoreMultiplier);
+			int totalScore = catScore + bigCatScore;
+			if (totalScore > 0) {
+				MakeRainbowScore(totalScore, multiplier);
 			}
 		}
 	}

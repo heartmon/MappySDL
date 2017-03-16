@@ -33,7 +33,7 @@ public:
 	}
 
 	virtual std::string getName() {
-		return CLASS_CAT;
+		return CLASS_BIG_CAT;
 	}
 
 	virtual int getWidth() {

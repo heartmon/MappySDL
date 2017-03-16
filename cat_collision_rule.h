@@ -42,12 +42,13 @@ public:
 				gameEntity->Receive(new Message(HEAD_HIT));
 			}
 			else {
-				behaviorComponent->ChangeSpeedY(-400);
+				behaviorComponent->ChangeSpeedY(-375);
 			}
 		}
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
-			if ((rand() % 2) + 1 == 2) {
+			bool isPowerDoor = DoorSpriteState::isPowerDoor(m->getArg1()->getCurrentStateType());
+			if ((rand() % 2) + 1 == 2 && !isPowerDoor) {
 				//SDL_Log("50 chance -- toggle!");
 				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
 			}

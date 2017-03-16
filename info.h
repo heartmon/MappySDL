@@ -8,6 +8,7 @@ class Info : public GameEntity {
 	int mappyLife;
 	int level;
 	int scoreTotal;
+	int highscore;
 	//ScoreTotal* scoreTotal;
 
 public:
@@ -24,7 +25,7 @@ public:
 		SDL_Log("Info::Init");
 
 		scoreTotal = 0;
-
+		highscore = 0;
 	}
 
 	void Update(float dt) {
@@ -40,26 +41,33 @@ public:
 		// Static text
 		char scoreTitle[10];
 		sprintf(scoreTitle, "SCORE");
-		system->drawText(150, 8, scoreTitle, red, false);
+		system->drawText(100, 8, scoreTitle, red, false);
+
+		char highscoreTitle[10];
+		sprintf(highscoreTitle, "HIGHSCORE");
+		system->drawText(225, 8, highscoreTitle, red, false);
 
 		char lifeTitle[10];
 		sprintf(lifeTitle, "MAPPY");
-		system->drawText(300, 8, lifeTitle, blue, false);
+		system->drawText(350, 8, lifeTitle, blue, false);
 
 		char levelTitle[10];
 		sprintf(levelTitle, "LEVEL");
-		system->drawText(450, 8, levelTitle, blue, false);
+		system->drawText(475, 8, levelTitle, blue, false);
 
 		// Dynamic
-		char scoreText[20], mouseLifeText[5], levelText[5];
+		char scoreText[20], mouseLifeText[5], levelText[5], highscoreText[20];
 		sprintf(scoreText, "%d", scoreTotal);
-		system->drawText(150, 30, scoreText);
+		system->drawText(100, 30, scoreText);
+
+		sprintf(highscoreText, "%d", highscore);
+		system->drawText(225, 30, highscoreText);
 
 		sprintf(mouseLifeText, "%d", mappyLife);
-		system->drawText(300, 30, mouseLifeText);
+		system->drawText(350, 30, mouseLifeText);
 
 		sprintf(levelText, "%d", level);
-		system->drawText(450, 30, levelText);
+		system->drawText(475, 30, levelText);
 	}
 
 	void Receive(Message* m) {
@@ -73,6 +81,26 @@ public:
 		}
 		if (m->getMessageType() == UPDATE_SCORE) {
 			scoreTotal += m->getData();
+			checkScore();
+		}
+		if (m->getMessageType() == HIGH_SCORE) {
+			highscore = m->getData();
+		}
+	}
+
+
+	int getScoreTotal() {
+		return scoreTotal;
+	}
+
+	int getHighScore() {
+		return highscore;
+	}
+
+private:
+	void checkScore() {
+		if (scoreTotal > highscore) {
+			highscore = scoreTotal;
 		}
 	}
 };

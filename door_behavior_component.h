@@ -33,7 +33,7 @@ public:
 	}
 
 	void Toggle() {
-		SDL_Log("Toggle Work ..");
+		//SDL_Log("Toggle Work ..");
 		gameEntity->isOpen = !gameEntity->isOpen;
 
 		UpdateState();

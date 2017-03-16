@@ -45,7 +45,7 @@ public:
 			SpriteSheetRenderComponent* spriteComponent = new SpriteSheetRenderComponent();
 			spriteComponent->Create(system, bigCat, nullptr, spriteState, true, camera, true);
 			BigCatBehaviorComponent* behaviorComponent = new BigCatBehaviorComponent();
-			behaviorComponent->Create(system, bigCat, nullptr, camera, mouse);
+			behaviorComponent->Create(system, bigCat, nullptr, camera, level->getItemPool());
 			BigCatCollisionRule* collisionRule = new BigCatCollisionRule();
 			collisionRule->Create(bigCat, camera, behaviorComponent);
 			MapCollideComponent* mapCollideComponent = new MapCollideComponent();
@@ -56,6 +56,8 @@ public:
 			doorCollideCompponent->Create(system, bigCat, nullptr, (ObjectPool<GameEntity>*)level->getDoorPool());
 			CollidePoolComponent* rainbowCollideComponent = new CollidePoolComponent();
 			rainbowCollideComponent->Create(system, bigCat, nullptr, (ObjectPool<GameEntity>*)rainbowController->getRainbowPool());
+			CollidePoolComponent* itemCollideComponent = new CollidePoolComponent();
+			itemCollideComponent->Create(system, bigCat, nullptr, (ObjectPool<GameEntity>*)level->getItemPool());
 
 			bigCat->Create();
 			bigCat->SetCollisionRule(collisionRule);
@@ -64,6 +66,7 @@ public:
 			bigCat->AddComponent(ropeCollideComponent);
 			bigCat->AddComponent(doorCollideCompponent);
 			bigCat->AddComponent(rainbowCollideComponent);
+			bigCat->AddComponent(itemCollideComponent);
 			bigCat->AddBehaviorComponent(behaviorComponent);
 
 			bigCat->AddReceiver(this);
@@ -150,12 +153,32 @@ public:
 		if (m->getMessageType() == CAT_DIE) {
 			activeCats--;
 		}
+
+		if (m->getMessageType() == POSSESS_ITEM) {
+			Send(m);
+		}
+
+		if (m->getMessageType() == UPDATE_SCORE) {
+			Send(new Message(m->getMessageType(), m->getArg1(), 1000));
+		}
+
+		if (m->getMessageType() == MOUSE_DIE) {
+			Hide();
+		}
+
+		if (m->getMessageType() == LEVEL_CLEAR) {
+			Hide();
+		}
 	}
 
-	void RoundInit() {
+	void Hide() {
 		for (auto go = bigCatPool.pool.begin(); go != bigCatPool.pool.end(); go++) {
 			(*go)->enabled = false;
 		}
+	}
+
+	void RoundInit() {
+		Hide();
 		activeCats = 0;
 	}
 

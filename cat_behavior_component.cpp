@@ -32,6 +32,10 @@ void CatBehaviorComponent::Update(float dt) {
 	bool go_on = true;
 	float g = 200.f;
 
+	if (nextOrder != NOTHING) {
+		currentOrder = nextOrder;
+		nextOrder = NOTHING;
+	}
 
 	// not moving the same way, not collide with anything now
 	if (gameEntity->isStop) {
@@ -58,25 +62,19 @@ void CatBehaviorComponent::Update(float dt) {
 	if (isOnTheGround(gameEntity->getCurrentStateType()) && 
 		(gameEntity->getCurrentStateType() != CatSpriteState::STATE_KNOCKBACK && gameEntity->getCurrentStateType() != CatSpriteState::STATE_AFTER_KNOCKBACK)
 		) {
-		if (currentOrder == CAT_MOVE_RIGHT) {
+		if (currentOrder == CAT_MOVE_RIGHT || currentOrder == CAT_JUMP_BACK_RIGHT) {
 			gameEntity->direction = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_WALK);
 			ChangeSpeedX(catWalkingSpeed*gameSpeed);
 		}
 
-		if (currentOrder == CAT_MOVE_LEFT) {
+		if (currentOrder == CAT_MOVE_LEFT || currentOrder == CAT_JUMP_BACK_LEFT) {
 			gameEntity->direction = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_WALK);
 			ChangeSpeedX(catWalkingSpeed*gameSpeed);
 		}
 
-		////space
-		//if (keys.fire) {
-		//	if (canSpace) {
-		//		gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
-		//		canSpace = false;
-		//	}
-		//}
+		//SDL_Log("%d", currentOrder);
 
 		gameEntity->ay = 0;
 		goingToJumpTo = 0;
@@ -161,11 +159,8 @@ void CatBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_JUMP_BACK) {
-		//gameEntity->direction = goingToJumpTo;
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
-			//SDL_Log("JUMP BACK");
-			//SDL_Log("Direction %d", gameEntity->direction);
 			float jumpSpeed = 100;
 			trackingNumber = 0;
 			ChangeSpeedY(-100.f);
@@ -181,21 +176,18 @@ void CatBehaviorComponent::Update(float dt) {
 			Move(dt*gameEntity->vx*gameEntity->direction, 0);
 		}
 		else {
+			if (gameEntity->direction == GameEntity::RIGHT) {
+				currentOrder = CAT_MOVE_RIGHT;
+			}
+			else {
+				currentOrder = CAT_MOVE_LEFT;
+			}
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
 			gameEntity->ay = 1;
-			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
-
-			/*if (gameEntity->direction == GameEntity::RIGHT) {
-				ChangeSpeedX(160);
-				nextOrder = CAT_MOVE_RIGHT;
-			}
-			else {
-				ChangeSpeedX(160);
-				nextOrder = CAT_MOVE_LEFT;
-			}*/
+			
 		}
 
 		return;
@@ -221,6 +213,7 @@ void CatBehaviorComponent::Update(float dt) {
 			Move(dt*gameEntity->vx*gameEntity->direction, 0);
 		}
 		else {
+			currentOrder = NOTHING;
 			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
@@ -234,7 +227,8 @@ void CatBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_STAND) {
-		clearOrder();
+		//clearOrder();
+		currentOrder = NOTHING;
 		ThinkWhereToMove();
 	}
 
@@ -242,18 +236,18 @@ void CatBehaviorComponent::Update(float dt) {
 
 
 	NumbProgress(dt);
-	if (nextOrder != NOTHING) {
+	/*if (nextOrder != NOTHING) {
 		currentOrder = nextOrder;
 		nextOrder = NOTHING;
-	}
+	}*/
 
 }
 
 void CatBehaviorComponent::ThinkWhereToMove() {
-	if (nextOrder != NOTHING) {
+	currentOrder = NOTHING;
+	if (currentOrder != NOTHING) {
 		return;
 	}
-	clearOrder();
 	//if (isNumb) {
 	//	return;
 	//}
@@ -269,11 +263,11 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 	case CatSpriteState::STATE_WALK:
 		if (gameEntity->horizontalPosition < mouseBox.x) {
 			//SDL_Log("Cat will move right");
-			nextOrder = CAT_MOVE_RIGHT;
+			currentOrder = CAT_MOVE_RIGHT;
 		}
 		else {
 			//SDL_Log("Cat will move left");
-			nextOrder = CAT_MOVE_LEFT;
+			currentOrder = CAT_MOVE_LEFT;
 		}
 		break;
 	}
@@ -282,11 +276,11 @@ void CatBehaviorComponent::ThinkWhereToMove() {
 void CatBehaviorComponent::ChangeDirection() {
 	if(currentOrder == CAT_MOVE_RIGHT) {
 		//SDL_Log("From right to left");
-		nextOrder = CAT_MOVE_LEFT;
+		currentOrder = CAT_MOVE_LEFT;
 	}
 	else {
 		//SDL_Log("From left to right");
-		nextOrder = CAT_MOVE_RIGHT;
+		currentOrder = CAT_MOVE_RIGHT;
 	}
 }
 
@@ -307,8 +301,10 @@ void CatBehaviorComponent::NumbProgress(float dt) {
 }
 
 void CatBehaviorComponent::ThinkWhereToJump() {
-	clearOrder();
 	if (isNumb) {
+		return;
+	}
+	if (currentOrder != NOTHING) {
 		return;
 	}
 
@@ -323,29 +319,37 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		if (gameEntity->vy > 0) {
 			return;
 		}
-		int justRandom = (rand() % 10) / 2 - 4;
-		bool yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - 1 == mouseBlockYPos;
-		//bool yDistance = catBlockYPos + justRandom == mouseBlockYPos;
-
-		bool notCareMouseState = true; //flag, whether the first or second condition's happened
-		bool stateOfMouse = mouse->getCurrentStateType() != MouseSpriteState::STATE_INTHEAIR;
-		if ((rand() % 2) + 1 + numbCount == 2)
-			notCareMouseState = false;
 		//
-		if (!notCareMouseState && !stateOfMouse) {
-			NumbMind();
-			//SDL_Log("Don't know what to do~~ %d", numbCount);
-			return;
+		bool yDistance = false;
+		if (abs(mouseBox.x - catBox.x) > SCREEN_WIDTH) {
+			int randomFloor = (rand() % 10);
+			yDistance = randomFloor >= catBlockYPos;
+		}
+		else {
+			int justRandom = (rand() % 10) / 2 - 4;
+			yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - 1 == mouseBlockYPos;
+			//bool yDistance = catBlockYPos + justRandom == mouseBlockYPos;
+
+			bool notCareMouseState = true; //flag, whether the first or second condition's happened
+			bool stateOfMouse = mouse->getCurrentStateType() != MouseSpriteState::STATE_INTHEAIR;
+			if ((rand() % 2) + 1 + numbCount == 2)
+				notCareMouseState = false;
+			//
+			if (!notCareMouseState && !stateOfMouse) {
+				NumbMind();
+				//SDL_Log("Don't know what to do~~ %d", numbCount);
+				return;
+			}
 		}
 		//
 		if (yDistance) {
 			if (gameEntity->horizontalPosition < mouseBox.x) {
 				//SDL_Log("Cat will jump right");
-				nextOrder = CAT_JUMP_BACK_RIGHT;
+				currentOrder = CAT_JUMP_BACK_RIGHT;
 			}
 			else {
 				//SDL_Log("Cat will jump left");
-				nextOrder = CAT_JUMP_BACK_LEFT;
+				currentOrder = CAT_JUMP_BACK_LEFT;
 			}
 
 			numbCount = 0;
@@ -460,7 +464,7 @@ void CatBehaviorComponent::Receive(Message* m) {
 }
 
 void CatBehaviorComponent::clearOrder() {
-	currentOrder = NOTHING;
+	//currentOrder = NOTHING;
 	nextOrder = NOTHING;
 	nextOrderReady = true;
 }

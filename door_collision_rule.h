@@ -36,7 +36,7 @@ public:
 			}
 		}
 
-		if (withThisEntity->getName() == CLASS_CAT) {
+		if (withThisEntity->getName() == CLASS_CAT || withThisEntity->getName() == CLASS_BIG_CAT) {
 			if (gameEntity->getCurrentStateType() != DoorSpriteState::STATE_DOOR_OPEN) {
 				bool isCollided = checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox());
 				if (isCollided) {

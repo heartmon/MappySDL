@@ -8,11 +8,11 @@ public:
 	const static int STATE_INTHEAIR = 3;
 	const static int STATE_KNOCKBACK = 4;
 	const static int STATE_DEAD = 5;
-	const static int STATE_STAND_RIGHT = 6;
-	const static int STATE_WALK_RIGHT = 7;
-	const static int STATE_PRE_JUMP_BACK = 8;
-	const static int STATE_JUMP_BACK = 9;
-	const static int STATE_DEAD_MOVING = 10;
+	//const static int STATE_STAND_RIGHT = 6;
+	//const static int STATE_WALK_RIGHT = 7;
+	const static int STATE_PRE_JUMP_BACK = 6;
+	const static int STATE_JUMP_BACK = 7;
+	const static int STATE_DEAD_MOVING = 8;
 
 	const static int STANDING_ANIMATION_FRAME = 1;
 	const static int WALKING_ANIMATION_FRAME = 2;
@@ -41,8 +41,8 @@ private:
 	SDL_Rect walkSpriteClips[WALKING_ANIMATION_FRAME];
 	SDL_Rect prejumpSpriteClips[PREJUMP_ANIMATION_FRAME];
 	SDL_Rect jumpSpriteClips[JUMP_ANIMATION_FRAME];
-	SDL_Rect standRightSpriteClips[STANDING_ANIMATION_FRAME];
-	SDL_Rect walkRightSpriteClips[WALKING_ANIMATION_FRAME];
+	//SDL_Rect standRightSpriteClips[STANDING_ANIMATION_FRAME];
+	//SDL_Rect walkRightSpriteClips[WALKING_ANIMATION_FRAME];
 	SDL_Rect knockbackClip[FRAME_NO_MOVE];
 	SDL_Rect deadClip[DEAD_ANIMATION_FRAME];
 	SDL_Rect deadMovingClip[DEAD_MOVING_ANIMATION_FRAME];

@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
 //Screen dimension constants
-const int SCREEN_WIDTH = 660;
+const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-const int WINDOW_WIDTH = 660;
+const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 580;
 
 const int X_SCREEN_OFFSET = 0;

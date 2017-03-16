@@ -8,6 +8,7 @@ class RainbowBehaviorComponent : public Component {
 	SDL_Rect* camera;
 public:
 	int numberOfCats;
+	int numberOfBigCats;
 
 	virtual void Create(AvancezLib* system, Rainbow * rainbow, SDL_Rect* camera) {
 		Component::Create(system, rainbow, nullptr);
@@ -17,6 +18,7 @@ public:
 
 	virtual void Init() {
 		numberOfCats = 0;
+		numberOfBigCats = 0;
 	}
 
 	virtual void Update(float dt) {

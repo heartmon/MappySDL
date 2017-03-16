@@ -40,7 +40,7 @@ public:
 			rainbow->SetCollisionRule(collisionRule);
 			rainbow->AddComponent(cameraComponent);
 			rainbow->AddComponent(spriteComponent);
-			rainbow->AddComponent(behaviorComponent);
+			rainbow->AddBehaviorComponent(behaviorComponent);
 
 			this->AddReceiver(rainbow);
 			rainbow->AddReceiver(this);
@@ -88,6 +88,7 @@ public:
 		GameEntity::Receive(m);
 		if (m->getMessageType() == RELEASE_RAINBOW && m->getArg1()->getName() == CLASS_DOOR) {
 			MakeRainbowFrom((Door*)m->getArg1());
+			Send(m);
 		}
 
 		if (m->getMessageType() == RAINBOW_GONE) {

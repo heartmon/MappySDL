@@ -9,11 +9,15 @@
 
 //enum BigCatAction { NOTHING, CAT_STAND, CAT_MOVE_LEFT, CAT_MOVE_RIGHT, CAT_JUMP_BACK_LEFT, CAT_JUMP_BACK_RIGHT, CAT_TOGGLE_DOOR };
 class BigCat;
+class Item;
 class Mouse;
+class Door;
 class BigCatBehaviorComponent : public Component {
 	SDL_Rect* camera;
 	BigCat* gameEntity;
 	Mouse* mouse;
+	ObjectPool<Item>* itemPool;
+	Item* currentTargetItem;
 
 	float defaultVx;
 	float defaultVy;
@@ -51,6 +55,14 @@ class BigCatBehaviorComponent : public Component {
 
 	float trackingNumber;
 
+	// time
+	float inItemTime = 0;
+	float inItemInterval = 3.f;
+
+	float inItemWithScoreTime = 0;
+	float inItemWithScoreInterval = 2.f;
+
+
 public:
 	const static int BOUNCE_SPEED_Y = 430;
 
@@ -60,8 +72,9 @@ public:
 	int goingToJumpTo = 0;
 	bool jumpAgainstWall = false;
 	bool isGoingToDie = false;
+	Door* lastKnownRainbowDoor;
 
-	void Create(AvancezLib* system, BigCat * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse);
+	void Create(AvancezLib* system, BigCat * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, ObjectPool<Item>* itemPool);
 	void Init();
 	void RoundInit();
 	void Update(float dt);
@@ -81,6 +94,11 @@ public:
 	void NumbMind();
 	void NumbProgress(float dt);
 	void ChangeDirection();
+
+	void ThinkToPossessItem(Item* item);
+	void FindNewTargetItem();
+	void ForgetCurrentTargetItem();
+	void ShowScore();
 
 	bool isOnTheGround(int currentState) {
 		switch (currentState) {

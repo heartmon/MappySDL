@@ -61,6 +61,7 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 
 	//
 	itemPool.Create(15);
+	int count = 0;
 	for (auto i = itemPool.pool.begin(); i != itemPool.pool.end(); i++) {
 		Item* item = *i;
 
@@ -76,7 +77,7 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 		ItemCollisionRule* itemCollisionRule = new ItemCollisionRule();
 		itemCollisionRule->Create(item, camera, itemBehaviorComponent);
 
-		item->Create();
+		item->Create(count++);
 		item->SetCollisionRule(itemCollisionRule);
 		item->AddComponent(spriteSheetRenderComponent);
 		item->AddComponent(cameraCollideComponent);
@@ -169,11 +170,6 @@ void Level::Update(float dt) {
 	for (auto it = ropePool.pool.begin(); it != ropePool.pool.end(); it++) {
 		Rope* rope = *it;
 		rope->Update(dt);
-	}
-
-	for (auto it = itemPool.pool.begin(); it != itemPool.pool.end(); it++) {
-		Item* item = *it;
-		item->Update(dt);
 	}
 
 	for (auto it = doorPool.pool.begin(); it != doorPool.pool.end(); it++) {

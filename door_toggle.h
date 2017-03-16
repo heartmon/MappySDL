@@ -7,7 +7,7 @@ class DoorToggle : public GameEntity {
 	ObjectPool<Door>* doors;
 	SDL_Rect* camera;
 
-	float toggleInterval = 0.02f;
+	float toggleInterval = 0.2f;
 	float toggleTime = 0;
 	bool canToggle = true;
 
@@ -63,7 +63,9 @@ public:
 				}
 
 				//check limited range
-
+				if (abs(controlEntityBox.x - doorBox.x) > SCREEN_WIDTH / 2 && controlEntity->getName() != CLASS_MOUSE) {
+					continue;
+				}
 				
 				if (controlEntity->direction == GameEntity::LEFT) {
 					if (xCheck - doorBox.x < minimumDistance && xCheck - doorBox.x > 0 && doorBox.x > camera->x) {
@@ -94,6 +96,10 @@ public:
 				return;
 			}
 			((DoorBehaviorComponent*)nearestDoor->getBehaviorComponent())->Toggle();
+
+			if (controlEntity->getName() == CLASS_MOUSE) {
+				SDL_Log("MOUSE TOGGLE DOOR");
+			}
 		}
 		
 	}

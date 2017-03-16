@@ -44,6 +44,10 @@ public:
 
 	void Update(float dt) {
 
+		for (auto it = item_pool->pool.begin(); it != item_pool->pool.end(); it++) {
+			Item* item = *it;
+			item->Update(dt);
+		}
 	}
 
 	void Receive(Message* m) {

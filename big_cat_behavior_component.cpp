@@ -5,12 +5,13 @@
 #include "mouse.h"
 #include "tile_sprite_state.h"
 #include "mouse_sprite_state.h"
+#include "item.h"
 
-void BigCatBehaviorComponent::Create(AvancezLib* system, BigCat* go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse) {
+void BigCatBehaviorComponent::Create(AvancezLib* system, BigCat* go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, ObjectPool<Item>* itemPool) {
 	Component::Create(system, go, game_objects);
 	this->gameEntity = go;
 	this->camera = camera;
-	this->mouse = mouse;
+	this->itemPool = itemPool;
 }
 
 void BigCatBehaviorComponent::Init() {
@@ -19,17 +20,19 @@ void BigCatBehaviorComponent::Init() {
 
 	currentOrder = NOTHING;
 	nextOrder = NOTHING;
+
+	currentTargetItem = NULL;
 }
 
 void BigCatBehaviorComponent::RoundInit() {
 	gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
+	currentTargetItem = NULL;
 }
 
 void BigCatBehaviorComponent::Update(float dt) {
 	bool go_on = true;
 	float g = 200.f;
-
-
+	
 	// not moving the same way, not collide with anything now
 	if (gameEntity->isStop) {
 		Move(dt*gameEntity->direction*180.f, 0);
@@ -50,6 +53,36 @@ void BigCatBehaviorComponent::Update(float dt) {
 		canSpace = true;
 		spaceTriggerTime = 0;
 	}
+
+	// not check other state until not in IN_ITEM state
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_IN_ITEM) {
+		inItemTime += dt;
+		if (inItemTime > inItemInterval) {
+			inItemTime = 0;
+			ForgetCurrentTargetItem();
+			FindNewTargetItem();
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
+		}
+
+		return;
+	}
+
+	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_IN_ITEM_WITH_SCORE) {
+		inItemWithScoreTime += dt;
+		if (inItemWithScoreTime > inItemWithScoreInterval) {
+			inItemWithScoreTime = 0;
+			ForgetCurrentTargetItem();
+			FindNewTargetItem();
+			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
+		}
+
+		return;
+	}
+
+
+	FindNewTargetItem();
+
+
 
 	// input processing
 	if (isOnTheGround(gameEntity->getCurrentStateType()) &&
@@ -247,6 +280,7 @@ void BigCatBehaviorComponent::Update(float dt) {
 }
 
 void BigCatBehaviorComponent::ThinkWhereToMove() {
+	if (currentTargetItem == NULL) return;
 	if (nextOrder != NOTHING) {
 		return;
 	}
@@ -255,16 +289,16 @@ void BigCatBehaviorComponent::ThinkWhereToMove() {
 	//	return;
 	//}
 
-	GameEntity::Box mouseBox = mouse->getCollisionBox(camera);
+	GameEntity::Box itemBox = currentTargetItem->getCollisionBox();
 	GameEntity::Box catBox = gameEntity->getCollisionBox();
 
-	int mouseBlockYPos = ceil(mouseBox.y) / TileSpriteState::TILE_HEIGHT;
+	int mouseBlockYPos = ceil(itemBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
 
 	switch (gameEntity->getCurrentStateType()) {
 	case BigCatSpriteState::STATE_STAND:
 	case BigCatSpriteState::STATE_WALK:
-		if (gameEntity->horizontalPosition < mouseBox.x) {
+		if (gameEntity->horizontalPosition < itemBox.x) {
 			//SDL_Log("Cat will move right");
 			nextOrder = CAT_MOVE_RIGHT;
 		}
@@ -304,39 +338,48 @@ void BigCatBehaviorComponent::NumbProgress(float dt) {
 }
 
 void BigCatBehaviorComponent::ThinkWhereToJump() {
+	if (currentTargetItem == NULL) return;
 	clearOrder();
 	if (isNumb) {
 		return;
 	}
 
-	GameEntity::Box mouseBox = mouse->getCollisionBox(camera);
+	GameEntity::Box itemBox = currentTargetItem->getCollisionBox();
 	GameEntity::Box catBox = gameEntity->getCollisionBox();
 
-	int mouseBlockYPos = ceil(mouseBox.y) / TileSpriteState::TILE_HEIGHT;
+	int itemBlockYPos = ceil(itemBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
+	
+	int blockPos = -1;
+	if (lastKnownRainbowDoor != NULL) {
+		GameEntity::Box doorBox = lastKnownRainbowDoor->getCollisionBox();
+		blockPos = ceil(doorBox.y) / TileSpriteState::TILE_HEIGHT + 1;
+	}
 
 	switch (gameEntity->getCurrentStateType()) {
 	case BigCatSpriteState::STATE_INTHEAIR:
 		if (gameEntity->vy > 0) {
 			return;
 		}
-		int justRandom = (rand() % 10) / 2 - 4;
-		bool yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - 1 == mouseBlockYPos;
-		//bool yDistance = catBlockYPos + justRandom == mouseBlockYPos;
+		
+		//SDL_Log("%d, %d", blockPos, catBlockYPos);
 
-		bool notCareMouseState = true; //flag, whether the first or second condition's happened
-		bool stateOfMouse = mouse->getCurrentStateType() != MouseSpriteState::STATE_INTHEAIR;
-		if ((rand() % 2) + 1 + numbCount == 2)
-			notCareMouseState = false;
-		//
-		if (!notCareMouseState && !stateOfMouse) {
-			NumbMind();
-			//SDL_Log("Don't know what to do~~ %d", numbCount);
-			return;
+		bool yDistance = catBlockYPos == itemBlockYPos || catBlockYPos - 1 == itemBlockYPos;
+		//know the block
+		if (blockPos != -1 && blockPos >= catBlockYPos - 2) {
+			yDistance = true;
+			lastKnownRainbowDoor = NULL;
 		}
-		//
+		else {
+
+		}
+
+		
+		if ((rand() % 2) + 1 == 2) {
+
+		}
 		if (yDistance) {
-			if (gameEntity->horizontalPosition < mouseBox.x) {
+			if (gameEntity->horizontalPosition < itemBox.x) {
 				//SDL_Log("Cat will jump right");
 				nextOrder = CAT_JUMP_BACK_RIGHT;
 			}
@@ -460,4 +503,41 @@ void BigCatBehaviorComponent::clearOrder() {
 	currentOrder = NOTHING;
 	nextOrder = NOTHING;
 	nextOrderReady = true;
+}
+
+void BigCatBehaviorComponent::ThinkToPossessItem(Item* item) {
+	if (currentTargetItem == NULL) return;
+	if (currentTargetItem != item) return;
+	if (gameEntity->getCurrentStateType() != BigCatSpriteState::STATE_WALK) return;
+
+	int chance = (rand() % 2) + 1;
+
+	if (chance == 2) {
+		SDL_Log("-----------------BigCat => Go in to the item!!");
+		gameEntity->setCurrentStateType(BigCatSpriteState::STATE_IN_ITEM);
+	}
+	else {
+		SDL_Log("-----------------BigCat => Change my mind :D");
+		ForgetCurrentTargetItem();
+	}
+}
+
+void BigCatBehaviorComponent::FindNewTargetItem() {
+	// Set current target item
+	if (currentTargetItem != NULL && !currentTargetItem->enabled) {
+		ForgetCurrentTargetItem();
+	}
+	if (currentTargetItem == NULL) {
+		currentTargetItem = itemPool->SelectRandom();
+		SDL_Log("Item been targeted, %d", currentTargetItem->getId());
+	}
+}
+
+void BigCatBehaviorComponent::ForgetCurrentTargetItem() {
+	currentTargetItem = NULL;
+}
+
+void BigCatBehaviorComponent::ShowScore() {
+	gameEntity->direction = GameEntity::LEFT;
+	gameEntity->setCurrentStateType(BigCatSpriteState::STATE_IN_ITEM_WITH_SCORE);
 }

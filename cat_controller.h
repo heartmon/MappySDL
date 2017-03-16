@@ -98,6 +98,8 @@ public:
 			}
 		}
 
+		if (activeCats == maximumSpawn) return;
+
 		if (firstTimeSpawn) {
 			if (canSpawn) {
 				switch (activeCats) {
@@ -150,12 +152,24 @@ public:
 		if (m->getMessageType() == CAT_DIE) {
 			activeCats--;
 		}
+
+		if (m->getMessageType() == MOUSE_DIE) {
+			Hide();
+		}
+
+		if (m->getMessageType() == LEVEL_CLEAR) {
+			Hide();
+		}
 	}
 
-	void RoundInit() {
+	void Hide() {
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->enabled = false;
 		}
+	}
+
+	void RoundInit() {
+		Hide();
 		activeCats = 0;
 	}
 

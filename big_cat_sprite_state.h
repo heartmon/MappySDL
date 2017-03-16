@@ -38,8 +38,8 @@ public:
 		InitClip(3, 0, INTHEAIR_ANIMATION_FRAME, intheairClip);
 		InitClip(5, 0, KNOCKBACK_FRAME, knockbackClip);
 		InitClip(5, 0, AFTER_KNOCKBACK_FRAME, afterKnockbackClip);
-		InitClip(6, 0, FRAME_NO_MOVE, inItemClip);
-		InitClip(7, 0, FRAME_NO_MOVE, inItemWithScoreClip);
+		InitClip(7, 0, FRAME_NO_MOVE, inItemClip);
+		InitClip(8, 0, FRAME_NO_MOVE, inItemWithScoreClip);
 
 		// Assign to states
 		std::vector<EntityState*>* states = new std::vector<EntityState*>();

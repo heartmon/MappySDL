@@ -17,6 +17,11 @@ void Mouse::Receive(Message* m)
 	}
 	if (m->getMessageType() == MOUSE_DIE) {
 		b->WhenDie();
+		Send(m);
+	}
+	if (m->getMessageType() == LEVEL_CLEAR) {
+		isStop = true;
+		setCurrentStateType(MouseSpriteState::STATE_STAND);
 	}
 
 }

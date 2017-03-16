@@ -9,8 +9,9 @@ public:
 	int defaultState;
 	int bonusState;
 
-	void Create() {
+	void Create(unsigned int id) {
 		GameEntity::Create();
+		this->id = id;
 	}
 	void Create(float x, float y, int state, int baseScore) {
 		GameEntity::Create(x, y);

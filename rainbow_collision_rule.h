@@ -18,6 +18,9 @@ public:
 		if (m->getArg1()->getName() == CLASS_CAT) {
 			behaviorComponent->numberOfCats++;
 		}
+		if (m->getArg1()->getName() == CLASS_BIG_CAT) {
+			behaviorComponent->numberOfBigCats++;
+		}
 	}
 
 };

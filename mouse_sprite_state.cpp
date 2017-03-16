@@ -16,11 +16,11 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	stand = new EntityState(mappySpriteSheet, STATE_STAND, STANDING_ANIMATION_FRAME, standSpriteClips);
 
 	//stand animation
-	standRightSpriteClips[0].x = spriteSize * 1;
+	/*standRightSpriteClips[0].x = spriteSize * 1;
 	standRightSpriteClips[0].y = spriteSize * 1;
 	standRightSpriteClips[0].w = spriteSize;
 	standRightSpriteClips[0].h = spriteSize;
-	EntityState* standRight = new EntityState(mappySpriteSheet, STATE_STAND_RIGHT, STANDING_ANIMATION_FRAME, standRightSpriteClips);
+	EntityState* standRight = new EntityState(mappySpriteSheet, STATE_STAND_RIGHT, STANDING_ANIMATION_FRAME, standRightSpriteClips);*/
 
 	//walking animation
 	walkSpriteClips[0].x = spriteSize * 0;
@@ -35,17 +35,17 @@ void MouseSpriteState::Create(AvancezLib* system) {
 
 	walk = new EntityState(mappySpriteSheet, STATE_WALK, WALKING_ANIMATION_FRAME, walkSpriteClips);
 
-	walkRightSpriteClips[0].x = spriteSize * 0;
+	/*walkRightSpriteClips[0].x = spriteSize * 0;
 	walkRightSpriteClips[0].y = spriteSize * 1;
 	walkRightSpriteClips[0].w = spriteSize;
-	walkRightSpriteClips[0].h = spriteSize;
+	walkRightSpriteClips[0].h = spriteSize;*/
 
-	walkRightSpriteClips[1].x = spriteSize * 1;
+	/*walkRightSpriteClips[1].x = spriteSize * 1;
 	walkRightSpriteClips[1].y = spriteSize * 1;
 	walkRightSpriteClips[1].w = spriteSize;
-	walkRightSpriteClips[1].h = spriteSize;
+	walkRightSpriteClips[1].h = spriteSize;*/
 
-	EntityState* walkRight = new EntityState(mappySpriteSheet, STATE_WALK_RIGHT, WALKING_ANIMATION_FRAME, walkRightSpriteClips);
+	//EntityState* walkRight = new EntityState(mappySpriteSheet, STATE_WALK_RIGHT, WALKING_ANIMATION_FRAME, walkRightSpriteClips);
 
 	//prejump animation
 	prejumpSpriteClips[0].x = spriteSize * 6;
@@ -84,8 +84,8 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	states->push_back(walk);
 	states->push_back(jump);
 	states->push_back(knockBack);
-	states->push_back(standRight);
-	states->push_back(walkRight);
+	/*states->push_back(standRight);
+	states->push_back(walkRight);*/
 	states->push_back(preJump);
 	states->push_back(preJumpBack);
 	states->push_back(jumpBack);

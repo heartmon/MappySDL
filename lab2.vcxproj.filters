@@ -263,5 +263,11 @@
     <ClInclude Include="config.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="sound_controller.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

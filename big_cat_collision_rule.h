@@ -27,7 +27,6 @@ public:
 		if (m->getArg1()->getName() == CLASS_RAINBOW) {
 			Rainbow* rainbow = (Rainbow*)m->getArg1();
 			// hit with rainbow
-			SDL_Log("Rainbow Hit111111111111!!");
 			gameEntity->isStop = true;
 			gameEntity->direction = rainbow->direction;
 		}
@@ -35,6 +34,7 @@ public:
 			//mouse->isCollidedWithMap = true;
 		}
 		if (m->getArg1()->getName() == CLASS_ITEM) {
+			behaviorComponent->ThinkToPossessItem((Item*)m->getArg1());
 		}
 
 		if (m->getArg1()->getName() == CLASS_ROPE) {
@@ -48,13 +48,27 @@ public:
 		}
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
-			if ((rand() % 2) + 1 == 2) {
+			bool isPowerDoor = DoorSpriteState::isPowerDoor(m->getArg1()->getCurrentStateType());
+			if ((rand() % 2) + 1 == 2 && !isPowerDoor) {
 				//SDL_Log("50 chance -- toggle!");
 				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
 			}
 			else {
 				behaviorComponent->Move(5 * -gameEntity->direction, 0);
 				behaviorComponent->ChangeDirection();
+			}
+			if (isPowerDoor) {
+				behaviorComponent->lastKnownRainbowDoor = (Door*)m->getArg1();
+			}
+		}
+
+		if (m->getArg1()->getName() == CLASS_MOUSE) {
+			switch (gameEntity->getCurrentStateType()) {
+				case BigCatSpriteState::STATE_IN_ITEM:
+					SDL_Log("Mouse will get bonus score");
+					behaviorComponent->ShowScore();
+					gameEntity->Send(new Message(UPDATE_SCORE, gameEntity));
+					break;
 			}
 		}
 	}
@@ -73,6 +87,17 @@ public:
 		}
 		if (withThisEntity->getName() == CLASS_RAINBOW) {
 			bool isCollided(checkSquareCollision(self->getCollisionBox(), withThisEntity->getCollisionBox()));
+			return isCollided;
+		}
+		if (withThisEntity->getName() == CLASS_ITEM) {
+			GameEntity::Box bcBox = self->getCollisionBox();
+			GameEntity::Box itemBox = withThisEntity->getCollisionBox();
+			bcBox.x = bcBox.x + bcBox.w / 2 - 1;
+			bcBox.w = 2;
+			itemBox.x = itemBox.x + itemBox.w / 2 - 1;
+			itemBox.w = 2;
+
+			bool isCollided(checkSquareCollision(bcBox, itemBox));
 			return isCollided;
 		}
 
