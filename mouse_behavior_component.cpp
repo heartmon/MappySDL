@@ -107,6 +107,7 @@ void MouseBehaviorComponent::Update(float dt) {
 		gameEntity->ay = 0;
 		goingToJumpTo = 0;
 		resetStateIndicator = false;
+		intheairDeadTime = 0;
 	}
 
 	// Update position
@@ -175,31 +176,15 @@ void MouseBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP_BACK) {
-		goingToJumpTo = 0;
+		goingToJumpTo = 0; 
+		// first setup value when enter this state
 		if (!resetStateIndicator) {
 			//SDL_Log("JUMP BACK");
-			float jumpSpeed = 100;
-			trackingNumber = 0;
-			ChangeSpeedY(-105.f);
-			ChangeSpeedX(jumpSpeed);
-			gameEntity->ay = 3.5;
+			ChangeSpeedY(-jumpbackSpeedY);
+			ChangeSpeedX(jumpbackSpeedX);
+			gameEntity->ay = 4;
 			resetStateIndicator = true;
-
 			isGoingToDie = false;
-		}
-
-		trackingNumber += dt;
-		if (trackingNumber <= 0.3) {
-			Move(dt*gameEntity->vx*gameEntity->direction, 0);
-		}
-		else {
-			gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
-			ChangeSpeedX(0);
-			ChangeSpeedY(200);
-			gameEntity->ay = 1;
-			//SDL_Log("Change to in the air");
-			resetStateIndicator = false;
-			intheairDeadTime = 0;
 		}
 
 		return;

@@ -38,8 +38,13 @@ class MouseBehaviorComponent : public Component {
 	float deadMovingTime = 0;
 
 	float intheairDeadTime = 0;
-	float intheairDeadInterval = 1.5f;
-	
+	float intheairDeadInterval = 0.2f;
+
+	bool doingJumpback = false;
+	float jumpbackTime = 0;
+	float jumpbackInterval = 0.4f;
+	float jumpbackSpeedX = 200;
+	float jumpbackSpeedY = 100;
 public:
 	bool resetStateIndicator;
 

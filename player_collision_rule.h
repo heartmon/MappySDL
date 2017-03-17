@@ -4,7 +4,8 @@
 #include "tile_sprite_state.h"
 
 class PlayerCollisionRule : public CollisionRuleInterface {
-
+protected:
+	float characterBounceSpeedY = 405;
 public:
 	virtual bool WhenCollideWithWall(Tile* tile, float dt) = 0;
 	virtual bool WhenHeadCollideWithCeil(Tile* tile, float dt) = 0;
@@ -123,7 +124,8 @@ public:
 			
 			if (
 				(playerBox.x + 5 <= tileBox.x + tileBox.w && playerBox.x + playerBox.w - 5 >= tileBox.x)
-				&& (playerBox.y <= tileBox.y + tileBox.h / 2) && (playerBox.y + 1 >= tileBox.y + tileBox.h / 2 - 1)
+				//&& (playerBox.y <= tileBox.y + tileBox.h / 2) && (playerBox.y + 1 >= tileBox.y + tileBox.h / 2 - 1)
+				&& (playerBox.y <= tileBox.y + tileBox.h / 2 && playerBox.y + playerBox.h >= tileBox.y)
 				&& (TileSpriteState::isFloor(tile->getCurrentStateType()))
 				&& gameEntity->vy < 0
 				) {
@@ -135,7 +137,7 @@ public:
 			// check the edge of the floor (collide by x-center)
 			if (
 				(playerCenterX - 1 <= tileBox.x + tileBox.w && playerCenterX + 1 >= tileBox.x)
-				&& (playerBox.y + playerBox.h - 1 <= tileBox.y + 1) && (playerBox.y + playerBox.h + 1 >= tileBox.y)
+				&& (playerBox.y + playerBox.h - 5 <= tileBox.y + 5 && playerBox.y + playerBox.h + 2 >= tileBox.y)
 				)
 			{
 				switch (tile->getCurrentStateType()) {
@@ -150,7 +152,7 @@ public:
 			// check if its foot collision (for the floor)
 			if (
 				(playerBox.x + 5 <= tileBox.x + tileBox.w && playerBox.x + playerBox.w - 5 >= tileBox.x)
-				&& (playerBox.y + playerBox.h - 1 <= tileBox.y + 1) && (playerBox.y + playerBox.h + 1 >= tileBox.y)
+				&& (playerBox.y + playerBox.h - 5 <= tileBox.y + 5 && playerBox.y + playerBox.h + 2  >= tileBox.y)
 				)
 			{
 				switch (tile->getCurrentStateType()) {

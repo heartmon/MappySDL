@@ -8,6 +8,7 @@
 enum CatAction { NOTHING, CAT_STAND, CAT_MOVE_LEFT, CAT_MOVE_RIGHT, CAT_JUMP_BACK_LEFT, CAT_JUMP_BACK_RIGHT, CAT_TOGGLE_DOOR };
 class Cat;
 class Mouse;
+class Door;
 class CatBehaviorComponent : public Component {
 	SDL_Rect* camera;
 	Cat* cat;
@@ -28,7 +29,8 @@ class CatBehaviorComponent : public Component {
 
 	float jumpbackInterval = 0.3f;
 	float jumpbackTime = 0;
-	float jumpbackSpeed = 100;
+	float jumpbackSpeedX = 200;
+	float jumpbackSpeedY = 100;
 
 	float knockbackInterval = 0.2f;
 	float knockbackTime = 0;
@@ -61,6 +63,7 @@ public:
 	int goingToJumpTo = 0;
 	bool jumpAgainstWall = false;
 	bool isGoingToDie = false;
+	Door* lastKnownRainbowDoor;
 
 	void Create(AvancezLib* system, Cat * go, std::vector<GameEntity*> * game_objects, SDL_Rect* camera, Mouse* mouse);
 	void Init();

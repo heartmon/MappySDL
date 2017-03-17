@@ -42,7 +42,7 @@ public:
 				gameEntity->Receive(new Message(HEAD_HIT));
 			}
 			else {
-				behaviorComponent->ChangeSpeedY(-375);
+				behaviorComponent->ChangeSpeedY(-characterBounceSpeedY);
 			}
 		}
 
@@ -55,6 +55,9 @@ public:
 			else {
 				behaviorComponent->Move(5 * -gameEntity->direction, 0);
 				behaviorComponent->ChangeDirection();
+			}
+			if (isPowerDoor) {
+				behaviorComponent->lastKnownRainbowDoor = (Door*)m->getArg1();
 			}
 		}
 	}
@@ -98,7 +101,7 @@ public:
 			behaviorComponent->resetStateIndicator = false;
 		}
 		else {
-			behaviorComponent->ChangeSpeedX(-gameEntity->vx);
+			behaviorComponent->ChangeDirection();
 			behaviorComponent->Move(dt*(gameEntity->vx), 0);
 		}
 

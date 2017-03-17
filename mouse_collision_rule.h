@@ -51,15 +51,18 @@ public:
 				gameEntity->Receive(new Message(HEAD_HIT));
 			}
 			else {
-				behaviorComponent->ChangeSpeedY(-375);
+				GameEntity::Box mouseBox = gameEntity->getCollisionBox(camera);
+				int yPos = ceil(mouseBox.y / TileSpriteState::TILE_HEIGHT);
+				//SDL_Log("Current speed Y %f, Y pos: %d", gameEntity->vy, yPos);
+				behaviorComponent->ChangeSpeedY(-characterBounceSpeedY);
 				gameEntity->Send(new Message(MOUSE_JUMP_ON_ROPE));
 			}
 			//mouse->vy = -430;
 		}
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
-			behaviorComponent->ChangeSpeedX(0);
-			behaviorComponent->Move(3 * -gameEntity->direction, 0);
+			//behaviorComponent->ChangeSpeedX(0);
+			//behaviorComponent->Move(0.03 * gameEntity->vx * -gameEntity->direction, 0);
 		}
 	}
 
@@ -78,6 +81,10 @@ public:
 		if (withThisEntity->getName() == CLASS_DOOR && behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType())) {
 			Door* door = (Door*)withThisEntity;
 			bool isCollided = door->getCollisionRule()->isCollided(door, self, dt);
+			if (isCollided) {
+				//need to use dt
+				behaviorComponent->Move(dt * gameEntity->vx * -gameEntity->direction, 0);
+			}
 			return isCollided;
 		}
 		if (withThisEntity->getName() == CLASS_CAT) {

@@ -161,33 +161,18 @@ void CatBehaviorComponent::Update(float dt) {
 	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_JUMP_BACK) {
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
-			float jumpSpeed = 100;
-			trackingNumber = 0;
-			ChangeSpeedY(-100.f);
-			ChangeSpeedX(jumpSpeed);
+			ChangeSpeedY(-jumpbackSpeedY);
+			ChangeSpeedX(jumpbackSpeedX);
 			gameEntity->ay = 3.5;
 			resetStateIndicator = true;
-
 			isGoingToDie = false;
 		}
 
-		trackingNumber += dt;
-		if (trackingNumber <= 0.3f) {
-			Move(dt*gameEntity->vx*gameEntity->direction, 0);
+		if (gameEntity->direction == GameEntity::RIGHT) {
+			currentOrder = CAT_MOVE_RIGHT;
 		}
 		else {
-			if (gameEntity->direction == GameEntity::RIGHT) {
-				currentOrder = CAT_MOVE_RIGHT;
-			}
-			else {
-				currentOrder = CAT_MOVE_LEFT;
-			}
-			gameEntity->setCurrentStateType(CatSpriteState::STATE_INTHEAIR);
-			ChangeSpeedX(0);
-			ChangeSpeedY(200);
-			gameEntity->ay = 1;
-			resetStateIndicator = false;
-			
+			currentOrder = CAT_MOVE_LEFT;
 		}
 
 		return;
@@ -308,6 +293,14 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		return;
 	}
 
+	int maximumPos = ceil(LEVEL_HEIGHT) / TileSpriteState::TILE_HEIGHT - 2;
+
+	int blockPos = -1;
+	if (lastKnownRainbowDoor != NULL) {
+		GameEntity::Box doorBox = lastKnownRainbowDoor->getCollisionBox();
+		blockPos = ceil(doorBox.y) / TileSpriteState::TILE_HEIGHT + 1;
+	}
+
 	GameEntity::Box mouseBox = mouse->getCollisionBox(camera);
 	GameEntity::Box catBox = cat->getCollisionBox();
 
@@ -324,6 +317,14 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		if (abs(mouseBox.x - catBox.x) > SCREEN_WIDTH) {
 			int randomFloor = (rand() % 10);
 			yDistance = randomFloor >= catBlockYPos;
+		}
+		else if (blockPos != -1 && blockPos >= catBlockYPos - 2 && blockPos != maximumPos) {
+			yDistance = true;
+			lastKnownRainbowDoor = NULL;
+		}
+		else if (blockPos != -1 && blockPos == maximumPos && blockPos <= catBlockYPos + 3) {
+			yDistance = true;
+			lastKnownRainbowDoor = NULL;
 		}
 		else {
 			int justRandom = (rand() % 10) / 2 - 4;

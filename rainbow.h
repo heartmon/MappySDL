@@ -41,6 +41,17 @@ public:
 	virtual std::string getName() {
 		return CLASS_RAINBOW;
 	}
+
+	GameEntity::Box getCollisionBox() {
+		GameEntity::Box box = GameEntity::getCollisionBox();
+		box.x = box.x + 5;
+		box.w = box.w - 10;
+		box.y = box.y + 10;
+		box.h = box.h - 20;
+
+		return box;
+	}
+
 private:
 
 };

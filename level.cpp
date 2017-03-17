@@ -10,21 +10,14 @@
 #include "door.h"
 #include "door_collision_rule.h"
 #include "item_collision_rule.h"
+#include "roof.h"
 // Message of complete level -> change level
 
 void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 	SDL_Log("Level::Create");
 	this->system = system;
-	this->level = 1;
-
 
 	this->camera = camera;
-
-	this->tileMap = new std::vector<Tile*>;
-	this->ropeArray = new std::vector<Rope*>;
-	this->itemArray = new std::vector<Item*>;
-	this->doorArray = new std::vector<Door*>;
-
 
 	// set common variables
 	tss = new TileSpriteState();
@@ -35,6 +28,9 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 
 	doorSpriteState = new DoorSpriteState();
 	doorSpriteState->Create(system);
+
+	roofSpriteState = new RoofSpriteState();
+	roofSpriteState->Create(system);
 
 	//ropeSpriteState = new RopeSpriteState();
 	//ropeSpriteState->Create(system);
@@ -48,7 +44,7 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
 		cameraCollideComponent->Create(system, door, NULL, camera);
 		DoorBehaviorComponent* doorBehaviorComponent = new DoorBehaviorComponent();
-		doorBehaviorComponent->Create(system, door, doorArray, camera);
+		doorBehaviorComponent->Create(system, door, &doorPool, camera);
 		DoorCollisionRule* doorCollisionRule = new DoorCollisionRule();
 		doorCollisionRule->Create(door, camera, doorBehaviorComponent);
 
@@ -127,6 +123,20 @@ void Level::Create(AvancezLib* system, SDL_Rect* camera) {
 		tile->AddComponent(cameraCollideComponent);
 
 	}
+
+	//roof 
+	roofPool.Create(TILE_ROWS + 1);
+	for (auto it = roofPool.pool.begin(); it != roofPool.pool.end(); it++) {
+		Roof *roof = *it;
+		SpriteSheetRenderComponent* spriteSheetRenderComponent = new SpriteSheetRenderComponent();
+		spriteSheetRenderComponent->Create(system, roof, NULL, roofSpriteState, true, camera, true);
+		CameraCollideComponent* cameraCollideComponent = new CameraCollideComponent();
+		cameraCollideComponent->Create(system, roof, NULL, camera);
+
+		roof->Create();
+		roof->AddComponent(spriteSheetRenderComponent);
+		roof->AddComponent(cameraCollideComponent);
+	}
 }
 
 void Level::Init(int level) {
@@ -135,28 +145,6 @@ void Level::Init(int level) {
 
 	//set tile map based on current level value (1 ~ ...)
 	this->SetTileMap(level);
-	/*for (int i = 0; i < TOTAL_TILES; ++i) {
-		tileSet[i]->Init();
-	}*/
-	/*for (std::vector<Tile*>::iterator it = tileMap->begin(); it != tileMap->end(); ++it) {
-		Tile* tile = *it;
-		tile->Init();
-	}
-
-	for (std::vector<Rope*>::iterator it = ropeArray->begin(); it != ropeArray->end(); ++it) {
-		Rope* rope = *it;
-		rope->Init();
-	}
-
-	for (std::vector<Item*>::iterator it = itemArray->begin(); it != itemArray->end(); ++it) {
-		Item* item = *it;
-		item->Init();
-	}
-
-	for (std::vector<Door*>::iterator it = doorArray->begin(); it != doorArray->end(); ++it) {
-		Door* door = *it;
-		door->Init();
-	}*/
 }
 
 void Level::Update(float dt) {
@@ -176,6 +164,11 @@ void Level::Update(float dt) {
 		Door* door = *it;
 		door->Update(dt);
 	}
+
+	/*for (auto it = roofPool.pool.begin(); it != roofPool.pool.end(); it++) {
+		Roof* roof = *it;
+		roof->Update(dt);
+	}*/
 }
 
 void Level::RoundInit(int level) {
@@ -197,6 +190,10 @@ void Level::SetTileMap(int level) {
 	}
 
 	for (auto it = doorPool.pool.begin(); it != doorPool.pool.end(); it++) {
+		(*it)->enabled = false;
+	}
+
+	for (auto it = roofPool.pool.begin(); it != roofPool.pool.end(); it++) {
 		(*it)->enabled = false;
 	}
 
@@ -242,19 +239,19 @@ void Level::SetTileMap(int level) {
 		{
 			int isDoorType = true;
 			Door* door = doorPool.FirstAvailable();
-			int doorOffsetY = -27;
+			int doorOffsetY = -24;
 			switch (tileType) {
 				case TileSpriteState::STATE_TILE_DOOR_LEFT:
-					door->Init((float)x - 26, (float)y + doorOffsetY, 0);
+					door->Init((float)x - 25, (float)y + doorOffsetY, 0);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_RIGHT:
-					door->Init((float)x + 3, (float)y + doorOffsetY, 1);
+					door->Init((float)x + 4, (float)y + doorOffsetY, 1);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_LEFT:
-					door->Init((float)x - 26, (float)y + doorOffsetY, 2);
+					door->Init((float)x - 25, (float)y + doorOffsetY, 2);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_RIGHT:
-					door->Init((float)x + 3, (float)y + doorOffsetY, 3);
+					door->Init((float)x + 4, (float)y + doorOffsetY, 3);
 					break;
 				default:
 					isDoorType = false;
@@ -272,15 +269,45 @@ void Level::SetTileMap(int level) {
 					break;
 			}
 
-			// special adding
+			// rope (trampoline)
 			if (tileType == TileSpriteState::STATE_TILE_ROPE) {
 				SDL_Log("Rope is being created?");
 				Rope* rope = ropePool.FirstAvailable();
 				rope->Init((float)x, (float)y - RopeSpriteState::SPRITE_HEIGHT/2 + 5);
 			}
 
-			Tile* tile = tileMapPool.FirstAvailable();
-			tile->Init(x, y, tileType, i);
+			// roof
+			if (tileType > roofStartOffset) {
+				Roof* roof = roofPool.FirstAvailable();
+				int index = (tileType - roofStartOffset - 1) % RoofSpriteState::TOTAL_ROOF_TYPE;
+				int direction = GameEntity::LEFT;
+				if (tileType - roofStartOffset - 1 >= RoofSpriteState::TOTAL_ROOF_TYPE) {
+					direction = GameEntity::RIGHT;
+				}
+				if (roof != NULL) {
+					
+					
+					roof->Init(float(x), (float)y - RoofSpriteState::SPRITE_HEIGHT / 2, index, direction);
+				}
+
+				Tile* tile = tileMapPool.FirstAvailable();
+				if (index == RoofSpriteState::ROOF_TYPE_CORNER) {
+					if(direction == GameEntity::LEFT)
+						tile->Init(x, y, TileSpriteState::STATE_TILE_WALL_LEFT, i);
+					else 
+						tile->Init(x, y, TileSpriteState::STATE_TILE_WALL_RIGHT, i);
+				}
+				else {
+					tile->Init(x, y, TileSpriteState::STATE_TILE_SPACE, i);
+				}
+
+				
+				
+			}
+			else {
+				Tile* tile = tileMapPool.FirstAvailable();
+				tile->Init(x, y, tileType, i);
+			}
 		}
 
 		//If we don't recognize the tile type

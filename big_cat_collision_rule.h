@@ -43,7 +43,7 @@ public:
 				gameEntity->Receive(new Message(HEAD_HIT));
 			}
 			else {
-				behaviorComponent->ChangeSpeedY(-400);
+				behaviorComponent->ChangeSpeedY(-characterBounceSpeedY);
 			}
 		}
 
@@ -123,7 +123,7 @@ public:
 			behaviorComponent->resetStateIndicator = false;
 		}
 		else {
-			behaviorComponent->ChangeSpeedX(-gameEntity->vx);
+			behaviorComponent->ChangeDirection();
 			behaviorComponent->Move(dt*(gameEntity->vx), 0);
 		}
 

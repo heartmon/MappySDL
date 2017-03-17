@@ -9,39 +9,28 @@ class Tile;
 class TileSpriteState;
 class Item;
 class Door;
+class Roof;
 class ItemSpriteState;
 class DoorSpriteState;
 class RopeSpriteState;
+class RoofSpriteState;
 class Level : public GameEntity {
-	//The different tile sprites
-
-	//private prop
 	AvancezLib* system;
 	SDL_Rect* camera;
-	//SpriteSheet* tileSprite;
 	Tile* tileSet[TOTAL_TILES];
-	
-	std::vector<Item*>* itemArray;
-	std::vector<Rope*>* ropeArray;
-	std::vector<Tile*>* tileMap;
-	std::vector<Door*>* doorArray;
 
 	ObjectPool<Item> itemPool;
 	ObjectPool<Rope> ropePool;
 	ObjectPool<Tile> tileMapPool;
 	ObjectPool<Door> doorPool;
-
-
-	//SDL_Rect tileClips[6];
-	int level = 1;
-
-	//SpriteSheetRenderComponent* spriteSheetRenderComponent;
-	//CameraCollideComponent* cameraCollideComponent;
+	ObjectPool<Roof> roofPool;
 
 	TileSpriteState* tss;
 	ItemSpriteState* itemSpriteState;
 	DoorSpriteState* doorSpriteState;
-	//RopeSpriteState* ropeSpriteState;
+	RoofSpriteState* roofSpriteState;
+	int roofStartOffset = 25;
+
 public:
 	void Create(AvancezLib* system, SDL_Rect* camera);
 	void Init(int level);
@@ -60,18 +49,8 @@ public:
 	ObjectPool<Door>* getDoorPool() {
 		return &doorPool;
 	}
-
-	std::vector<Tile*>* getTileMap() {
-		return tileMap;
-	}
-	std::vector<Rope*>* getRopeArray() {
-		return ropeArray;
-	}
-	std::vector<Item*>* getItemArray() {
-		return itemArray;
-	}
-	std::vector<Door*>* getDoorArray() {
-		return doorArray;
+	ObjectPool<Roof>* getRoofPool() {
+		return &roofPool;
 	}
 private:
 	void SetTileMap(int level);

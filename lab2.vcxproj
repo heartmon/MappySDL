@@ -81,6 +81,8 @@
     <ClInclude Include="rainbow_collision_rule.h" />
     <ClInclude Include="rainbow_controller.h" />
     <ClInclude Include="rainbow_sprite_state.h" />
+    <ClInclude Include="roof.h" />
+    <ClInclude Include="roof_sprite_state.h" />
     <ClInclude Include="rope.h" />
     <ClInclude Include="rope_behavior_component.h" />
     <ClInclude Include="rope_collision_rule.h" />

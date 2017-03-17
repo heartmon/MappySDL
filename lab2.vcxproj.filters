@@ -43,6 +43,9 @@
     <Filter Include="Source Files\score">
       <UniqueIdentifier>{00211549-fcd7-485c-9cc6-64665d656026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\roof">
+      <UniqueIdentifier>{07c8a513-b505-43c4-8eac-0ce8c069ca0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -268,6 +271,12 @@
     </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="roof.h">
+      <Filter>Source Files\roof</Filter>
+    </ClInclude>
+    <ClInclude Include="roof_sprite_state.h">
+      <Filter>Source Files\roof</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

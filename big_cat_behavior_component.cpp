@@ -57,8 +57,9 @@ void BigCatBehaviorComponent::Update(float dt) {
 	// not check other state until not in IN_ITEM state
 	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_IN_ITEM) {
 		inItemTime += dt;
-		if (inItemTime > inItemInterval) {
+		if (inItemTime > inItemInterval + inItemRandomOffset) {
 			inItemTime = 0;
+			inItemRandomOffset = (rand() % 6)/2 - 2;
 			ForgetCurrentTargetItem();
 			FindNewTargetItem();
 			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
@@ -191,43 +192,14 @@ void BigCatBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_JUMP_BACK) {
-		//gameEntity->direction = goingToJumpTo;
 		goingToJumpTo = 0;
 		if (!resetStateIndicator) {
-			//SDL_Log("JUMP BACK");
-			//SDL_Log("Direction %d", gameEntity->direction);
-			float jumpSpeed = 100;
-			trackingNumber = 0;
-			ChangeSpeedY(-100.f);
-			ChangeSpeedX(jumpSpeed);
+			ChangeSpeedY(-jumpbackSpeedY);
+			ChangeSpeedX(jumpbackSpeedX);
 			gameEntity->ay = 3.5;
 			resetStateIndicator = true;
-
 			isGoingToDie = false;
 		}
-
-		trackingNumber += dt;
-		if (trackingNumber <= 0.3f) {
-			Move(dt*gameEntity->vx*gameEntity->direction, 0);
-		}
-		else {
-			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
-			ChangeSpeedX(0);
-			ChangeSpeedY(200);
-			gameEntity->ay = 1;
-			//SDL_Log("Change to in the air");
-			resetStateIndicator = false;
-
-			/*if (gameEntity->direction == GameEntity::RIGHT) {
-			ChangeSpeedX(160);
-			nextOrder = CAT_MOVE_RIGHT;
-			}
-			else {
-			ChangeSpeedX(160);
-			nextOrder = CAT_MOVE_LEFT;
-			}*/
-		}
-
 		return;
 	}
 	//hopping
@@ -349,6 +321,7 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 
 	int itemBlockYPos = ceil(itemBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
+	int maximumPos = ceil(LEVEL_HEIGHT) / TileSpriteState::TILE_HEIGHT - 2;
 	
 	int blockPos = -1;
 	if (lastKnownRainbowDoor != NULL) {
@@ -362,16 +335,20 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 			return;
 		}
 		
-		//SDL_Log("%d, %d", blockPos, catBlockYPos);
+		//SDL_Log("%d, %d", maximumPos, catBlockYPos);
 
-		bool yDistance = catBlockYPos == itemBlockYPos || catBlockYPos - 1 == itemBlockYPos;
+		bool yDistance;
 		//know the block
-		if (blockPos != -1 && blockPos >= catBlockYPos - 2) {
+		if (blockPos != -1 && blockPos >= catBlockYPos - 2 && blockPos != maximumPos) {
+			yDistance = true;
+			lastKnownRainbowDoor = NULL;
+		}
+		else if(blockPos != -1 && blockPos == maximumPos && blockPos <= catBlockYPos + 3) {
 			yDistance = true;
 			lastKnownRainbowDoor = NULL;
 		}
 		else {
-
+			yDistance = catBlockYPos == itemBlockYPos || catBlockYPos - 1 == itemBlockYPos;
 		}
 
 		

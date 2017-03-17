@@ -14,7 +14,7 @@ public:
 	const static int FRAME_DOOR_POWER = 2;
 
 	const static int SPRITE_WIDTH = 40;
-	const static int SPRITE_HEIGHT = 76;
+	const static int SPRITE_HEIGHT = 65;
 
 	virtual void Create(AvancezLib* system) {
 		// Set sprite sheet name

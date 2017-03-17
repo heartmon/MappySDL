@@ -21,9 +21,10 @@ class CatController : public GameEntity {
 	float spawnDelayTime = 0.f;
 	float spawnInterval = .3f;
 	bool canSpawn = true;
-	bool firstTimeSpawn = true;
+	bool roundSpawn = true;
 	int maximumSpawn = 4;
 	int activeCats = 0;
+	int levelNo;
 public:
 	void Create(AvancezLib* system, SDL_Rect* camera, Level* level, Mouse* mouse, RainbowController* rainbowController) {
 		GameEntity::Create();
@@ -77,15 +78,28 @@ public:
 		return &cats_pool;
 	}
 
-	void Init() {
+	void Init(int levelNo) {
 		GameEntity::Init();
-		firstTimeSpawn = true;
+		roundSpawn = true;
 		SDL_Log("CatController::Init");
+		this->levelNo = levelNo;
+
+		if (levelNo <= 2) {
+			maximumSpawn = 3;
+		}
+		else if (levelNo <= 4) {
+			maximumSpawn = 4;
+		}
+		else if (levelNo <= 6) {
+			maximumSpawn = 5;
+		}
+		else {
+			maximumSpawn = 6;
+		}
 	}
 
 
 	void Update(float dt) {
-		if (!enabled) return;
 		for (auto go = cats_pool.pool.begin(); go != cats_pool.pool.end(); go++) {
 			(*go)->Update(dt);
 		}
@@ -98,42 +112,37 @@ public:
 			}
 		}
 
-		if (activeCats == maximumSpawn) return;
-
-		if (firstTimeSpawn) {
-			if (canSpawn) {
+		if (activeCats < maximumSpawn) {
+			if (roundSpawn) {
 				switch (activeCats) {
-					case 0:
-						Spawn(24 * TileSpriteState::TILE_WIDTH, 2 * TileSpriteState::TILE_HEIGHT);
-						break;
-					case 1:
-						Spawn(12 * TileSpriteState::TILE_WIDTH, 10 * TileSpriteState::TILE_HEIGHT);
-						break;
-					case 2:
-						Spawn();
-						break;
-					case 3:
-						Spawn();
-						break;
-					default:
-						Spawn();
-						break;
+				case 0:
+					Spawn(24 * TileSpriteState::TILE_WIDTH, 3 * TileSpriteState::TILE_HEIGHT);
+					break;
+				case 1:
+					Spawn(13 * TileSpriteState::TILE_WIDTH, 9 * TileSpriteState::TILE_HEIGHT);
+					break;
+				case 2:
+					Spawn(13 * TileSpriteState::TILE_WIDTH, 2 * TileSpriteState::TILE_HEIGHT);
+					break;
+				case 3:
+					Spawn(13 * TileSpriteState::TILE_WIDTH, 2 * TileSpriteState::TILE_HEIGHT);
+					break;
+				default:
+					Spawn();
+					break;
 				}
 			}
-		}
-		else {
-			if (canSpawn) {
-				if (activeCats < maximumSpawn) {
+			else {
+				if (canSpawn) {
 					Spawn();
 				}
 			}
 		}
 
 		if (activeCats == maximumSpawn) {
-			firstTimeSpawn = false;
+			roundSpawn = false;
 		}
 
-		
 		
 
 	}
@@ -171,12 +180,13 @@ public:
 	void RoundInit() {
 		Hide();
 		activeCats = 0;
+		roundSpawn = true;
 	}
 
 	void Spawn() {
-		Spawn(13 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
+		Spawn(14.5 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
 	}
-	void Spawn(int x, int y) {
+	void Spawn(float x, float y) {
 		MakeCat(x, y);
 		activeCats++;
 		canSpawn = false;

@@ -81,6 +81,10 @@ public:
 			MakeScoreFrom(m->getArg1());
 		}
 
+		if (m->getMessageType() == MOUSE_JUMP_ON_ROPE) {
+			this->Send(new Message(UPDATE_SCORE, this, 10));
+		}
+
 		if (m->getMessageType() == RAINBOW_GONE) {
 			RainbowBehaviorComponent* behaviorComponent = (RainbowBehaviorComponent*)m->getArg1()->getBehaviorComponent();
 			SDL_Log("Cat die : %d, Big cat die : %d", behaviorComponent->numberOfCats, behaviorComponent->numberOfBigCats);

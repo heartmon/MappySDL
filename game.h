@@ -40,12 +40,13 @@ class Game : public GameEntity {
 	ObjectPool<Rope>* ropePool;
 	ObjectPool<Tile>* tileMapPool;
 	ObjectPool<Door>* doorPool;
+	ObjectPool<Roof>* roofPool;
 
 	int levelNo = 1;
 
 	const int START_CAMERA_X = LEVEL_WIDTH - SCREEN_WIDTH;
-	const int START_MOUSE_X = 280;
-	const int START_MOUSE_Y = 400;
+	const int START_MOUSE_X = 440;
+	const int START_MOUSE_Y = 440;
 
 	bool doonce = false;
 
@@ -73,6 +74,7 @@ public:
 		doorPool = level->getDoorPool();
 		itemPool = level->getItemPool();
 		tileMapPool = level->getTileMapPool();
+		roofPool = level->getRoofPool();
 
 		//Door Toggle
 		doorToggle = new DoorToggle();
@@ -162,6 +164,10 @@ public:
 		soundController->Create(system);
 		gameEntities.push_back(soundController);
 
+		for (auto it = roofPool->pool.begin(); it != roofPool->pool.end(); ++it) {
+			GameEntity* roof = (GameEntity*)(*it);
+			gameEntities.push_back(roof);
+		}
 	}
 
 	void RoundInit() {
@@ -225,6 +231,8 @@ public:
 		itemController->AddReceiver(catController);
 		itemController->AddReceiver(bigCatController);
 		itemController->AddReceiver(mouse);
+		mouse->AddReceiver(scoreController);
+		mouse->AddReceiver(bigCatController);
 	}
 
 	void CleanUpEachRound() {
@@ -262,7 +270,7 @@ public:
 		doorToggle->Init();
 		scoreController->Init();
 		rainbowController->Init();
-		catController->Init();
+		catController->Init(levelNo);
 		bigCatController->Init();
 		soundController->Init();
 

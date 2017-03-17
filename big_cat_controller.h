@@ -21,7 +21,7 @@ class BigCatController : public GameEntity {
 	float spawnDelayTime = 0.f;
 	float spawnInterval = .5f;
 	bool canSpawn = true;
-	bool firstTimeSpawn = true;
+	bool roundSpawn = true;
 	int maximumSpawn = 1;
 	int activeCats = 0;
 public:
@@ -82,13 +82,12 @@ public:
 
 	void Init() {
 		GameEntity::Init();
-		firstTimeSpawn = true;
+		roundSpawn = true;
 		SDL_Log("BigCatController::Init");
 	}
 
 
 	void Update(float dt) {
-		if (!enabled) return;
 		for (auto go = bigCatPool.pool.begin(); go != bigCatPool.pool.end(); go++) {
 			(*go)->Update(dt);
 		}
@@ -101,42 +100,29 @@ public:
 			}
 		}
 
-		if (firstTimeSpawn) {
-			if (canSpawn) {
-				switch (activeCats) {
-				case 0:
-					Spawn(24 * TileSpriteState::TILE_WIDTH, 2 * TileSpriteState::TILE_HEIGHT);
-					break;
-				case 1:
-					Spawn(12 * TileSpriteState::TILE_WIDTH, 10 * TileSpriteState::TILE_HEIGHT);
-					break;
-				case 2:
-					Spawn();
-					break;
-				case 3:
-					Spawn();
-					break;
-				default:
-					Spawn();
-					break;
+		if (activeCats < maximumSpawn) {
+			if (roundSpawn) {
+				if (canSpawn) {
+					switch (activeCats) {
+					case 0:
+						Spawn(24 * TileSpriteState::TILE_WIDTH, 3 * TileSpriteState::TILE_HEIGHT);
+						break;
+					default:
+						Spawn();
+						break;
+					}
 				}
 			}
-		}
-		else {
-			if (canSpawn) {
-				if (activeCats < maximumSpawn) {
+			else {
+				if (canSpawn) {
 					Spawn();
 				}
 			}
 		}
 
 		if (activeCats == maximumSpawn) {
-			firstTimeSpawn = false;
+			roundSpawn = false;
 		}
-
-
-
-
 	}
 
 	void Receive(Message* m) {
@@ -180,12 +166,13 @@ public:
 	void RoundInit() {
 		Hide();
 		activeCats = 0;
+		roundSpawn = true;
 	}
 
 	void Spawn() {
-		Spawn(13 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
+		Spawn(14.5 * TileSpriteState::TILE_WIDTH, 1 * TileSpriteState::TILE_HEIGHT);
 	}
-	void Spawn(int x, int y) {
+	void Spawn(float x, float y) {
 		MakeCat(x, y);
 		activeCats++;
 		canSpawn = false;
@@ -198,5 +185,6 @@ public:
 		}
 
 		bigCat->Init(x, y);
+		SDL_Log("Big Cat spawned %d", bigCat->enabled);
 	}
 };

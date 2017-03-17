@@ -31,7 +31,8 @@ class BigCatBehaviorComponent : public Component {
 
 	float jumpbackInterval = 0.3f;
 	float jumpbackTime = 0;
-	float jumpbackSpeed = 100;
+	float jumpbackSpeedX = 200;
+	float jumpbackSpeedY = 100;
 
 	float knockbackInterval = 0.2f;
 	float knockbackTime = 0;
@@ -58,6 +59,7 @@ class BigCatBehaviorComponent : public Component {
 	// time
 	float inItemTime = 0;
 	float inItemInterval = 3.f;
+	float inItemRandomOffset = 0;
 
 	float inItemWithScoreTime = 0;
 	float inItemWithScoreInterval = 2.f;

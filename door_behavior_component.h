@@ -5,14 +5,14 @@
 #include "door.h"
 
 class DoorBehaviorComponent : public Component {
-	std::vector<Door*>* allDoors;
+	ObjectPool<Door>* allDoors;
 	SDL_Rect* camera;
 	float toggleInterval = .25f;
 	float toggleTime = 0;
 	Door* gameEntity;
 
 public:
-	virtual void Create(AvancezLib* system, Door* go, std::vector<Door*> * allDoors, SDL_Rect* camera) {
+	virtual void Create(AvancezLib* system, Door* go, ObjectPool<Door>* allDoors, SDL_Rect* camera) {
 		this->system = system;
 		this->gameEntity = go;
 		this->camera = camera;

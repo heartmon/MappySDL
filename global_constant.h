@@ -2,7 +2,7 @@
 #include <string>
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_HEIGHT = 520;
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 580;
@@ -12,10 +12,10 @@ const int Y_SCREEN_OFFSET = WINDOW_HEIGHT - SCREEN_HEIGHT;
 
 //The dimensions of the level
 const int LEVEL_WIDTH = 1200;
-const int LEVEL_HEIGHT = 480;
+const int LEVEL_HEIGHT = 520;
 
 const int TILE_ROWS = 30;
-const int TILES_COLUMNS = 12;
+const int TILES_COLUMNS = 13;
 const int TOTAL_TILES = TILE_ROWS * TILES_COLUMNS;
 
 //Tile constants
