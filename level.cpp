@@ -197,6 +197,8 @@ void Level::SetTileMap(int level) {
 		(*it)->enabled = false;
 	}
 
+	SetRoofColor(level);
+
 
 	SDL_Log("Level %d .. setting tile map", level);
 
@@ -335,4 +337,18 @@ void Level::SetTileMap(int level) {
 	}
 
 	map.close();
+}
+
+void Level::SetRoofColor(int levelNo) {
+	switch (levelNo % 3) {
+		case 1:
+			roofSpriteState->getSpriteSheet()->SetTintColor(255, 255, 255);
+			break;
+		case 2:	
+			roofSpriteState->getSpriteSheet()->SetTintColor(0, 255, 0);
+			break;
+		case 0:
+			roofSpriteState->getSpriteSheet()->SetTintColor(0, 255, 255);
+			break;
+	}
 }

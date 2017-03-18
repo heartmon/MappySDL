@@ -3,7 +3,7 @@
 #include "door.h"
 #include "door_behavior_component.h"
 
-class DoorToggle : public GameEntity {
+class DoorController : public GameEntity {
 	ObjectPool<Door>* doors;
 	SDL_Rect* camera;
 

@@ -312,25 +312,25 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		if (gameEntity->vy > 0) {
 			return;
 		}
-		//
+		//SDL_Log("%d, %d, %d, %d", catBlockYPos, mouseBlockYPos, blockPos, maximumPos);
 		bool yDistance = false;
 		if (abs(mouseBox.x - catBox.x) > SCREEN_WIDTH) {
-			int randomFloor = (rand() % 10);
-			yDistance = randomFloor >= catBlockYPos;
+			int randomFloor = (rand() % maximumPos);
+			yDistance = randomFloor - 1 >= catBlockYPos && randomFloor + 1 <= catBlockYPos;
+			//SDL_Log("Case 1");
 		}
 		else if (blockPos != -1 && blockPos >= catBlockYPos - 2 && blockPos != maximumPos) {
+			//SDL_Log("Case 2");
 			yDistance = true;
 			lastKnownRainbowDoor = NULL;
 		}
-		else if (blockPos != -1 && blockPos == maximumPos && blockPos <= catBlockYPos + 3) {
+		else if (blockPos == maximumPos && catBlockYPos + 1 <= blockPos) {
+			//SDL_Log("Block door is bottom floor");
 			yDistance = true;
-			lastKnownRainbowDoor = NULL;
 		}
-		else {
-			int justRandom = (rand() % 10) / 2 - 4;
-			yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - 1 == mouseBlockYPos;
-			//bool yDistance = catBlockYPos + justRandom == mouseBlockYPos;
-
+		else if (blockPos==-1){
+			//SDL_Log("Follow case");
+			yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - (rand()%2) == mouseBlockYPos;
 			bool notCareMouseState = true; //flag, whether the first or second condition's happened
 			bool stateOfMouse = mouse->getCurrentStateType() != MouseSpriteState::STATE_INTHEAIR;
 			if ((rand() % 2) + 1 + numbCount == 2)
@@ -339,11 +339,13 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 			if (!notCareMouseState && !stateOfMouse) {
 				NumbMind();
 				//SDL_Log("Don't know what to do~~ %d", numbCount);
+				falseTime = 0;
 				return;
 			}
+			if (!yDistance) falseTime++;
 		}
 		//
-		if (yDistance) {
+		if (yDistance || falseTime == 45) {
 			if (gameEntity->horizontalPosition < mouseBox.x) {
 				//SDL_Log("Cat will jump right");
 				currentOrder = CAT_JUMP_BACK_RIGHT;
@@ -354,6 +356,11 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 			}
 
 			numbCount = 0;
+			falseTime = 0;
+			lastKnownRainbowDoor = NULL;
+		}
+		else {
+			
 		}
 		break;
 	}

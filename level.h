@@ -54,4 +54,5 @@ public:
 	}
 private:
 	void SetTileMap(int level);
+	void SetRoofColor(int levelNo);
 };

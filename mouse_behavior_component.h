@@ -44,7 +44,9 @@ class MouseBehaviorComponent : public Component {
 	float jumpbackTime = 0;
 	float jumpbackInterval = 0.4f;
 	float jumpbackSpeedX = 200;
-	float jumpbackSpeedY = 100;
+	float jumpbackSpeedY = 110;
+
+	float yPosBeforePrejump = 0;
 public:
 	bool resetStateIndicator;
 

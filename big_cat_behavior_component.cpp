@@ -343,19 +343,15 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 			yDistance = true;
 			lastKnownRainbowDoor = NULL;
 		}
-		else if(blockPos != -1 && blockPos == maximumPos && blockPos <= catBlockYPos + 3) {
+		else if (blockPos == maximumPos && catBlockYPos + 1 <= blockPos) {
+			//SDL_Log("Block door is bottom floor");
 			yDistance = true;
-			lastKnownRainbowDoor = NULL;
 		}
-		else {
+		else if (blockPos == -1) {
 			yDistance = catBlockYPos == itemBlockYPos || catBlockYPos - 1 == itemBlockYPos;
+			if (!yDistance) falseTime++;;
 		}
-
-		
-		if ((rand() % 2) + 1 == 2) {
-
-		}
-		if (yDistance) {
+		if (yDistance || falseTime == 50) {
 			if (gameEntity->horizontalPosition < itemBox.x) {
 				//SDL_Log("Cat will jump right");
 				nextOrder = CAT_JUMP_BACK_RIGHT;
@@ -364,8 +360,12 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 				//SDL_Log("Cat will jump left");
 				nextOrder = CAT_JUMP_BACK_LEFT;
 			}
-
+			lastKnownRainbowDoor = NULL;
 			numbCount = 0;
+			falseTime = 0;
+		}
+		else {
+			
 		}
 		break;
 	}

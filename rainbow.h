@@ -46,8 +46,8 @@ public:
 		GameEntity::Box box = GameEntity::getCollisionBox();
 		box.x = box.x + 5;
 		box.w = box.w - 10;
-		box.y = box.y + 10;
-		box.h = box.h - 20;
+		box.y = box.y + 20;
+		box.h = 5;
 
 		return box;
 	}

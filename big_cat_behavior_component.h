@@ -53,6 +53,7 @@ class BigCatBehaviorComponent : public Component {
 	float numbTime = 0;
 	int numbCount = 0;
 	bool isNumb = false;
+	int falseTime = 0;
 
 	float trackingNumber;
 

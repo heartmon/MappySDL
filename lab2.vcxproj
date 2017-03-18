@@ -54,7 +54,7 @@
     <ClInclude Include="door_behavior_component.h" />
     <ClInclude Include="door_collision_rule.h" />
     <ClInclude Include="door_sprite_state.h" />
-    <ClInclude Include="door_toggle.h" />
+    <ClInclude Include="door_controller.h" />
     <ClInclude Include="draw_entity.h" />
     <ClInclude Include="entity_state.h" />
     <ClInclude Include="game.h" />

@@ -192,22 +192,20 @@ void MouseBehaviorComponent::Update(float dt) {
 	//hopping
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
 		if (!resetStateIndicator) {
-			float jumpSpeed = 100;
+			float jumpSpeed = 167;
 			prejumpTime = 0;
-			ChangeSpeedY(-100.f);
+			ChangeSpeedY(-140.f);
 			ChangeSpeedX(jumpSpeed);
-			gameEntity->ay = 3.5;
+			gameEntity->ay = 7.5;
 			resetStateIndicator = true;
 			if (jumpAgainstWall) {
-				ChangeSpeedY(0);
+				ChangeSpeedY(-140.f/3 - 10);
+				gameEntity->ay = 8.5;
 			}
+			yPosBeforePrejump = gameEntity->getCollisionBox(camera).y + 2;
 		}
 
-		prejumpTime += dt;
-		if (prejumpTime <= 0.2 && (prejumpTime <= 0.1 || !jumpAgainstWall)) {
-			Move(dt*gameEntity->vx*gameEntity->direction, 0);
-		}
-		else {
+		if (yPosBeforePrejump <= gameEntity->getCollisionBox(camera).y) {
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
@@ -215,8 +213,8 @@ void MouseBehaviorComponent::Update(float dt) {
 			//SDL_Log("Change to in the air");
 			resetStateIndicator = false;
 			jumpAgainstWall = false;
+			yPosBeforePrejump = 0;
 		}
-
 		return;
 	}
 

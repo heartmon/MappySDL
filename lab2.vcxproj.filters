@@ -182,9 +182,6 @@
     <ClInclude Include="door_collision_rule.h">
       <Filter>Source Files\door</Filter>
     </ClInclude>
-    <ClInclude Include="door_toggle.h">
-      <Filter>Source Files\door</Filter>
-    </ClInclude>
     <ClInclude Include="rainbow.h">
       <Filter>Source Files\rainbow</Filter>
     </ClInclude>
@@ -277,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="roof_sprite_state.h">
       <Filter>Source Files\roof</Filter>
+    </ClInclude>
+    <ClInclude Include="door_controller.h">
+      <Filter>Source Files\door</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

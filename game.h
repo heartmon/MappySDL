@@ -8,7 +8,7 @@
 #include "level.h"
 #include "global_constant.h"
 #include "mouse_collision_rule.h"
-#include "door_toggle.h"
+#include "door_controller.h"
 #include "rainbow_controller.h"
 #include "info.h"
 #include "item.h"
@@ -27,7 +27,7 @@ class Game : public GameEntity {
 	float lastTime;
 	Level* level;
 	SDL_Rect* camera;
-	DoorToggle* doorToggle;
+	DoorController* doorController;
 	RainbowController* rainbowController;
 	Info* info;
 	ScoreController* scoreController;
@@ -77,9 +77,9 @@ public:
 		roofPool = level->getRoofPool();
 
 		//Door Toggle
-		doorToggle = new DoorToggle();
-		doorToggle->Create(doorPool, camera);
-		gameEntities.push_back(doorToggle);
+		doorController = new DoorController();
+		doorController->Create(doorPool, camera);
+		gameEntities.push_back(doorController);
 
 
 		//Rainbow controller
@@ -192,11 +192,11 @@ public:
 		this->AddReceiver(info);
 
 		scoreController->AddReceiver(info);
-		catController->AddReceiver(doorToggle);
-		bigCatController->AddReceiver(doorToggle);
+		catController->AddReceiver(doorController);
+		bigCatController->AddReceiver(doorController);
 
 		mouse->AddReceiver(this);
-		mouse->AddReceiver(doorToggle);
+		mouse->AddReceiver(doorController);
 		mouse->AddReceiver(info);
 		mouse->AddReceiver(catController);
 
@@ -267,7 +267,7 @@ public:
 			info->Init();
 		}
 
-		doorToggle->Init();
+		doorController->Init();
 		scoreController->Init();
 		rainbowController->Init();
 		catController->Init(levelNo);
