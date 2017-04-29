@@ -48,18 +48,6 @@ public:
 		}
 
 		if (m->getArg1()->getName() == CLASS_DOOR) {
-			bool isPowerDoor = DoorSpriteState::isPowerDoor(m->getArg1()->getCurrentStateType());
-			if ((rand() % 2) + 1 == 2 && !isPowerDoor) {
-				//SDL_Log("50 chance -- toggle!");
-				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
-			}
-			else {
-				behaviorComponent->Move(5 * -gameEntity->direction, 0);
-				behaviorComponent->ChangeDirection();
-			}
-			if (isPowerDoor) {
-				behaviorComponent->lastKnownRainbowDoor = (Door*)m->getArg1();
-			}
 		}
 
 		if (m->getArg1()->getName() == CLASS_MOUSE) {
@@ -83,6 +71,35 @@ public:
 		if (withThisEntity->getName() == CLASS_DOOR && behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType())) {
 			Door* door = (Door*)withThisEntity;
 			bool isCollided = door->getCollisionRule()->isCollided(door, self, dt);
+			if (isCollided) {
+				bool isPowerDoor = DoorSpriteState::isPowerDoor(door->getCurrentStateType());
+				//need to use dt
+				if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_JUMP_BACK
+					) {
+					SDL_Log("JUMP AGAINST WALL");
+					behaviorComponent->ChangeSpeedX(gameEntity->vx);
+					gameEntity->direction = -gameEntity->direction;
+					behaviorComponent->Move(dt*gameEntity->vx*gameEntity->direction, 0);
+					gameEntity->setCurrentStateType(BigCatSpriteState::STATE_PREJUMP);
+					behaviorComponent->jumpAgainstWall = true;
+					behaviorComponent->resetStateIndicator = false;
+				}
+				else if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
+
+				}
+				else if ((rand() % 2) + 1 == 2 && !isPowerDoor) {
+					//SDL_Log("50 chance -- toggle!");
+					gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
+				}
+				else {
+					behaviorComponent->ChangeDirection();
+					behaviorComponent->Move(1 * -gameEntity->direction, 0);
+				}
+
+				if (isPowerDoor) {
+					behaviorComponent->lastKnownRainbowDoor = door;
+				}
+			}
 			return isCollided;
 		}
 		if (withThisEntity->getName() == CLASS_RAINBOW) {

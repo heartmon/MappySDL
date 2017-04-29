@@ -23,5 +23,13 @@ void Mouse::Receive(Message* m)
 		isStop = true;
 		setCurrentStateType(MouseSpriteState::STATE_STAND);
 	}
+	if (m->getMessageType() == MOUSE_TOGGLE_DOOR) {
+		behaviorComponent->Receive(m);
+	}
 
+}
+
+void Mouse::RoundInit() {
+	GameEntity::RoundInit();
+	direction = GameEntity::LEFT;
 }

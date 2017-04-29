@@ -39,11 +39,12 @@ void MouseBehaviorComponent::Update(float dt) {
 	system->getKeyStatus(keys);
 
 	// sum
-	spaceTriggerTime += dt;
-
-	if (spaceTriggerTime > spaceTriggerInterval) {
-		canSpace = true;
-		spaceTriggerTime = 0;
+	if (!canSpace) {
+		spaceTriggerTime += dt;
+		if (spaceTriggerTime > spaceTriggerInterval) {
+			canSpace = true;
+			spaceTriggerTime = 0;
+		}
 	}
 
 	// no behavior add all
@@ -91,14 +92,6 @@ void MouseBehaviorComponent::Update(float dt) {
 			ChangeSpeedX(160.f);
 		}
 
-		//space
-		if (keys.fire) {
-			if (canSpace) {
-				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
-				canSpace = false;
-			}
-		}
-
 		if (!keys.left && !keys.right) {
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_STAND);
 			ChangeSpeedX(0.f);
@@ -110,11 +103,25 @@ void MouseBehaviorComponent::Update(float dt) {
 		intheairDeadTime = 0;
 	}
 
+	if ((isOnTheGround(gameEntity->getCurrentStateType()) 
+		//|| gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP_BACK)
+		)
+		&& gameEntity->getCurrentStateType() != MouseSpriteState::STATE_KNOCKBACK
+		) {
+		//space
+		if (keys.fire) {
+			if (canSpace) {
+				gameEntity->Send(new Message(TOGGLE_DOOR, gameEntity));
+				//canSpace = false;
+			}
+		}
+	}
+
 	// Update position
 	float distanceX = dt * gameEntity->vx * gameEntity->direction;
-	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_KNOCKBACK) {
+	/*if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_KNOCKBACK) {
 		distanceX = 0;
-	}
+	}*/
 	
 	float distanceY = dt * gameEntity->vy;
 
@@ -192,7 +199,7 @@ void MouseBehaviorComponent::Update(float dt) {
 	//hopping
 	if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
 		if (!resetStateIndicator) {
-			float jumpSpeed = 167;
+			float jumpSpeed = 185;
 			prejumpTime = 0;
 			ChangeSpeedY(-140.f);
 			ChangeSpeedX(jumpSpeed);
@@ -294,8 +301,10 @@ void MouseBehaviorComponent::Move(float distanceX, float distanceY)
 }
 
 
-void MouseBehaviorComponent::Receive(int message) {
-
+void MouseBehaviorComponent::Receive(Message* m) {
+	if (m->getMessageType() == MOUSE_TOGGLE_DOOR) {
+		canSpace = false;
+	}
 }
 
 void MouseBehaviorComponent::Destroy() {
@@ -344,23 +353,25 @@ void MouseBehaviorComponent::WhenDoorClose(GameEntity* ent) {
 
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_LEFT) {
 		// if inside door
-		if (mouseBox.x <= doorX + doorW - doorW / 4 && mouseBox.x + mouseBox.w >= doorX
+		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX
 			&& mouseBox.y <= doorBox.y + doorBox.h / 2 && mouseBox.y + mouseBox.h / 2 >= doorBox.y
 			) {
 			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::RIGHT;
+			gameEntity->direction = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
 		}
 	}
 	if (door->defaultState == DoorSpriteState::STATE_DOOR_RIGHT) {
 		// if inside door
-		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX + doorW / 4
+		if (mouseBox.x <= doorX + doorW && mouseBox.x + mouseBox.w >= doorX
 			&& mouseBox.y <= doorBox.y + doorBox.h / 2 && mouseBox.y + mouseBox.h / 2 >= doorBox.y
 			) {
 			//SDL_Log("KNOCKBACK!");
 			toBeKnockedBack = true;
 			knockbackDirection = GameEntity::LEFT;
+			gameEntity->direction = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_KNOCKBACK);
 		}
 	}

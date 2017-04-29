@@ -78,12 +78,28 @@ public:
 			bool isCollided = item->getCollisionRule()->isCollided(item, self, dt);
 			return isCollided;
 		}
-		if (withThisEntity->getName() == CLASS_DOOR && behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType())) {
+		if (withThisEntity->getName() == CLASS_DOOR) {
 			Door* door = (Door*)withThisEntity;
 			bool isCollided = door->getCollisionRule()->isCollided(door, self, dt);
 			if (isCollided) {
 				//need to use dt
-				behaviorComponent->Move(dt * gameEntity->vx * -gameEntity->direction, 0);
+				if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_JUMP_BACK
+					) {
+					SDL_Log("JUMP AGAINST WALL");
+					behaviorComponent->ChangeSpeedX(gameEntity->vx);
+					gameEntity->direction = -gameEntity->direction;
+					behaviorComponent->Move(dt*gameEntity->vx*gameEntity->direction, 0);
+					gameEntity->setCurrentStateType(MouseSpriteState::STATE_PREJUMP);
+					behaviorComponent->jumpAgainstWall = true;
+					behaviorComponent->resetStateIndicator = false;
+				}
+				else if (gameEntity->getCurrentStateType() == MouseSpriteState::STATE_PREJUMP) {
+
+				}
+				else {
+					behaviorComponent->Move(0.11 * -gameEntity->direction, 0);
+					behaviorComponent->Move(dt * gameEntity->vx * -gameEntity->direction, 0);
+				}
 			}
 			return isCollided;
 		}
@@ -173,9 +189,11 @@ public:
 		return true;
 	}
 	bool WhenIsGoingToFallingDown(Tile* tile, float dt) {
-		if (behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType())) {
+		if (behaviorComponent->isOnTheGround(gameEntity->getCurrentStateType()) || gameEntity->getCurrentStateType() == MouseSpriteState::STATE_KNOCKBACK) {
 			SDL_Log("Prejump");
+			behaviorComponent->resetStateIndicator = false;
 			gameEntity->setCurrentStateType(MouseSpriteState::STATE_PREJUMP);
+			behaviorComponent->toBeKnockedBack = false;
 		}
 
 		return true;

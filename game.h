@@ -199,6 +199,7 @@ public:
 		mouse->AddReceiver(doorController);
 		mouse->AddReceiver(info);
 		mouse->AddReceiver(catController);
+		doorController->AddReceiver(mouse);
 
 		for (auto it = ropePool->pool.begin(); it != ropePool->pool.end(); ++it) {
 			Rope* rope = *it;
@@ -274,6 +275,8 @@ public:
 		bigCatController->Init();
 		soundController->Init();
 
+		mouse->RoundInit();
+
 		// Init level
 		level->Init(levelNo);
 
@@ -338,7 +341,13 @@ public:
 
 				levelNo++;
 				gameSpeed += .075f;
-				Init();
+
+				if (levelNo >= 7) {
+					Receive(new Message(GAME_OVER));
+				}
+				else {
+					Init();
+				}
 			}
 		}
 

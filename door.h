@@ -32,6 +32,7 @@ public:
 		defaultState = state;
 		size->w = DoorSpriteState::SPRITE_WIDTH;
 		size->h = DoorSpriteState::SPRITE_HEIGHT;
+		isOpen = false;
 	}
 
 	virtual std::string getName() {

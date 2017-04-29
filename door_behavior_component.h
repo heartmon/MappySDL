@@ -7,7 +7,7 @@
 class DoorBehaviorComponent : public Component {
 	ObjectPool<Door>* allDoors;
 	SDL_Rect* camera;
-	float toggleInterval = .25f;
+	float toggleInterval = .1f;
 	float toggleTime = 0;
 	Door* gameEntity;
 

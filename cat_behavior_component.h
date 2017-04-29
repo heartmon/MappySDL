@@ -30,13 +30,13 @@ class CatBehaviorComponent : public Component {
 	float jumpbackInterval = 0.3f;
 	float jumpbackTime = 0;
 	float jumpbackSpeedX = 200;
-	float jumpbackSpeedY = 100;
+	float jumpbackSpeedY = 120;
 
 	float knockbackInterval = 0.2f;
 	float knockbackTime = 0;
 
 	int knockbackDirection = 0;
-	float knockbackSpeed = 400.f;
+	float knockbackSpeed = 415.f;
 
 	float afterKnockbackInterval = 2.f;
 	float afterKnockbackTime = 0;
@@ -52,6 +52,8 @@ class CatBehaviorComponent : public Component {
 	int numbCount = 0;
 	bool isNumb = false;
 	int falseTime = 0;
+	int minimumDistanceAtm = 9999;
+	int headhitAmount = 1;
 
 	float trackingNumber;
 

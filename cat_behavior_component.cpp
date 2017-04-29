@@ -26,6 +26,9 @@ void CatBehaviorComponent::Init() {
 
 void CatBehaviorComponent::RoundInit() {
 	gameEntity->setCurrentStateType(CatSpriteState::STATE_STAND);
+
+	headhitAmount = 1;
+	minimumDistanceAtm = 9999;
 }
 
 void CatBehaviorComponent::Update(float dt) {
@@ -212,7 +215,6 @@ void CatBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == CatSpriteState::STATE_STAND) {
-		//clearOrder();
 		currentOrder = NOTHING;
 		ThinkWhereToMove();
 	}
@@ -307,6 +309,11 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 	int mouseBlockYPos = ceil(mouseBox.y) / TileSpriteState::TILE_HEIGHT;
 	int catBlockYPos = ceil(catBox.y) / TileSpriteState::TILE_HEIGHT;
 
+	//SDL_Log("%d", abs(catBlockYPos - mouseBlockYPos));
+	if (abs(catBlockYPos - mouseBlockYPos) < minimumDistanceAtm) {
+		minimumDistanceAtm = abs(catBlockYPos - mouseBlockYPos);
+	}
+
 	switch (gameEntity->getCurrentStateType()) {
 	case CatSpriteState::STATE_INTHEAIR:
 		if (gameEntity->vy > 0) {
@@ -314,6 +321,7 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 		}
 		//SDL_Log("%d, %d, %d, %d", catBlockYPos, mouseBlockYPos, blockPos, maximumPos);
 		bool yDistance = false;
+		int preventLoopCheck = (200 + ((rand() % 20) - 30)) / headhitAmount;
 		if (abs(mouseBox.x - catBox.x) > SCREEN_WIDTH) {
 			int randomFloor = (rand() % maximumPos);
 			yDistance = randomFloor - 1 >= catBlockYPos && randomFloor + 1 <= catBlockYPos;
@@ -328,6 +336,9 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 			//SDL_Log("Block door is bottom floor");
 			yDistance = true;
 		}
+		else if (minimumDistanceAtm >= 1 && (falseTime >= preventLoopCheck || preventLoopCheck < 0)) {
+			yDistance = true;
+		}
 		else if (blockPos==-1){
 			//SDL_Log("Follow case");
 			yDistance = catBlockYPos == mouseBlockYPos || catBlockYPos - (rand()%2) == mouseBlockYPos;
@@ -339,13 +350,14 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 			if (!notCareMouseState && !stateOfMouse) {
 				NumbMind();
 				//SDL_Log("Don't know what to do~~ %d", numbCount);
-				falseTime = 0;
+				//falseTime = 0;
 				return;
 			}
-			if (!yDistance) falseTime++;
+			//if (!yDistance) falseTime++;
 		}
+
 		//
-		if (yDistance || falseTime == 45) {
+		if (yDistance) {
 			if (gameEntity->horizontalPosition < mouseBox.x) {
 				//SDL_Log("Cat will jump right");
 				currentOrder = CAT_JUMP_BACK_RIGHT;
@@ -358,9 +370,11 @@ void CatBehaviorComponent::ThinkWhereToJump() {
 			numbCount = 0;
 			falseTime = 0;
 			lastKnownRainbowDoor = NULL;
+			minimumDistanceAtm = 9999;
+			headhitAmount = 1;
 		}
 		else {
-			
+			falseTime++;
 		}
 		break;
 	}
@@ -449,6 +463,7 @@ void CatBehaviorComponent::ChangeSpeedY(float newVy) {
 
 void CatBehaviorComponent::WhenHeadHit() {
 	ChangeSpeedY(-gameEntity->vy);
+	headhitAmount++;
 	//gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
 }
 
@@ -472,7 +487,6 @@ void CatBehaviorComponent::Receive(Message* m) {
 }
 
 void CatBehaviorComponent::clearOrder() {
-	//currentOrder = NOTHING;
 	nextOrder = NOTHING;
 	nextOrderReady = true;
 }

@@ -76,12 +76,7 @@ public:
 					&& (leftSide.x <= tileBox.x + tileBox.w)
 					) {
 
-					if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_SPACE && (leftSide.x >= tileBox.x)) {
-						//if (((int)GetPlayerBox().y - TileSpriteState::TILE_HEIGHT) % TileSpriteState::TILE_HEIGHT < 40) {
-							result = WhenReadyToJumpbackToTheLeft(tile, dt);
-						//}
-					}
-					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
+					if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
 						|| tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_RIGHT
 						) {
 						if (pos + 3 < tileMap->pool.size()) {
@@ -91,7 +86,9 @@ public:
 								result = WhenReadyToJumpbackToTheLeft(tile, dt);
 							}
 						}
-
+					}
+					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_SPACE && (leftSide.x >= tileBox.x)) {
+						result = WhenReadyToJumpbackToTheLeft(tile, dt);
 					}
 				}
 
@@ -101,12 +98,7 @@ public:
 					
 					) {
 					//&& behaviorComponent->goingToJumpTo == GameEntity::RIGHT
-					if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_SPACE && (rightSide.x >= tileBox.x)) {
-						//if (((int)GetPlayerBox().y - TileSpriteState::TILE_HEIGHT) % TileSpriteState::TILE_HEIGHT < 40) {
-							result = WhenReadyToJumpbackToTheRight(tile, dt);
-						//}
-					}
-					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
+					if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_LEFT
 						|| tile->getCurrentStateType() == TileSpriteState::STATE_TILE_WALL_RIGHT
 						) {
 						if (pos - 3 < tileMap->pool.size()) {
@@ -115,7 +107,9 @@ public:
 								result = WhenReadyToJumpbackToTheRight(tile, dt);
 							}
 						}
-
+					}
+					else if (tile->getCurrentStateType() == TileSpriteState::STATE_TILE_SPACE && (rightSide.x >= tileBox.x)) {
+						result = WhenReadyToJumpbackToTheRight(tile, dt);
 					}
 				}
 			}

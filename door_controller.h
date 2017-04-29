@@ -46,14 +46,15 @@ public:
 		else {
 			controlEntityBox = controlEntity->getCollisionBox();
 		}
-		int xCheck = (int)controlEntityBox.x;
+		float xCheck = controlEntityBox.x;
 		Door* nearestDoor = nullptr;
-		int minimumDistance = 9999;
+		float minimumDistance = 9999;
 		for (auto it = doors->pool.begin(); it != doors->pool.end(); ++it) {
+			//SDL_Log("mouse position (%f, %f))", controlEntityBox.x, controlEntityBox.y);
 			if (!(*it)->enabled) continue;
 
 			Door* door = *it;
-			if (door->isToggleEnabled) {
+			//if (door->isToggleEnabled) {
 			
 				GameEntity::Box doorBox = door->getCollisionBox();
 
@@ -67,8 +68,11 @@ public:
 					continue;
 				}
 				
+				//SDL_Log("doooooor position : (%f,%f), distance: %f", (*it)->horizontalPosition, (*it)->verticalPosition, xCheck - doorBox.x);
+
 				if (controlEntity->direction == GameEntity::LEFT) {
 					if (xCheck - doorBox.x < minimumDistance && xCheck - doorBox.x > 0 && doorBox.x > camera->x) {
+						//SDL_Log("%f, %f", xCheck, doorBox.x);
 						nearestDoor = door;
 						minimumDistance = xCheck - doorBox.x;
 					}
@@ -79,13 +83,18 @@ public:
 						minimumDistance = doorBox.x - xCheck;
 					}
 				}
-			}
-			else {
-				//SDL_Log("Door delay");
-			}
+			//}
+			//else {
+			//	//SDL_Log("Door delay");
+			//}
 		}
 
 		if (nearestDoor != nullptr) {
+			if (!nearestDoor->isToggleEnabled) {
+				nearestDoor = NULL;
+				return;
+			} 
+
 			nearestDoor->isToggleEnabled = false;
 			/*SDL_Log("WORKKKKKKKKKKKKKK LEFT");*/
 			if ((nearestDoor->getCurrentStateType() == DoorSpriteState::STATE_DOOR_POWER_LEFT
@@ -99,6 +108,8 @@ public:
 
 			if (controlEntity->getName() == CLASS_MOUSE) {
 				SDL_Log("MOUSE TOGGLE DOOR");
+				SDL_Log("Nearest %f, %f", nearestDoor->horizontalPosition, nearestDoor->verticalPosition);
+				Send(new Message(MOUSE_TOGGLE_DOOR, this));
 			}
 		}
 		

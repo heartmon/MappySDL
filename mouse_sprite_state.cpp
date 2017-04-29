@@ -15,13 +15,6 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	standSpriteClips[0].h = spriteSize;
 	stand = new EntityState(mappySpriteSheet, STATE_STAND, STANDING_ANIMATION_FRAME, standSpriteClips);
 
-	//stand animation
-	/*standRightSpriteClips[0].x = spriteSize * 1;
-	standRightSpriteClips[0].y = spriteSize * 1;
-	standRightSpriteClips[0].w = spriteSize;
-	standRightSpriteClips[0].h = spriteSize;
-	EntityState* standRight = new EntityState(mappySpriteSheet, STATE_STAND_RIGHT, STANDING_ANIMATION_FRAME, standRightSpriteClips);*/
-
 	//walking animation
 	walkSpriteClips[0].x = spriteSize * 0;
 	walkSpriteClips[0].y = 0;
@@ -34,18 +27,6 @@ void MouseSpriteState::Create(AvancezLib* system) {
 	walkSpriteClips[1].h = spriteSize;
 
 	walk = new EntityState(mappySpriteSheet, STATE_WALK, WALKING_ANIMATION_FRAME, walkSpriteClips);
-
-	/*walkRightSpriteClips[0].x = spriteSize * 0;
-	walkRightSpriteClips[0].y = spriteSize * 1;
-	walkRightSpriteClips[0].w = spriteSize;
-	walkRightSpriteClips[0].h = spriteSize;*/
-
-	/*walkRightSpriteClips[1].x = spriteSize * 1;
-	walkRightSpriteClips[1].y = spriteSize * 1;
-	walkRightSpriteClips[1].w = spriteSize;
-	walkRightSpriteClips[1].h = spriteSize;*/
-
-	//EntityState* walkRight = new EntityState(mappySpriteSheet, STATE_WALK_RIGHT, WALKING_ANIMATION_FRAME, walkRightSpriteClips);
 
 	//prejump animation
 	prejumpSpriteClips[0].x = spriteSize * 6;

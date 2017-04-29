@@ -9,6 +9,8 @@
 //}
 bool AvancezLib::init(int width, int height, Router* router, GameViewport* gameViewport)
 {
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
+
 	SDL_Log("Initializing the system...\n");
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)

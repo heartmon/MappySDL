@@ -88,11 +88,11 @@ public:
 		if (m->getMessageType() == RAINBOW_GONE) {
 			RainbowBehaviorComponent* behaviorComponent = (RainbowBehaviorComponent*)m->getArg1()->getBehaviorComponent();
 			SDL_Log("Cat die : %d, Big cat die : %d", behaviorComponent->numberOfCats, behaviorComponent->numberOfBigCats);
-			int catScore = pow(scorePowerBase, behaviorComponent->numberOfCats)*scoreMultiplier;
-			if (behaviorComponent->numberOfCats == 0) {
+			int catScore = pow(scorePowerBase, behaviorComponent->numberOfCats + behaviorComponent->numberOfBigCats)*scoreMultiplier;
+			if (behaviorComponent->numberOfCats + behaviorComponent->numberOfBigCats == 0) {
 				catScore = 0;
 			}
-			int bigCatScore = bigcatScore * behaviorComponent->numberOfBigCats;
+			int bigCatScore = 0; // bigcatScore * behaviorComponent->numberOfBigCats;
 			int multiplier = behaviorComponent->numberOfBigCats * 2;
 
 			int totalScore = catScore + bigCatScore;

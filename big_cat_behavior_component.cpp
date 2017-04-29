@@ -22,11 +22,16 @@ void BigCatBehaviorComponent::Init() {
 	nextOrder = NOTHING;
 
 	currentTargetItem = NULL;
+	headhitAmount = 1;
+	gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
 }
 
 void BigCatBehaviorComponent::RoundInit() {
 	gameEntity->setCurrentStateType(BigCatSpriteState::STATE_STAND);
 	currentTargetItem = NULL;
+
+	headhitAmount = 1;
+	minimumDistanceAtm = 9999;
 }
 
 void BigCatBehaviorComponent::Update(float dt) {
@@ -92,13 +97,13 @@ void BigCatBehaviorComponent::Update(float dt) {
 		if (currentOrder == CAT_MOVE_RIGHT) {
 			gameEntity->direction = GameEntity::RIGHT;
 			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_WALK);
-			ChangeSpeedX(160.f);
+			ChangeSpeedX(walkingSpeed * gameSpeed);
 		}
 
 		if (currentOrder == CAT_MOVE_LEFT) {
 			gameEntity->direction = GameEntity::LEFT;
 			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_WALK);
-			ChangeSpeedX(160.f);
+			ChangeSpeedX(walkingSpeed * gameSpeed);
 		}
 
 		////space
@@ -223,6 +228,7 @@ void BigCatBehaviorComponent::Update(float dt) {
 			Move(dt*gameEntity->vx*gameEntity->direction, 0);
 		}
 		else {
+			currentOrder = NOTHING;
 			gameEntity->setCurrentStateType(BigCatSpriteState::STATE_INTHEAIR);
 			ChangeSpeedX(0);
 			ChangeSpeedY(200);
@@ -236,7 +242,7 @@ void BigCatBehaviorComponent::Update(float dt) {
 	}
 
 	if (gameEntity->getCurrentStateType() == BigCatSpriteState::STATE_STAND) {
-		clearOrder();
+		currentOrder = NOTHING;
 		ThinkWhereToMove();
 	}
 
@@ -244,19 +250,15 @@ void BigCatBehaviorComponent::Update(float dt) {
 
 
 	NumbProgress(dt);
-	if (nextOrder != NOTHING) {
-		currentOrder = nextOrder;
-		nextOrder = NOTHING;
-	}
 
 }
 
 void BigCatBehaviorComponent::ThinkWhereToMove() {
 	if (currentTargetItem == NULL) return;
-	if (nextOrder != NOTHING) {
+	currentOrder = NOTHING;
+	if (currentOrder != NOTHING) {
 		return;
 	}
-	clearOrder();
 	//if (isNumb) {
 	//	return;
 	//}
@@ -272,11 +274,11 @@ void BigCatBehaviorComponent::ThinkWhereToMove() {
 	case BigCatSpriteState::STATE_WALK:
 		if (gameEntity->horizontalPosition < itemBox.x) {
 			//SDL_Log("Cat will move right");
-			nextOrder = CAT_MOVE_RIGHT;
+			currentOrder = CAT_MOVE_RIGHT;
 		}
 		else {
 			//SDL_Log("Cat will move left");
-			nextOrder = CAT_MOVE_LEFT;
+			currentOrder = CAT_MOVE_LEFT;
 		}
 		break;
 	}
@@ -285,11 +287,11 @@ void BigCatBehaviorComponent::ThinkWhereToMove() {
 void BigCatBehaviorComponent::ChangeDirection() {
 	if (currentOrder == CAT_MOVE_RIGHT) {
 		//SDL_Log("From right to left");
-		nextOrder = CAT_MOVE_LEFT;
+		currentOrder = CAT_MOVE_LEFT;
 	}
 	else {
 		//SDL_Log("From left to right");
-		nextOrder = CAT_MOVE_RIGHT;
+		currentOrder = CAT_MOVE_RIGHT;
 	}
 }
 
@@ -311,7 +313,9 @@ void BigCatBehaviorComponent::NumbProgress(float dt) {
 
 void BigCatBehaviorComponent::ThinkWhereToJump() {
 	if (currentTargetItem == NULL) return;
-	clearOrder();
+	if (currentOrder != NOTHING) {
+		return;
+	}
 	if (isNumb) {
 		return;
 	}
@@ -329,6 +333,10 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 		blockPos = ceil(doorBox.y) / TileSpriteState::TILE_HEIGHT + 1;
 	}
 
+	if (abs(catBlockYPos - itemBlockYPos) < minimumDistanceAtm) {
+		minimumDistanceAtm = abs(catBlockYPos - itemBlockYPos);
+	}
+
 	switch (gameEntity->getCurrentStateType()) {
 	case BigCatSpriteState::STATE_INTHEAIR:
 		if (gameEntity->vy > 0) {
@@ -336,36 +344,40 @@ void BigCatBehaviorComponent::ThinkWhereToJump() {
 		}
 		
 		//SDL_Log("%d, %d", maximumPos, catBlockYPos);
-
-		bool yDistance;
+		int preventLoopCheck = (250 + ((rand() % 20) - 30)) / headhitAmount;
+		bool yDistance = false;
 		//know the block
 		if (blockPos != -1 && blockPos >= catBlockYPos - 2 && blockPos != maximumPos) {
 			yDistance = true;
 			lastKnownRainbowDoor = NULL;
 		}
 		else if (blockPos == maximumPos && catBlockYPos + 1 <= blockPos) {
-			//SDL_Log("Block door is bottom floor");
 			yDistance = true;
 		}
-		else if (blockPos == -1) {
-			yDistance = catBlockYPos == itemBlockYPos || catBlockYPos - 1 == itemBlockYPos;
-			if (!yDistance) falseTime++;;
+		else if (minimumDistanceAtm >= 1 && (falseTime >= preventLoopCheck || preventLoopCheck < 0)) {
+			yDistance = true;
+			//SDL_Log("===================================");
 		}
-		if (yDistance || falseTime == 50) {
+		else if (blockPos == -1) {
+			yDistance = catBlockYPos == itemBlockYPos;
+		}
+		if (yDistance) {
 			if (gameEntity->horizontalPosition < itemBox.x) {
 				//SDL_Log("Cat will jump right");
-				nextOrder = CAT_JUMP_BACK_RIGHT;
+				currentOrder = CAT_JUMP_BACK_RIGHT;
 			}
-			else {
+			else if (gameEntity->horizontalPosition > itemBox.x) {
 				//SDL_Log("Cat will jump left");
-				nextOrder = CAT_JUMP_BACK_LEFT;
+				currentOrder = CAT_JUMP_BACK_LEFT;
 			}
 			lastKnownRainbowDoor = NULL;
 			numbCount = 0;
 			falseTime = 0;
+			minimumDistanceAtm = 9999;
+			headhitAmount = 1;
 		}
 		else {
-			
+			falseTime++;
 		}
 		break;
 	}
@@ -454,6 +466,7 @@ void BigCatBehaviorComponent::ChangeSpeedY(float newVy) {
 
 void BigCatBehaviorComponent::WhenHeadHit() {
 	ChangeSpeedY(-gameEntity->vy);
+	headhitAmount++;
 	//gameEntity->setCurrentStateType(MouseSpriteState::STATE_INTHEAIR);
 }
 
@@ -477,7 +490,7 @@ void BigCatBehaviorComponent::Receive(Message* m) {
 }
 
 void BigCatBehaviorComponent::clearOrder() {
-	currentOrder = NOTHING;
+	//currentOrder = NOTHING;
 	nextOrder = NOTHING;
 	nextOrderReady = true;
 }

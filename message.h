@@ -29,7 +29,8 @@ enum MessageType {
 	GAME_INIT,
 	MOUSE_JUMP_ON_ROPE,
 	ROUND_INIT,
-	HIGH_SCORE
+	HIGH_SCORE,
+	MOUSE_TOGGLE_DOOR
 };
 
 class Message {

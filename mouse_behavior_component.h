@@ -23,14 +23,14 @@ class MouseBehaviorComponent : public Component {
 	float prejumpInterval = 0.2f;
 	float prejumpTime = 0;
 
-	float spaceTriggerInterval = 0.35f;
+	float spaceTriggerInterval = .25f;
 	float spaceTriggerTime = 0;
 	bool canSpace = true;
 
 	float knockbackInterval = 0.2f;
 	float knockbackTime = 0;
 	int knockbackDirection = 0;
-	float knockbackSpeed = 400.f;
+	float knockbackSpeed = 420.f;
 
 	float deadInterval = .7f;
 	float deadTime = 0;
@@ -44,7 +44,7 @@ class MouseBehaviorComponent : public Component {
 	float jumpbackTime = 0;
 	float jumpbackInterval = 0.4f;
 	float jumpbackSpeedX = 200;
-	float jumpbackSpeedY = 110;
+	float jumpbackSpeedY = 130;
 
 	float yPosBeforePrejump = 0;
 public:
@@ -54,7 +54,7 @@ public:
 	virtual void Init();
 	virtual void RoundInit();
 	void Update(float dt);
-	void Receive(int message);
+	void Receive(Message* message);
 	void Destroy();
 	void Move(float distanceX, float distanceY);
 
@@ -85,8 +85,8 @@ public:
 	void WhenDie();
 
 	bool isGoingToDie = false;
-
-private:
 	bool toBeKnockedBack = false;
+private:
+	
 
 };

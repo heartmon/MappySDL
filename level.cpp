@@ -244,13 +244,13 @@ void Level::SetTileMap(int level) {
 			int doorOffsetY = -24;
 			switch (tileType) {
 				case TileSpriteState::STATE_TILE_DOOR_LEFT:
-					door->Init((float)x - 25, (float)y + doorOffsetY, 0);
+					door->Init((float)x - 4, (float)y + doorOffsetY, 0);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_RIGHT:
 					door->Init((float)x + 4, (float)y + doorOffsetY, 1);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_LEFT:
-					door->Init((float)x - 25, (float)y + doorOffsetY, 2);
+					door->Init((float)x - 4, (float)y + doorOffsetY, 2);
 					break;
 				case TileSpriteState::STATE_TILE_DOOR_POWER_RIGHT:
 					door->Init((float)x + 4, (float)y + doorOffsetY, 3);
@@ -305,6 +305,10 @@ void Level::SetTileMap(int level) {
 
 				
 				
+			}
+			else if (isDoorType) {
+				Tile* tile = tileMapPool.FirstAvailable();
+				tile->Init(x, y, TileSpriteState::STATE_TILE_SPACE, i);
 			}
 			else {
 				Tile* tile = tileMapPool.FirstAvailable();

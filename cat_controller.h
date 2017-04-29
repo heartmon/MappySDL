@@ -85,16 +85,16 @@ public:
 		this->levelNo = levelNo;
 
 		if (levelNo <= 2) {
-			maximumSpawn = 1;
-		}
-		else if (levelNo <= 4) {
 			maximumSpawn = 4;
 		}
-		else if (levelNo <= 6) {
+		else if (levelNo <= 4) {
 			maximumSpawn = 5;
 		}
-		else {
+		else if (levelNo <= 6) {
 			maximumSpawn = 6;
+		}
+		else {
+			maximumSpawn = 7;
 		}
 	}
 

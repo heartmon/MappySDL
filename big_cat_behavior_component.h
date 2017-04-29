@@ -22,6 +22,8 @@ class BigCatBehaviorComponent : public Component {
 	float defaultVx;
 	float defaultVy;
 
+	float walkingSpeed = 160.f;
+
 	float spaceTriggerInterval = 0.35f;
 	float spaceTriggerTime = 0;
 	bool canSpace = true;
@@ -32,7 +34,7 @@ class BigCatBehaviorComponent : public Component {
 	float jumpbackInterval = 0.3f;
 	float jumpbackTime = 0;
 	float jumpbackSpeedX = 200;
-	float jumpbackSpeedY = 100;
+	float jumpbackSpeedY = 120;
 
 	float knockbackInterval = 0.2f;
 	float knockbackTime = 0;
@@ -54,6 +56,8 @@ class BigCatBehaviorComponent : public Component {
 	int numbCount = 0;
 	bool isNumb = false;
 	int falseTime = 0;
+	int minimumDistanceAtm = 9999;
+	int headhitAmount = 1;
 
 	float trackingNumber;
 

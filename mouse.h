@@ -24,10 +24,13 @@ public:
 		size->w = MouseSpriteState::SPRITE_WIDTH;
 		size->h = MouseSpriteState::SPRITE_HEIGHT;
 
+		direction = GameEntity::LEFT;
+
 		vx = 160.0f;
 	}
 
 	virtual void Receive(Message* m);
+	virtual void RoundInit();
 
 	virtual std::string getName() {
 		return CLASS_MOUSE;
